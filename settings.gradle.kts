@@ -24,4 +24,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "Friendly Emotions"
 include(":app")
+include(":domain")
+include(":data")
+include(":feature:child")
+include(":feature:therapist")
+include(":core:ui")
  
