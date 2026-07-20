@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Friendly Emotions</string>
+    <string name="app_name_child">Przyjazne Emocje Gra</string>
+    <string name="app_name_therapist">Przyjazne Emocje Ustawienia</string>
 </resources>
