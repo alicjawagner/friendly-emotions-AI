@@ -1,0 +1,1 @@
+Use the documents in `docs/target` as the authoritative source of truth. Use `docs/reference/friendly-words` only to understand legacy behavior when the target documentation does not fully specify it. If there is any conflict, always follow the target documentation.
