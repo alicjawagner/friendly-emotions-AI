@@ -1,0 +1,109 @@
+package pg.autyzm.friendlyemotions.domain.service
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertSame
+import org.junit.Test
+import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
+import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
+import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
+import pg.autyzm.friendlyemotions.domain.model.runtime.Trial
+import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
+import kotlin.random.Random
+
+class TrialPositionRandomizerTest {
+    private fun option(id: String) =
+        TrialOption(
+            imageId = ImageId(id),
+            imagePath = "/images/$id.png",
+            emotionId = EmotionId.HAPPY,
+            gender = GrammaticalGender.MASCULINE,
+        )
+
+    private fun trial(
+        options: List<TrialOption>,
+        correct: TrialOption = options.first(),
+    ) = Trial(
+        targetEmotionId = EmotionId.HAPPY,
+        promptGender = GrammaticalGender.MASCULINE,
+        correctOption = correct,
+        allOptions = options,
+    )
+
+    @Test
+    fun `never repeats the correct option's position on consecutive trials for the same emotion`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 1))
+        val correct = option("correct")
+        val original = trial(listOf(correct, option("d1"), option("d2")))
+
+        var previousPosition = randomizer.randomizePositions(original).allOptions.indexOf(correct)
+        repeat(30) {
+            val position = randomizer.randomizePositions(original).allOptions.indexOf(correct)
+            assertNotEquals(previousPosition, position)
+            previousPosition = position
+        }
+    }
+
+    @Test
+    fun `cycles through every position before any position repeats within one cycle`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 2))
+        val correct = option("correct")
+        val original = trial(listOf(correct, option("d1"), option("d2")))
+
+        val positions = List(3) { randomizer.randomizePositions(original).allOptions.indexOf(correct) }
+
+        assertEquals(setOf(0, 1, 2), positions.toSet())
+    }
+
+    @Test
+    fun `resets and keeps shuffling freely once all positions have been used`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 3))
+        val correct = option("correct")
+        val original = trial(listOf(correct, option("d1"), option("d2")))
+
+        // Exhaust the full cycle (3 positions), then request several more trials past exhaustion.
+        val positions = List(9) { randomizer.randomizePositions(original).allOptions.indexOf(correct) }
+
+        assertEquals(setOf(0, 1, 2), positions.toSet())
+        for (i in 1 until positions.size) {
+            assertNotEquals(positions[i - 1], positions[i])
+        }
+    }
+
+    @Test
+    fun `returns the trial unchanged when there is one option or fewer`() {
+        val randomizer = TrialPositionRandomizer()
+        val single = trial(listOf(option("only")))
+        val empty =
+            Trial(
+                targetEmotionId = EmotionId.HAPPY,
+                promptGender = GrammaticalGender.MASCULINE,
+                correctOption = option("only"),
+                allOptions = emptyList(),
+            )
+
+        assertSame(single, randomizer.randomizePositions(single))
+        assertSame(empty, randomizer.randomizePositions(empty))
+    }
+
+    @Test
+    fun `tracks position history independently per emotion`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 4))
+        val happyCorrect = option("happy-correct")
+        val happyTrial = trial(listOf(happyCorrect, option("h1"), option("h2")))
+        val sadCorrect = option("sad-correct").copy(emotionId = EmotionId.SAD)
+        val sadTrial =
+            Trial(
+                targetEmotionId = EmotionId.SAD,
+                promptGender = GrammaticalGender.MASCULINE,
+                correctOption = sadCorrect,
+                allOptions = listOf(sadCorrect, option("s1"), option("s2")),
+            )
+
+        val happyPositions = List(3) { randomizer.randomizePositions(happyTrial).allOptions.indexOf(happyCorrect) }
+        val sadPositions = List(3) { randomizer.randomizePositions(sadTrial).allOptions.indexOf(sadCorrect) }
+
+        assertEquals(setOf(0, 1, 2), happyPositions.toSet())
+        assertEquals(setOf(0, 1, 2), sadPositions.toSet())
+    }
+}
