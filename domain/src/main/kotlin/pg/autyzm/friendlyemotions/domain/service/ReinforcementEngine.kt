@@ -24,7 +24,14 @@ class ReinforcementEngine(private val random: Random = Random) {
 
         return Reinforcement(
             praiseWord = settings.enabledPraiseWords.random(random),
-            animationTheme = if (settings.animationsEnabled) ReinforcementSettings.ANIMATION_THEMES.random(random) else null,
+            animationTheme =
+                if (settings.animationsEnabled) {
+                    ReinforcementSettings.ANIMATION_THEMES.random(
+                        random,
+                    )
+                } else {
+                    null
+                },
         )
     }
 }
