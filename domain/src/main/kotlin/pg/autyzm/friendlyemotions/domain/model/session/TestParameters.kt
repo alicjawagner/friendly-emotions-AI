@@ -14,6 +14,7 @@ data class TestParameters(
     val promptTemplate: PromptTemplate = PromptTemplate.EMOTION_ONLY,
     val ttsEnabled: Boolean = false,
     val captionsEnabled: Boolean = false,
+    val mixedGenderInAnswers: Boolean = true,
 ) {
     init {
         require(displayedImageCount in LearningParameters.DISPLAYED_IMAGE_COUNT_RANGE) {

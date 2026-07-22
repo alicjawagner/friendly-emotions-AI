@@ -25,7 +25,6 @@
 14. [Error Correction Model](#14-error-correction-model)
 15. [Configuration Model](#15-configuration-model-business-perspective)
 16. [Domain Events](#16-domain-events)
-17. [Extensibility Considerations](#17-extensibility-considerations)
 
 ---
 
@@ -83,7 +82,7 @@ The six emotions are fixed domain constants. They are never created, renamed, or
 | `EmotionId` | Stable identifier: `HAPPY`, `SAD`, `SURPRISED`, `ANGRY`, `SCARED`, `BORED` |
 | `labels` | Map of locale → `EmotionLabel` (Polish gendered forms; English neutral form) |
 
-**English names:** happy, sad, surprised, angry, scared, bored  
+**English names:** happy, sad, surprised, angry, scared, bored
 **Polish names (masculine / feminine / neuter):** wesoły/wesoła/wesołe · smutny/smutna/smutne · zdziwiony/zdziwiona/zdziwione · zły/zła/złe · przestraszony/przestraszona/przestraszone · znudzony/znudzona/znudzone
 
 **Responsibility:** Serve as the top-level grouping for all teaching material; provide gender-inflected labels for prompt rendering.
@@ -229,7 +228,7 @@ The screen always displays only the emotion name (never the full phrase). TTS sp
 LEARNING | TEST
 ```
 
-`LEARNING`: spoken prompts, hints, praise animations, reinforcement, error-correction re-queuing. No scores displayed during session.  
+`LEARNING`: spoken prompts, hints, praise animations, reinforcement, error-correction re-queuing. No scores displayed during session.
 `TEST`: timed, no hints, no reinforcement during rounds. Score (percentage correct, counts) recorded and shown at session end.
 
 ---
@@ -299,6 +298,7 @@ Controls test-mode session behavior. By default mirrors `LearningParameters`.
 | `promptTemplate` | `PromptTemplate` | — | Inherited or independent |
 | `ttsEnabled` | `Boolean` | `false` | Inherited; default off for independent setting |
 | `captionsEnabled` | `Boolean` | `false` | Inherited; default off for independent setting |
+| `mixedGenderInAnswers` | `Boolean` | `true` | Inherited or independent |
 
 **Answer time limit:** shared with `LearningParameters.hintDelaySeconds`. No separate field — when the timer fires in test mode it counts the trial as wrong and advances.
 
@@ -315,7 +315,7 @@ Controls test-mode session behavior. By default mirrors `LearningParameters`.
 | `endSessionAnimationEnabled` | `Boolean` | `true` | Animation played at session end |
 | `endSessionFanfareEnabled` | `Boolean` | `true` | Audio fanfare played at session end |
 
-Available praise words: "dobrze", "super", "świetnie", "ekstra", "rewelacja", "brawo".  
+Available praise words: "dobrze", "super", "świetnie", "ekstra", "rewelacja", "brawo".
 Available animation themes: flowers, butterflies, balloons, cars. One theme selected at random per event.
 
 ---
@@ -424,7 +424,7 @@ Emotion (6 fixed) ──1:N──< EmotionFolder >──1:N──< EmotionImage
 
 Generates the ordered list of trials for one session.
 
-**Inputs:** eligible `EmotionImage` records filtered by mode, active `LearningParameters` (or `TestParameters`), `mixedGenderInAnswers` flag  
+**Inputs:** eligible `EmotionImage` records filtered by mode, active `LearningParameters` (or `TestParameters`), `mixedGenderInAnswers` flag
 **Output:** `List<Trial>`
 
 **Algorithm:**
@@ -442,7 +442,7 @@ Generates the ordered list of trials for one session.
 
 Produces a `RenderedPrompt` for a given trial.
 
-**Inputs:** `PromptTemplate`, `EmotionId`, `GrammaticalGender`, `Locale`  
+**Inputs:** `PromptTemplate`, `EmotionId`, `GrammaticalGender`, `Locale`
 **Output:** `RenderedPrompt`
 
 Selects the correct `EmotionLabel` form: the gender-specific Polish form or the neutral English form. Instantiates the template to produce `displayText` (emotion name only) and `spokenText` (full phrase).
@@ -739,7 +739,7 @@ Active in `LEARNING` mode only. The mechanism re-queues failed trials within the
 | 2 | Mistake | Requeue shuffled layout | 2 |
 | 2 | Correct (not clean) | No requeue | 0 (recovery complete) |
 
-**Same layout requeue:** the trial is re-inserted with identical option positions.  
+**Same layout requeue:** the trial is re-inserted with identical option positions.
 **Shuffled layout requeue:** `TrialPositionRandomizer` produces a different on-screen arrangement to prevent position memorization.
 
 The re-inserted trial is placed immediately after the current position in the trial list, so the child encounters the failed emotion again on the very next trial.
@@ -755,7 +755,7 @@ The therapist configures a LearningStep through a five-tab wizard. All state is 
 | **Materials** | What the child practices | Select emotions → select folders → optionally deselect individual images; assign each image to LEARNING/TEST/BOTH |
 | **Learning** | How learning-mode sessions work | Image count per trial (1–6); repetitions per emotion (1–3); prompt template; TTS; captions; hint delay (1–10 s); active hint types (≥1); mixed gender in answers |
 | **Reinforcement** | Motivational feedback | Active praise words; in-trial animations; end-of-session animation; end-of-session fanfare |
-| **Test** | Assessment behavior | Override learning settings or inherit; if independent: image count, repetitions, prompt, TTS, captions |
+| **Test** | Assessment behavior | Override learning settings or inherit; if independent: image count, repetitions, prompt, TTS, captions, mixed gender in answers |
 | **Save** | Persistence | Unique name (required, case-insensitive duplicate check); read-only summary comparing all learning vs. test parameters |
 
 **Material selection detail:**

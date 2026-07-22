@@ -460,7 +460,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - **Materials Tab** — `MaterialTabViewModel` + `MaterialTabScreen`: pick emotion → view folders → select/deselect folders (auto-selects all images for L+T) → expand folder to deselect individual images → per-image LEARNING/TEST checkboxes
 - **Learning Tab** — `LearningTabViewModel` + `LearningTabScreen`: `NumberSelector` for image count (1–6) and repetitions (1–3), prompt template picker, TTS toggle, captions toggle, hint delay slider, hint type checkboxes (≥1 required), mixed gender toggle
 - **Reinforcement Tab** — `ReinforcementTabViewModel` + `ReinforcementTabScreen`: praise word checkboxes, animation toggle, end-of-session animation toggle, end-of-session fanfare toggle
-- **Test Tab** — `TestTabViewModel` + `TestTabScreen`: override toggle; when overriding: independent image count, repetitions, prompt, TTS, captions; uses `DeriveTestParametersUseCase` when not overriding
+- **Test Tab** — `TestTabViewModel` + `TestTabScreen`: override toggle; when overriding: independent image count, repetitions, prompt, TTS, captions, mixed gender toggle; uses `DeriveTestParametersUseCase` when not overriding
 - **Save Tab** — `SaveTabViewModel` + `SaveTabScreen`: name input with validation (blank / duplicate check via `ValidateLearningStepNameUseCase`), read-only summary table (learning vs. test parameters), Save button → `SaveLearningStepUseCase`
 - Edit mode: pre-populate wizard from existing `LearningStep` via `GetLearningStepUseCase`
 - Discard confirmation on back navigation
