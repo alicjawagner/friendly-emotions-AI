@@ -1,8 +1,8 @@
 # Target Architecture — Friendly Emotions
 
-> **Role:** Principal Android Architect  
-> **Date:** 2026-07-16  
-> **Scope:** Software architecture only. No UI design, no Compose screen design, no code generation.  
+> **Role:** Principal Android Architect
+> **Date:** 2026-07-16
+> **Scope:** Software architecture only. No UI design, no Compose screen design, no code generation.
 > **Sources:** `friendly-emotions-functional-specification.md`, `target-domain.md`, `01-project-inventory.md` through `06-architecture-improvement-analysis.md`
 
 ---
@@ -200,7 +200,7 @@ domain/model/
 ├── emotion/
 │   ├── EmotionId.kt              (enum: HAPPY, SAD, SURPRISED, ANGRY, SCARED, BORED)
 │   ├── Emotion.kt                (id, labels: Map<Locale, EmotionLabel>)
-│   ├── EmotionLabel.kt           (masculine, feminine, neuter, invariant)
+│   ├── EmotionLabel.kt           (masculine, feminine, neuter, neutral)
 │   ├── EmotionFolder.kt          (id, emotionId, name, genderPolicy, isExample)
 │   ├── EmotionImage.kt           (id, folderId, filePath, gender, isExample)
 │   ├── GrammaticalGender.kt      (enum: MASCULINE, FEMININE, NEUTER)
@@ -390,10 +390,10 @@ The child app collects `LearningStepRepository.observeActiveStep()` as a `StateF
 
 ### 9.1 Room Database
 
-**Database name:** `friendly_emotions`  
-**Version:** starts at 1  
-**Schema export:** `exportSchema = true` (schemas committed to source control)  
-**Migration strategy:** explicit `addMigrations()` for structural changes; `@AutoMigration` for simple additions  
+**Database name:** `friendly_emotions`
+**Version:** starts at 1
+**Schema export:** `exportSchema = true` (schemas committed to source control)
+**Migration strategy:** explicit `addMigrations()` for structural changes; `@AutoMigration` for simple additions
 **Foreign keys:** enabled via `onOpen` callback
 
 ### 9.2 Entity Design
