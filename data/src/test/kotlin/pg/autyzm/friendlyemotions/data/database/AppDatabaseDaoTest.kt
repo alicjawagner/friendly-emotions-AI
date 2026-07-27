@@ -39,6 +39,7 @@ class AppDatabaseDaoTest {
         val context = RuntimeEnvironment.getApplication()
         db =
             Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+                .addCallback(AppDatabase.CALLBACK)
                 .build()
     }
 
