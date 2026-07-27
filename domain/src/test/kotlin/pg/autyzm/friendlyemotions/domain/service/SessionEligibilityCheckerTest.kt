@@ -7,9 +7,9 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
+import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStep
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
-import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
