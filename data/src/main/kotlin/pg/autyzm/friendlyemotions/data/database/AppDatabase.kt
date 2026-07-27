@@ -4,6 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import pg.autyzm.friendlyemotions.data.dao.EmotionFolderDao
+import pg.autyzm.friendlyemotions.data.dao.EmotionImageDao
+import pg.autyzm.friendlyemotions.data.dao.ImageUsageDao
+import pg.autyzm.friendlyemotions.data.dao.LearningStepDao
 import pg.autyzm.friendlyemotions.data.database.converter.FolderGenderPolicyConverter
 import pg.autyzm.friendlyemotions.data.database.converter.GrammaticalGenderConverter
 import pg.autyzm.friendlyemotions.data.database.converter.HintTypeSetConverter
@@ -19,8 +23,6 @@ import pg.autyzm.friendlyemotions.data.entity.LearningStepEntity
  * The single Room database shared by the Child App and Therapist App (ADR-005). There is no
  * `EmotionEntity` — the 6 emotions are supplied by `EmotionCatalog` in `:domain`, never persisted
  * as a table (target-architecture.md §6.3).
- *
- * DAOs are added in Session 3.2; this session only establishes schema version 1.
  */
 @Database(
     entities = [
@@ -41,6 +43,14 @@ import pg.autyzm.friendlyemotions.data.entity.LearningStepEntity
     StringSetConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun emotionFolderDao(): EmotionFolderDao
+
+    abstract fun emotionImageDao(): EmotionImageDao
+
+    abstract fun learningStepDao(): LearningStepDao
+
+    abstract fun imageUsageDao(): ImageUsageDao
+
     companion object {
         const val DATABASE_NAME = "friendly_emotions"
 

@@ -7,13 +7,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import pg.autyzm.friendlyemotions.data.dao.EmotionFolderDao
+import pg.autyzm.friendlyemotions.data.dao.EmotionImageDao
+import pg.autyzm.friendlyemotions.data.dao.ImageUsageDao
+import pg.autyzm.friendlyemotions.data.dao.LearningStepDao
 import pg.autyzm.friendlyemotions.data.database.AppDatabase
 import javax.inject.Singleton
 
-/**
- * Provides the singleton [AppDatabase] (ADR-005). DAO `@Provides` methods are added in Session 3.2
- * once the DAOs exist.
- */
+/** Provides the singleton [AppDatabase] (ADR-005) and every DAO derived from it. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -25,4 +26,16 @@ object DatabaseModule {
         Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
             .addCallback(AppDatabase.CALLBACK)
             .build()
+
+    @Provides
+    fun provideEmotionFolderDao(database: AppDatabase): EmotionFolderDao = database.emotionFolderDao()
+
+    @Provides
+    fun provideEmotionImageDao(database: AppDatabase): EmotionImageDao = database.emotionImageDao()
+
+    @Provides
+    fun provideLearningStepDao(database: AppDatabase): LearningStepDao = database.learningStepDao()
+
+    @Provides
+    fun provideImageUsageDao(database: AppDatabase): ImageUsageDao = database.imageUsageDao()
 }
