@@ -7,6 +7,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
 import pg.autyzm.friendlyemotions.domain.model.runtime.Trial
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
+import pg.autyzm.friendlyemotions.domain.repository.EmotionFolderRepository
 import pg.autyzm.friendlyemotions.domain.repository.LearningStepRepository
 import pg.autyzm.friendlyemotions.domain.service.TrialGenerator
 import javax.inject.Inject
@@ -20,6 +21,7 @@ class InitializeSessionUseCase
     @Inject
     constructor(
         private val learningStepRepository: LearningStepRepository,
+        private val emotionFolderRepository: EmotionFolderRepository,
     ) {
         suspend operator fun invoke(): Result<List<Trial>, DomainError> {
             val activeStep =
@@ -60,11 +62,12 @@ class InitializeSessionUseCase
 
         /**
          * `EmotionImage` only carries a `folderId`; resolving each image's `EmotionId` requires looking
-         * up its folder. Left as `TODO()` until `:data` wiring exists in Phase 3 — the orchestration
-         * shape above it is already correct and repository-agnostic beyond this step.
+         * up its folder. Fetches all distinct folders in a single batch call to avoid N+1 queries.
          */
-        @Suppress("UNUSED_PARAMETER")
-        private fun groupImagesByEmotion(images: List<EmotionImage>): Map<EmotionId, List<EmotionImage>> {
-            TODO("Phase 3: resolve each image's EmotionId via EmotionFolderRepository.getFolderById(image.folderId)")
+        private suspend fun groupImagesByEmotion(images: List<EmotionImage>): Map<EmotionId, List<EmotionImage>> {
+            val folderIds = images.map(EmotionImage::folderId).distinct()
+            val emotionIdByFolderId =
+                emotionFolderRepository.getFoldersByIds(folderIds).associate { it.id to it.emotionId }
+            return images.groupBy { image -> emotionIdByFolderId.getValue(image.folderId) }
         }
     }

@@ -28,4 +28,12 @@ interface EmotionImageRepository {
 
     /** Deletes the DB record and the backing physical file (§10.2). */
     suspend fun deleteImage(imageId: ImageId)
+
+    /**
+     * Deletes files in `filesDir/images/` that have no backing [EmotionImage] row (§9.5, §11.3).
+     * A filesystem concern, so the enumeration/diffing logic lives entirely in `:data`.
+     *
+     * @return the number of orphaned files deleted.
+     */
+    suspend fun cleanOrphanedFiles(): Int
 }

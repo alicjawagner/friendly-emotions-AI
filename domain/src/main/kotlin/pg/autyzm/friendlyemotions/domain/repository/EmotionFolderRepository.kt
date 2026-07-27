@@ -15,6 +15,9 @@ interface EmotionFolderRepository {
 
     suspend fun getFolderById(folderId: FolderId): EmotionFolder
 
+    /** Batch lookup used to resolve many images' [EmotionId]s without N+1 queries. */
+    suspend fun getFoldersByIds(folderIds: List<FolderId>): List<EmotionFolder>
+
     suspend fun createFolder(
         emotionId: EmotionId,
         name: String,

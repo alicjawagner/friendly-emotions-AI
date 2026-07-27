@@ -10,16 +10,13 @@ import javax.inject.Inject
  * [pg.autyzm.friendlyemotions.domain.usecase.material.DeleteFolderUseCase]) already remove the file
  * alongside the record.
  *
- * Enumerating orphaned files requires a filesystem listing that no `:domain` repository interface
- * exposes yet (file access belongs to `:data`), so this is left as `TODO()` until that method is
- * added in Phase 3.
+ * Enumerating orphaned files requires a filesystem listing, which is a `:data`-layer concern
+ * ([EmotionImageRepository.cleanOrphanedFiles]); this use case is a thin pass-through.
  */
 class CleanOrphanImagesUseCase
     @Inject
     constructor(
         private val emotionImageRepository: EmotionImageRepository,
     ) {
-        suspend operator fun invoke() {
-            TODO("Phase 3: EmotionImageRepository needs a way to enumerate files with no backing EmotionImage record")
-        }
+        suspend operator fun invoke(): Int = emotionImageRepository.cleanOrphanedFiles()
     }
