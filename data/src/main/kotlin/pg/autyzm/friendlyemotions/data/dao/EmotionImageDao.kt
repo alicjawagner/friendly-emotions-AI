@@ -25,6 +25,10 @@ interface EmotionImageDao {
     @Query("SELECT * FROM emotion_images WHERE id = :imageId")
     suspend fun getById(imageId: String): EmotionImageEntity?
 
+    /** Batch lookup backing `LearningStepRepository.getImagesEligibleForStep`, avoiding N+1 queries. */
+    @Query("SELECT * FROM emotion_images WHERE id IN (:imageIds)")
+    suspend fun getByIds(imageIds: List<String>): List<EmotionImageEntity>
+
     @Query("SELECT * FROM emotion_images WHERE folderId = :folderId")
     fun observeForFolder(folderId: String): Flow<List<EmotionImageEntity>>
 
