@@ -103,6 +103,16 @@ class DatabaseInitializerTest {
 
             val result = useCase()
 
+            // TEMPORARY DEBUG LOG: proves the domain <-> data wiring (repository -> mapper -> DAO -> Room)
+            // works end-to-end against the seeded "Podstawowy" step. Remove once verified.
+            println(
+                "[SMOKE TEST] InitializeSessionUseCase() result against seeded 'Podstawowy' step: $result",
+            )
+            if (result is Result.Success) {
+                println("[SMOKE TEST] Trial count: ${result.value.size}")
+                result.value.forEachIndexed { index, trial -> println("[SMOKE TEST] Trial[$index] = $trial") }
+            }
+
             assertTrue(result is Result.Success)
             assertTrue((result as Result.Success).value.isNotEmpty())
         }
