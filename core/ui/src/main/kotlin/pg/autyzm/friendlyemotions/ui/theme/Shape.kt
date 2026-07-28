@@ -17,3 +17,11 @@ val FriendlyEmotionsShapes =
         large = RoundedCornerShape(24.dp),
         extraLarge = RoundedCornerShape(32.dp),
     )
+
+/**
+ * Corner radius actually observed on the Figma "Modal" (node `53:2390`) and "Notification-box"
+ * (node `53:2472`) components — unlike [FriendlyEmotionsShapes] above, this one is not a guess.
+ * Used by dialogs and full-screen states that should read as part of the same card/notification
+ * family (`YesNoConfirmationDialog`, `InfoDialog`, `ErrorScreen`'s retry button).
+ */
+val FriendlyEmotionsModalShape = RoundedCornerShape(10.dp)
