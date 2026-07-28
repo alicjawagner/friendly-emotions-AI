@@ -1,7 +1,7 @@
 # Implementation Roadmap — Friendly Emotions
 
-> **Role:** Senior Android Tech Lead  
-> **Date:** 2026-07-17  
+> **Role:** Senior Android Tech Lead
+> **Date:** 2026-07-17
 > **Target:** Production-ready Android application from an empty project
 
 ---
@@ -133,7 +133,7 @@
 
 *Entities:* `EmotionFolderEntity`, `EmotionImageEntity`, `LearningStepEntity`, `ImageUsageEntity`, `LearningParametersEmbedded`, `TestParametersEmbedded`, `ReinforcementSettingsEmbedded`
 
-*DAOs:* `EmotionFolderDao`, `EmotionImageDao`, `LearningStepDao`, `ImageUsageDao`  
+*DAOs:* `EmotionFolderDao`, `EmotionImageDao`, `LearningStepDao`, `ImageUsageDao`
 Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observeActiveStep(): Flow<LearningStepEntity?>`
 
 *Mappers:* `EmotionFolderMapper`, `EmotionImageMapper`, `LearningStepMapper`
@@ -172,7 +172,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 
 **Components:**
 - `FriendlyEmotionsTheme` — color scheme, typography, shapes derived from Figma design tokens
-- Shared components: `NumberSelector`, `YesNoConfirmationDialog`, `InfoDialog`, `CheckboxRow`, `LoadingScreen`, `ErrorScreen`
+- Shared components: `YesNoConfirmationDialog`, `InfoDialog`, `LoadingScreen`, `ErrorScreen`
 - Theme preview composables (`@Preview`)
 
 **Documents:** `target-architecture.md` §16.2; **Figma** — use `get_design_context` on the design system / theme node to extract all tokens before implementation

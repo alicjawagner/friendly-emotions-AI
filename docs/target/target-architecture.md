@@ -727,10 +727,8 @@ These domain services are reusable across any feature or future application:
 
 | Component | Purpose |
 |---|---|
-| `NumberSelector` | ± button control for integer values with min/max |
 | `YesNoConfirmationDialog` | Standard destructive-action confirmation |
 | `InfoDialog` | Read-only information overlay |
-| `CheckboxRow` | Labeled toggle row used throughout therapist settings |
 | `FriendlyEmotionsTheme` | Material3 theme tokens (colors, typography, shapes) |
 | `LoadingScreen` | Standard loading state overlay |
 | `ErrorScreen` | Standard error state with retry action |
