@@ -129,7 +129,7 @@
 
 *Database:*
 - `AppDatabase` (version 1, `exportSchema = true`, foreign key enforcement)
-- TypeConverters: `GrammaticalGenderConverter`, `FolderGenderPolicyConverter`, `HintTypeSetConverter`, `PromptTemplateConverter`, `SessionModeConverter`
+- TypeConverters: `GrammaticalGenderConverter`, `FolderGenderPolicyConverter`, `HintTypeSetConverter`, `PromptTemplateConverter`, `SessionModeConverter`, `StringSetConverter` (generic `Set<String>` converter, used wherever a raw string set is embedded without its own enum-backed converter)
 
 *Entities:* `EmotionFolderEntity`, `EmotionImageEntity`, `LearningStepEntity`, `ImageUsageEntity`, `LearningParametersEmbedded`, `TestParametersEmbedded`, `ReinforcementSettingsEmbedded`
 
@@ -144,7 +144,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 
 *Seeding:* `DatabaseInitializer` — seeds example folders (Women/F, Men/M, Emojis/N, Other/MIXED per emotion), example images (asset URIs), two example learning steps on first launch
 
-*DI:* `DatabaseModule`, `RepositoryModule`, `StorageModule`
+*DI:* `DatabaseModule`, `RepositoryModule`, `StorageModule`, `CoroutineScopeModule` (`@ApplicationScope` `CoroutineScope`, used by `DatabaseInitializer`)
 
 *Use cases — full implementations:* All material use cases, all learning step use cases, session use cases (connect to repository implementations)
 
@@ -171,9 +171,14 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Goal:** Implement the Material3 theme and the shared UI component library used by both feature modules.
 
 **Components:**
-- `FriendlyEmotionsTheme` — color scheme, typography, shapes derived from Figma design tokens
-- Shared components: `YesNoConfirmationDialog`, `InfoDialog`, `LoadingScreen`, `ErrorScreen`
+- `FriendlyEmotionsTheme` (`ui.theme.Theme.kt`) — thin wrapper around `MaterialTheme(colorScheme, typography, shapes, content)`. Only the handful of semantic Material3 slots it actually overrides (background/surface/error/primary/secondary/tertiary) are wired; it is **not** the primary way components get styled.
+- `FriendlyEmotionsColors` (`ui.theme.FriendlyEmotionsColors.kt`) — raw design-token colors grouped to mirror the Figma color frame (`Shades`, `Neutral`, `PrimaryFriendlyEmotions.P50..P1000`, `Gradient`, `Overlay`, `Secondary`, `States`). Components reference these tokens **directly** rather than through `MaterialTheme.colorScheme`.
+- `FriendlyEmotionsTextStyles` (`ui.theme.Type.kt`) — the 15 named Figma text styles (`displayD1/D2`, `headingH1..H5` regular/medium, `bodyRegular/Medium`, `button`, `captionC1/C2`), family `RubikFontFamily` (`ui.theme.Font.kt`). `FriendlyEmotionsTypography` is a best-effort `Typography` mapping onto Material3 slots for the cases that do use `MaterialTheme.typography`; prefer `FriendlyEmotionsTextStyles` directly for exact control.
+- `FriendlyEmotionsShapes` / `FriendlyEmotionsModalShape` (`ui.theme.Shape.kt`) — `FriendlyEmotionsModalShape = RoundedCornerShape(10.dp)` is the shape actually used by dialogs and full-screen states.
+- Shared components (`ui.components`): `YesNoConfirmationDialog`, `InfoDialog`, `LoadingScreen`, `ErrorScreen` — all stateless, callers pass already-resolved `String`s (no `@StringRes` params).
 - Theme preview composables (`@Preview`)
+
+> **Convention for all later phases:** reach for `FriendlyEmotionsColors.*` / `FriendlyEmotionsTextStyles.*` first; use `MaterialTheme.colorScheme` / `MaterialTheme.typography` only for the few semantic slots `FriendlyEmotionsTheme` actually maps.
 
 **Documents:** `target-architecture.md` §16.2; **Figma** — use `get_design_context` on the design system / theme node to extract all tokens before implementation
 
@@ -196,14 +201,17 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Goal:** Implement the child app navigation architecture and the two pre-session screens: the 5-second info splash and the main screen showing the active step.
 
 **Components:**
-- `ChildScreen` sealed class navigation state (`Info`, `Main`, `Game`, `End`)
-- `ChildNavigationHost` — single composable router driven by `StateFlow<ChildScreen>`
-- `ChildHomeViewModel` — observes `observeActiveStep()` via use case, evaluates `canPlay`, drives `Info → Main` auto-transition after 5 seconds
-- `ChildHomeScreen` — info splash (5 s auto-advance or tap), main screen (step name, mode badge, Play button disabled when `!canPlay`)
+- `ObserveActiveLearningStepUseCase` (**new**, `:domain/usecase/session/`) — thin `Flow<LearningStep?>` wrapper around `LearningStepRepository.observeActiveStep()`, mirroring `ObserveLearningStepsUseCase`. Added in this phase because no existing use case exposed the active step as a reactive stream (only one-shot `.first()` reads existed, inside `CheckSessionEligibilityUseCase`/`InitializeSessionUseCase`); `ChildHomeViewModel` may not call the repository directly, so this was a required addition, not an optional one.
+- `InfoSplashScreen` (**shared component, lives in `:core:ui/components/`, not `:feature:child`**) — `@Composable fun InfoSplashScreen(appTitle: String, onContinue: () -> Unit, modifier: Modifier = Modifier)`. Built here but designed for reuse: the Therapist App's welcome screen (Phase 9) calls this same composable with a different `appTitle` ("Friendly Emotions Settings" / "Przyjazne Emocje Ustawienia") instead of duplicating it in `:feature:therapist`. Splash body copy (subtitle, bullet list, continue hint) lives in `:core:ui`'s own string resources (default `values/` = Polish, `values-en/` = English) since it is identical for both callers; only the title string is supplied by the caller.
+- `ChildScreen` sealed class navigation state (`Info`, `Main`, `Game`, `End`) — `:feature:child/navigation/`
+- `ChildNavigationHost` — single composable router driven by `StateFlow<ChildScreen>`; suppresses system back via a permanent no-op `BackHandler(enabled = true) {}` at its root (Compose-layer, not an `Activity.onBackPressedDispatcher` override — see ADR-012). Renders `InfoSplashScreen` for `ChildScreen.Info` and `ChildHomeScreen` for `ChildScreen.Main`; `Game`/`End` are temporary inline placeholders (`// TODO(Phase 6)` / `// TODO(Phase 8)`) so the `when` stays exhaustive without inventing `GameScreen.kt`/`SessionEndScreen.kt` ahead of the phases that design them.
+- `ChildHomeViewModel` — observes `ObserveActiveLearningStepUseCase()`, re-evaluates `canPlay` via `CheckSessionEligibilityUseCase` on every active-step change, drives `Info → Main` auto-transition after a named `SPLASH_DURATION_MS = 5_000L` constant (not an inline magic number — this closes a documented issue from Friendly Words, `docs/reference/friendly-words/06-architecture-improvement-analysis.md` finding L-6)
+- `ChildHomeScreen` (**main screen only** — the info splash is the shared `InfoSplashScreen` above, not a second composable in this file): step name, mode badge (`SessionMode.LEARNING` → "uczenie"/"learning", `SessionMode.TEST` → "test"/"test", matching the Friendly Words legacy convention), Play button disabled when `!canPlay`
 - `ChildHomeUiState`
-- `ChildModule` (Hilt)
+- Locale-dependent copy (splash body, home screen labels) uses Android resource qualifiers only — default `values/strings.xml` (Polish, primary) + `values-en/strings.xml` (English, secondary) — no manual `Locale` branching in code, per functional-specification §3.
+- `ChildModule` (Hilt) — **deferred to Phase 7.** Its only documented purpose (`@Provides TtsController @ViewModelScoped`) has nothing to provide until `TtsController` exists; Hilt needs no placeholder module for the constructor-injected use cases this phase uses. See Phase 7.
 
-**Documents:** `target-architecture.md` §5.1, §12.1, §13.1–13.2; `friendly-emotions-functional-specification.md` §5.11; ADR-012; **Figma** — info screen, child main screen
+**Documents:** `target-architecture.md` §5.1, §11.3, §12.1, §13.1–13.2, §16.2; `friendly-emotions-functional-specification.md` §5.11; ADR-012; **Figma** — info screen (node `1015:4978`), child main screen (node `321:12252`)
 
 **Expected Outcome:** Child app shows info splash for 5 seconds (or less on tap), transitions to main screen. Play button is enabled only when example step is active and has eligible images.
 
@@ -214,6 +222,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - [ ] Main screen shows name of active example learning step
 - [ ] Play button visible and enabled (example data is seeded)
 - [ ] No back-navigation possible from child app (system back does nothing)
+- [ ] Switching device language between Polish and English re-renders both screens' text correctly with no code change
 - [ ] UI matches Figma for both screens
 
 **Dependencies:** Phase 2, Phase 3, Phase 4
@@ -260,6 +269,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 
 **Components:**
 - `TtsController` (`DefaultLifecycleObserver`, `@ViewModelScoped`) — initialize TTS, set locale (PL/EN), `speak()`, shutdown on ViewModel cleared
+- `ChildModule` (Hilt, `:feature:child/di/`) — `@Provides TtsController` (`@ViewModelScoped`). Not needed before this phase (moved here from Phase 5, which had nothing yet to provide through it).
 - `PromptRenderer` integration — gender-inflected `displayText` + `spokenText` from correct option's gender
 - Hint timer — coroutine in `viewModelScope`; on expiry: show hints; first wrong tap in learning mode: show hints immediately
 - Hint visuals — `OUTLINE_CORRECT`, `ANIMATE_CORRECT`, `SCALE_CORRECT`, `DIM_INCORRECT` applied to image tiles

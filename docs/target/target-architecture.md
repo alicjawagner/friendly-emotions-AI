@@ -203,10 +203,15 @@ domain/model/
 │   ├── EmotionLabel.kt           (masculine, feminine, neuter, neutral)
 │   ├── EmotionFolder.kt          (id, emotionId, name, genderPolicy, isExample)
 │   ├── EmotionImage.kt           (id, folderId, filePath, gender, isExample)
+│   ├── NewEmotionImage.kt        (not-yet-persisted image payload; input to EmotionImageRepository.addImages, §10.1)
+│   ├── FolderId.kt               (opaque ID value class, mirrors ADR-008's type-safety-over-strings rule)
+│   ├── ImageId.kt                (opaque ID value class)
 │   ├── GrammaticalGender.kt      (enum: MASCULINE, FEMININE, NEUTER)
 │   └── FolderGenderPolicy.kt     (enum: MASCULINE, FEMININE, NEUTER, MIXED)
 ├── session/
 │   ├── LearningStep.kt           (aggregate root — see §6.2)
+│   ├── LearningStepId.kt         (opaque ID value class)
+│   ├── LearningStepDraft.kt      (editable content of a LearningStep, used by saveStep/updateStep, §10.1 — mirrors LearningStep minus id/isActive/activeMode/isExample, which the activation use cases control, not the wizard draft, ADR-013)
 │   ├── SessionMode.kt            (enum: LEARNING, TEST)
 │   ├── MaterialSelection.kt      (imageUsages: List<ImageUsage>)
 │   ├── ImageUsage.kt             (imageId, inLearning, inTest)
@@ -218,7 +223,10 @@ domain/model/
 └── runtime/
     ├── Trial.kt                  (targetEmotionId, promptGender, correctOption, allOptions)
     ├── TrialOption.kt            (imageId, imagePath, emotionId, gender)
-    └── RenderedPrompt.kt         (displayText, spokenText)
+    ├── TrialState.kt             (sealed class — see §7.3)
+    ├── TrialVerdict.kt           (enum — see §7.3)
+    ├── RenderedPrompt.kt         (displayText, spokenText)
+    └── SessionResult.kt          (carried by ChildScreen.End, §13.2)
 ```
 
 ### 6.2 Aggregate Invariants
@@ -532,9 +540,10 @@ learningStep/
 
 ```
 session/
-├── CheckSessionEligibilityUseCase  validates canPlay = true
-├── InitializeSessionUseCase        loads active step, filters images by mode, invokes TrialGenerator
-└── CleanOrphanImagesUseCase        deletes unreferenced image files and DB records
+├── ObserveActiveLearningStepUseCase  Flow<LearningStep?> passthrough of observeActiveStep(), for ChildHomeViewModel (§12.1)
+├── CheckSessionEligibilityUseCase    validates canPlay = true
+├── InitializeSessionUseCase          loads active step, filters images by mode, invokes TrialGenerator
+└── CleanOrphanImagesUseCase          deletes unreferenced image files and DB records
 ```
 
 ### 11.4 Use Case Contracts
@@ -545,11 +554,11 @@ Every use case follows the same structure:
 class SomeUseCase @Inject constructor(
     private val repository: SomeRepository
 ) {
-    suspend operator fun invoke(params): Result<Output>
+    suspend operator fun invoke(params): Result<Output, DomainError>
 }
 ```
 
-Use cases return `Result<T>` for operations that can fail with domain errors. Callers (ViewModels) map the result to UI state. For observing streams, use cases return `Flow<T>` and do not suspend.
+Use cases return `Result<T, DomainError>` (§15.1's sealed `Result<out T, out E>` — distinct from `kotlin.Result`, which carries a `Throwable` rather than a typed `DomainError`) for operations that can fail with domain errors. Callers (ViewModels) map the result to UI state. For observing streams, use cases return `Flow<T>` and do not suspend — a plain passthrough wrapper like `ObserveActiveLearningStepUseCase` (§11.3) has no `Result` at all, since a repository `Flow` can't fail in the domain-error sense.
 
 ---
 
@@ -614,7 +623,9 @@ sealed class ChildScreen {
 }
 ```
 
-`ChildHomeViewModel` exposes `StateFlow<ChildScreen>`. The root composable routes to the correct screen based on this value. The `when` expression is exhaustive and compiler-enforced. The child app uses no `NavController` — back-navigation for children is intentionally suppressed by this design.
+`ChildHomeViewModel` exposes `StateFlow<ChildScreen>`. The root composable (`ChildNavigationHost`) routes to the correct screen based on this value. The `when` expression is exhaustive and compiler-enforced. The child app uses no `NavController` — back-navigation for children is intentionally suppressed by this design.
+
+System back is suppressed with a permanent no-op `BackHandler(enabled = true) {}` at the root of `ChildNavigationHost` (Compose layer) — not by overriding `Activity.onBackPressedDispatcher` in `ChildActivity`. This keeps the suppression colocated with the navigation state machine it protects and requires no changes to `ChildActivity` beyond hosting `ChildNavigationHost`.
 
 ### 13.3 Therapist App Navigation
 
@@ -732,8 +743,19 @@ These domain services are reusable across any feature or future application:
 | `FriendlyEmotionsTheme` | Material3 theme tokens (colors, typography, shapes) |
 | `LoadingScreen` | Standard loading state overlay |
 | `ErrorScreen` | Standard error state with retry action |
+| `InfoSplashScreen` | 5-second info splash content, parametrized by `appTitle: String`. Introduced in Phase 5 for the Child App; reused as-is (different title only) by the Therapist App's welcome screen in Phase 9 — living in `:core:ui` rather than `:feature:child` is what makes that reuse possible without a forbidden `:feature:child` ↔ `:feature:therapist` dependency. |
 
-### 16.3 Shared Business Constants
+Components generally reference `FriendlyEmotionsColors.*` and `FriendlyEmotionsTextStyles.*` (§16.3) directly for styling, rather than `MaterialTheme.colorScheme`/`MaterialTheme.typography` — `FriendlyEmotionsTheme` only wires a handful of semantic Material3 slots (background/surface/error/primary/secondary/tertiary).
+
+### 16.3 Design Tokens (`:core:ui`)
+
+| Token object | Contents |
+|---|---|
+| `FriendlyEmotionsColors` | Raw color constants grouped to mirror the Figma color frame: `Shades`, `Neutral.N100..N400`, `PrimaryFriendlyEmotions.P50..P1000`, `Gradient`, `Overlay`, `Secondary`, `States` |
+| `FriendlyEmotionsTextStyles` | The 15 named Figma text styles (`displayD1/D2`, `headingH1..H5` × regular/medium, `bodyRegular/Medium`, `button`, `captionC1/C2`), family `RubikFontFamily` |
+| `FriendlyEmotionsShapes` / `FriendlyEmotionsModalShape` | `FriendlyEmotionsModalShape = RoundedCornerShape(10.dp)`, used by dialogs and full-screen states |
+
+### 16.4 Shared Business Constants
 
 The Emotion catalog (6 fixed emotions with all label forms) is defined once in `:domain/EmotionCatalog.kt` and shared across all features. The praise word set and animation theme list are defined in `:domain/model/session/ReinforcementSettings.kt` as companion object constants.
 
@@ -841,10 +863,15 @@ pg.autyzm.friendlyemotions.domain/
 │   │   ├── EmotionLabel.kt
 │   │   ├── EmotionFolder.kt
 │   │   ├── EmotionImage.kt
+│   │   ├── NewEmotionImage.kt
+│   │   ├── FolderId.kt
+│   │   ├── ImageId.kt
 │   │   ├── GrammaticalGender.kt
 │   │   └── FolderGenderPolicy.kt
 │   ├── session/
 │   │   ├── LearningStep.kt
+│   │   ├── LearningStepId.kt
+│   │   ├── LearningStepDraft.kt
 │   │   ├── SessionMode.kt
 │   │   ├── MaterialSelection.kt
 │   │   ├── ImageUsage.kt
@@ -895,11 +922,13 @@ pg.autyzm.friendlyemotions.domain/
 │   │   ├── SetActiveModeUseCase.kt
 │   │   └── DeriveTestParametersUseCase.kt
 │   └── session/
+│       ├── ObserveActiveLearningStepUseCase.kt
 │       ├── CheckSessionEligibilityUseCase.kt
 │       ├── InitializeSessionUseCase.kt
 │       └── CleanOrphanImagesUseCase.kt
 └── error/
-    └── DomainError.kt
+    ├── DomainError.kt
+    └── Result.kt                                 # sealed Result<out T, out E>; distinct from kotlin.Result
 ```
 
 ### `:data`
@@ -914,7 +943,8 @@ pg.autyzm.friendlyemotions.data/
 │       ├── FolderGenderPolicyConverter.kt
 │       ├── HintTypeSetConverter.kt
 │       ├── PromptTemplateConverter.kt
-│       └── SessionModeConverter.kt
+│       ├── SessionModeConverter.kt
+│       └── StringSetConverter.kt        # generic Set<String> converter (no dedicated enum)
 ├── entity/
 │   ├── EmotionFolderEntity.kt
 │   ├── EmotionImageEntity.kt
@@ -942,7 +972,27 @@ pg.autyzm.friendlyemotions.data/
 └── di/
     ├── DatabaseModule.kt
     ├── RepositoryModule.kt
-    └── StorageModule.kt
+    ├── StorageModule.kt
+    └── CoroutineScopeModule.kt      # @ApplicationScope CoroutineScope, consumed by DatabaseInitializer
+```
+
+### `:core:ui`
+
+```
+pg.autyzm.friendlyemotions.ui/
+├── theme/
+│   ├── Theme.kt                     # FriendlyEmotionsTheme
+│   ├── FriendlyEmotionsColors.kt
+│   ├── Type.kt                      # FriendlyEmotionsTextStyles, FriendlyEmotionsTypography
+│   ├── Font.kt                      # RubikFontFamily
+│   ├── Shape.kt                     # FriendlyEmotionsShapes, FriendlyEmotionsModalShape
+│   └── Color.kt
+└── components/
+    ├── YesNoConfirmationDialog.kt
+    ├── InfoDialog.kt
+    ├── LoadingScreen.kt
+    ├── ErrorScreen.kt
+    └── InfoSplashScreen.kt          # added Phase 5 — shared by :feature:child and (Phase 9) :feature:therapist
 ```
 
 ### `:feature:child`
@@ -951,9 +1001,9 @@ pg.autyzm.friendlyemotions.data/
 pg.autyzm.friendlyemotions.child/
 ├── navigation/
 │   ├── ChildScreen.kt               # sealed class navigation state
-│   └── ChildNavigationHost.kt
+│   └── ChildNavigationHost.kt       # BackHandler(enabled = true) {} lives here — see §13.2
 ├── home/
-│   ├── ChildHomeScreen.kt
+│   ├── ChildHomeScreen.kt           # Main screen only — the Info splash is InfoSplashScreen in :core:ui, not here
 │   ├── ChildHomeViewModel.kt
 │   └── ChildHomeUiState.kt
 ├── session/
@@ -968,7 +1018,7 @@ pg.autyzm.friendlyemotions.child/
 │   ├── SessionEndViewModel.kt
 │   └── SessionEndUiState.kt
 └── di/
-    └── ChildModule.kt
+    └── ChildModule.kt               # added in Phase 7 alongside TtsController — nothing to provide before then
 ```
 
 ### `:feature:therapist`
@@ -1075,6 +1125,8 @@ These principles must be followed by every contributor from the first commit:
 9. **Feature modules never depend on each other or on `:data`.** `:feature:child` and `:feature:therapist` depend only on `:domain` and `:core:ui`. Hilt in `:app` wires the implementations.
 
 10. **Every new schema change increments the Room version and ships with a migration.** `fallbackToDestructiveMigration` is never enabled. `exportSchema = true` is permanent. Schema JSON files are committed to source control alongside the migration code.
+
+11. **Locale-dependent copy uses Android resource qualifiers, never manual `Locale` branching.** Default `values/strings.xml` holds Polish (primary, per functional-specification §3); `values-en/strings.xml` overrides with English. No code checks `Locale.getDefault()` or similar to pick copy — the resource system does it.
 
 ---
 

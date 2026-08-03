@@ -24,7 +24,7 @@ sealed class ChildScreen {
 
 `ChildHomeViewModel` exposes a `StateFlow<ChildScreen>`. The single root composable (`ChildNavigationHost`) observes this `StateFlow` and renders the appropriate screen in a `when` expression. The `when` is exhaustive — the Kotlin compiler requires all four variants to be handled.
 
-Back navigation is suppressed by design. The child-facing screens have no back button. There is no `NavController` whose back stack could be popped. The system back gesture, if applicable, is intercepted and suppressed at the Activity level.
+Back navigation is suppressed by design. The child-facing screens have no back button. There is no `NavController` whose back stack could be popped. The system back gesture is intercepted and suppressed with a permanent no-op `BackHandler(enabled = true) {}` at the root of `ChildNavigationHost` (Compose layer) — not by overriding `Activity.onBackPressedDispatcher` in `ChildActivity`. Keeping the suppression inside the composable that owns the navigation state machine means `ChildActivity` itself needs no special-casing beyond hosting `ChildNavigationHost`.
 
 The Therapist App, which has complex multi-screen navigation with genuine back-stack requirements, uses Jetpack Navigation Compose with typed, sealed-class routes.
 
