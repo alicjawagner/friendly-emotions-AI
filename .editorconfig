@@ -11,3 +11,6 @@ indent_style = space
 indent_size = 4
 max_line_length = 120
 ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+# PascalCase is the standard naming convention for @Composable functions (they behave like
+# factory functions returning UI), so ktlint's function-naming rule should not flag them.
+ktlint_function_naming_ignore_when_annotated_with = Composable

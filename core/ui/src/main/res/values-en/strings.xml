@@ -1,0 +1,19 @@
+<resources>
+    <string name="core_ui_splash_subtitle">Supporting the development of emotion recognition in children with developmental disorders</string>
+    <string name="core_ui_splash_continue_hint">Let\'s go! Tap anywhere to continue.</string>
+
+    <string name="core_ui_splash_bullet1_label">Always completely free:</string>
+    <string name="core_ui_splash_bullet1_body">non-profit and open source</string>
+
+    <string name="core_ui_splash_bullet2_label">Developed by:</string>
+    <string name="core_ui_splash_bullet2_body">Gdansk University of Technology and Institute for Child Development, https://www.fundacja.iwrd.pl/en/</string>
+
+    <string name="core_ui_splash_bullet3_label">Part of the Friendly Apps project:</string>
+    <string name="core_ui_splash_bullet3_body">Check out our other educational games!</string>
+
+    <string name="core_ui_splash_bullet4_label">Designed for children on the autism spectrum and with other developmental disorders:</string>
+    <string name="core_ui_splash_bullet4_body">a separate settings app for caregivers/therapists, installed automatically</string>
+
+    <string name="core_ui_splash_bullet5_label">To learn more:</string>
+    <string name="core_ui_splash_bullet5_body">Visit the project website: https://tiapps.org/</string>
+</resources>
