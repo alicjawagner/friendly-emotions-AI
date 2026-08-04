@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_ui_splash_subtitle">Wspieranie rozwoju rozpoznawania emocji u dzieci z zaburzeniami rozwojowymi</string>
+    <string name="core_ui_splash_continue_hint">Zaczynamy! Dotknij gdziekolwiek, aby przejść dalej.</string>
+
+    <string name="core_ui_splash_bullet1_label">Zawsze całkowicie bezpłatna:</string>
+    <string name="core_ui_splash_bullet1_body">non-profit i open source</string>
+
+    <string name="core_ui_splash_bullet2_label">Opracowana przez:</string>
+    <string name="core_ui_splash_bullet2_body">Politechnikę Gdańską oraz Instytut Wspomagania Rozwoju Dziecka, https://www.fundacja.iwrd.pl/</string>
+
+    <string name="core_ui_splash_bullet3_label">Część projektu Przyjazne Emocje:</string>
+    <string name="core_ui_splash_bullet3_body">sprawdź nasze inne gry edukacyjne!</string>
+
+    <string name="core_ui_splash_bullet4_label">Zaprojektowana dla dzieci ze spektrum autyzmu i innymi zaburzeniami rozwojowymi:</string>
+    <string name="core_ui_splash_bullet4_body">odrębna aplikacja ustawień dla opiekuna/terapeuty, instalowana automatycznie</string>
+
+    <string name="core_ui_splash_bullet5_label">Aby dowiedzieć się więcej:</string>
+    <string name="core_ui_splash_bullet5_body">odwiedź stronę projektu: https://tiapps.org/</string>
+</resources>
