@@ -22,6 +22,7 @@ coilCompose = "3.0.4"
 mockk = "1.13.12"
 ktlint = "12.3.0"
 javaxInject = "1"
+ui = "1.11.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +58,7 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

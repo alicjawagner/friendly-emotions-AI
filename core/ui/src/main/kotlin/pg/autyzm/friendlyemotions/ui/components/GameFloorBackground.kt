@@ -57,8 +57,8 @@ fun GameFloorBackground(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 24.dp, bottom = 24.dp)
-                        .size(120.dp),
+                        .padding(end = 80.dp, bottom = 140.dp)
+                        .size(200.dp),
             )
         }
         content()
