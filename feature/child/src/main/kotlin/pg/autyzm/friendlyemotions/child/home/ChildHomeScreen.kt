@@ -40,8 +40,8 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
-private val logoSize = 96.dp
-private val playButtonSize = 200.dp
+private val logoSize = 140.dp
+private val playButtonSize = 370.dp
 private val playButtonIconSize = 88.dp
 private const val PLAY_BUTTON_DISABLED_ALPHA = 0.5f
 
@@ -62,6 +62,7 @@ fun ChildHomeScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 48.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Header()
             Spacer(modifier = Modifier.height(16.dp))
@@ -70,7 +71,10 @@ fun ChildHomeScreen(
         PlayButtonArea(
             uiState = uiState,
             onPlayClick = onPlayClick,
-            modifier = Modifier.align(Alignment.Center),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 70.dp),
         )
     }
 }
@@ -109,6 +113,7 @@ private fun InfoPanel(
                 .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, RoundedCornerShape(5.dp))
                 .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoRow(
             icon = Icons.Filled.Inventory,
