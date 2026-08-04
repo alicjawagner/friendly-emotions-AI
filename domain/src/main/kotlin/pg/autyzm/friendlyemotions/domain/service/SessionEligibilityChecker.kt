@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.domain.service
 
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStep
+import javax.inject.Inject
 
 /**
  * Pre-flight check before the child starts a session (target-domain.md §7.4). `canPlay` is true
@@ -9,9 +10,11 @@ import pg.autyzm.friendlyemotions.domain.model.session.LearningStep
  * mode — since a non-empty flat image list necessarily belongs to at least one emotion group, no
  * grouping is needed here.
  */
-class SessionEligibilityChecker {
-    fun canPlay(
-        activeStep: LearningStep?,
-        eligibleImages: List<EmotionImage>,
-    ): Boolean = activeStep != null && eligibleImages.isNotEmpty()
-}
+class SessionEligibilityChecker
+    @Inject
+    constructor() {
+        fun canPlay(
+            activeStep: LearningStep?,
+            eligibleImages: List<EmotionImage>,
+        ): Boolean = activeStep != null && eligibleImages.isNotEmpty()
+    }

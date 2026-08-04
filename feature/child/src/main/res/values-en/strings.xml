@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="child_home_title">Friendly Emotions</string>
+    <string name="child_home_active_step_label">Active learning step:</string>
+    <string name="child_home_mode_label">Mode:</string>
+    <string name="child_home_mode_learning">learning</string>
+    <string name="child_home_mode_test">test</string>
+    <string name="child_home_no_active_step">no active step</string>
+    <string name="child_home_no_materials_message">No materials configured for this step</string>
+</resources>
