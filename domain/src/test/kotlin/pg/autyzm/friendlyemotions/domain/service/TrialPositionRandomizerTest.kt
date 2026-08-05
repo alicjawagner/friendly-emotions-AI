@@ -106,4 +106,70 @@ class TrialPositionRandomizerTest {
         assertEquals(setOf(0, 1, 2), happyPositions.toSet())
         assertEquals(setOf(0, 1, 2), sadPositions.toSet())
     }
+
+    @Test
+    fun `assignThreeSlotPositions cycles a single option's slot through all three before repeating`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 10))
+        val correct = option("only")
+        val single = trial(listOf(correct))
+
+        val slots = List(9) { randomizer.assignThreeSlotPositions(single).indexOf(correct) }
+
+        assertEquals(setOf(0, 1, 2), slots.toSet())
+        for (i in 1 until slots.size) {
+            assertNotEquals(slots[i - 1], slots[i])
+        }
+    }
+
+    @Test
+    fun `assignThreeSlotPositions leaves exactly two null slots for a single option`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 11))
+        val correct = option("only")
+        val single = trial(listOf(correct))
+
+        val result = randomizer.assignThreeSlotPositions(single)
+
+        assertEquals(3, result.size)
+        assertEquals(1, result.count { it == correct })
+        assertEquals(2, result.count { it == null })
+    }
+
+    @Test
+    fun `assignThreeSlotPositions fills two of the three slots for a two-option trial and leaves one null`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 12))
+        val correct = option("correct")
+        val distractor = option("distractor")
+        val pair = trial(listOf(correct, distractor))
+
+        val result = randomizer.assignThreeSlotPositions(pair)
+
+        assertEquals(3, result.size)
+        assertEquals(1, result.count { it == correct })
+        assertEquals(1, result.count { it == distractor })
+        assertEquals(1, result.count { it == null })
+    }
+
+    @Test
+    fun `assignThreeSlotPositions never repeats the correct option's slot on consecutive trials`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 13))
+        val correct = option("correct")
+        val distractor = option("distractor")
+        val pair = trial(listOf(correct, distractor))
+
+        var previousSlot = randomizer.assignThreeSlotPositions(pair).indexOf(correct)
+        repeat(20) {
+            val slot = randomizer.assignThreeSlotPositions(pair).indexOf(correct)
+            assertNotEquals(previousSlot, slot)
+            previousSlot = slot
+        }
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `assignThreeSlotPositions rejects trials with more than two options`() {
+        val randomizer = TrialPositionRandomizer()
+        val correct = option("correct")
+        val threeOptions = trial(listOf(correct, option("d1"), option("d2")))
+
+        randomizer.assignThreeSlotPositions(threeOptions)
+    }
 }

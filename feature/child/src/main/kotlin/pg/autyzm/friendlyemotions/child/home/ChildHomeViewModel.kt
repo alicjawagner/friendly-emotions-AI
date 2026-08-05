@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pg.autyzm.friendlyemotions.child.navigation.ChildScreen
 import pg.autyzm.friendlyemotions.domain.error.Result
+import pg.autyzm.friendlyemotions.domain.model.runtime.SessionResult
 import pg.autyzm.friendlyemotions.domain.usecase.session.CheckSessionEligibilityUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import javax.inject.Inject
@@ -79,6 +80,15 @@ class ChildHomeViewModel
             if (uiState.value.canPlay) {
                 _screen.value = ChildScreen.Game
             }
+        }
+
+        /**
+         * Forwarded from `GameViewModel`'s one-shot `GameNavigationEvent.SessionCompleted` (via
+         * `collectAsEffect()`), since `GameViewModel` cannot mutate [_screen] directly — only
+         * [ChildHomeViewModel] owns it (target-architecture.md §13.2).
+         */
+        fun onSessionComplete(result: SessionResult) {
+            _screen.value = ChildScreen.End(result)
         }
 
         private fun advanceFromInfo() {
