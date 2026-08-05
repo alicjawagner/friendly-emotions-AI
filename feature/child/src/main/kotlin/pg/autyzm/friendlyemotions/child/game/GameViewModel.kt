@@ -121,7 +121,11 @@ class GameViewModel
         }
 
         private fun List<TrialOption?>.toOptionUiList(): List<GameOptionUi?> =
-            map { option -> option?.let { GameOptionUi(imageId = it.imageId, imagePath = it.imagePath) } }
+            map { option ->
+                option?.let {
+                    GameOptionUi(imageId = it.imageId, imagePath = it.imagePath, emotionId = it.emotionId)
+                }
+            }
 
         private fun DomainError.toMessage(): String =
             when (this) {

@@ -7,4 +7,10 @@
     <string name="child_home_mode_test">test</string>
     <string name="child_home_no_active_step">no active step</string>
     <string name="child_home_no_materials_message">No materials configured for this step</string>
+    <string name="emotion_name_happy">happy</string>
+    <string name="emotion_name_sad">sad</string>
+    <string name="emotion_name_surprised">surprised</string>
+    <string name="emotion_name_angry">angry</string>
+    <string name="emotion_name_scared">scared</string>
+    <string name="emotion_name_bored">bored</string>
 </resources>

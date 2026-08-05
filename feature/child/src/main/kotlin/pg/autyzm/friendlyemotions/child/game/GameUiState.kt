@@ -21,10 +21,16 @@ sealed class GameUiState {
     data class Error(val message: String) : GameUiState()
 }
 
-/** A UI-layer projection of `TrialOption` — only the fields `GameScreen` needs to render a card. */
+/**
+ * A UI-layer projection of `TrialOption` — only the fields `GameScreen` needs to render a card.
+ * [emotionId] is the *option's own* emotion (per Figma's `screens/game` reference, each card shows
+ * its own emotion-word caption below its image) — it is not necessarily the trial's target emotion,
+ * since distractor options always belong to a different emotion than the target (`TrialGenerator`).
+ */
 data class GameOptionUi(
     val imageId: ImageId,
     val imagePath: String,
+    val emotionId: EmotionId,
 )
 
 /**
