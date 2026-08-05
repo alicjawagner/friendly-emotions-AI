@@ -293,6 +293,27 @@ class GameViewModelTest {
     @Test
     fun `advancing to the next trial resets hintsVisible`() =
         runTest(testDispatcher) {
+            // No prior mistake, so the correct tap is clean and advances straight to `second`
+            // (error correction only kicks in once `first` has recorded a mistake).
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(second.targetEmotionId, state.emotionId)
+            assertFalse(state.hintsVisible)
+        }
+
+    @Test
+    fun `a mistake requeues the trial (shuffled) instead of advancing to the next one, resetting hintsVisible`() =
+        runTest(testDispatcher) {
             val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
             val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
@@ -305,12 +326,20 @@ class GameViewModelTest {
             runCurrent()
             assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
 
+            // Correct, but not clean (a mistake was already recorded this correction cycle) — per
+            // target-domain.md §14 this re-queues `first` (shuffled) instead of reaching `second`.
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
             runCurrent()
 
             val state = viewModel.uiState.value as GameUiState.Content
-            assertEquals(second.targetEmotionId, state.emotionId)
+            assertEquals(first.targetEmotionId, state.emotionId)
             assertFalse(state.hintsVisible)
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+
+            val finalState = viewModel.uiState.value as GameUiState.Content
+            assertEquals(second.targetEmotionId, finalState.emotionId)
         }
 
     @Test

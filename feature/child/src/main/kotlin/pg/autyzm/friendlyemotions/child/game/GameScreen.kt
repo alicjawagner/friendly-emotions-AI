@@ -67,7 +67,7 @@ private val photoShape = RoundedCornerShape(photoCornerRadius)
 // a card-width-scale border of that size would look disproportionate — flagged as a visual-tuning
 // item for manual QA against Figma, not a hard mismatch to fix blindly.
 private val hintOutlineWidth = 8.dp
-private const val HINT_SCALE_FACTOR = 1.08f
+private const val HINT_SCALE_FACTOR = 1.15f
 private const val HINT_DIM_ALPHA = 0.4f
 private val hintBounceAmplitude = 6.dp
 private const val HINT_BOUNCE_DURATION_MILLIS = 600
