@@ -22,14 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import pg.autyzm.friendlyemotions.child.R
 import pg.autyzm.friendlyemotions.child.backgrounds.GameEmptyBackground
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
@@ -109,7 +107,10 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
 ) {
-    GameEmptyBackground(modifier = modifier, onSpeakerClick = {}) {
+    GameEmptyBackground(
+        modifier = modifier,
+        onSpeakerClick = { onEvent(GameUiEvent.RepeatPromptRequested) },
+    ) {
         when (uiState) {
             GameUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
@@ -141,7 +142,7 @@ private fun GameContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = uiState.emotionId.displayName(),
+            text = uiState.promptText,
             style = FriendlyEmotionsTextStyles.displayD2,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
         )
@@ -309,7 +310,7 @@ private fun OptionCard(
         )
         if (captionsEnabled) {
             Text(
-                text = option.emotionId.displayName(),
+                text = option.captionText,
                 style = sizing.labelStyle,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                 textAlign = TextAlign.Center,
@@ -318,26 +319,10 @@ private fun OptionCard(
     }
 }
 
-/**
- * Plain string-resource lookup, not `PromptRenderer` (phase-6 plan decision #6 — gender-inflected
- * text is a Phase 7 concern). Known limitation, by design: shows the masculine/English form
- * regardless of the option's actual [pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender].
- */
-@Composable
-private fun EmotionId.displayName(): String =
-    when (this) {
-        EmotionId.HAPPY -> stringResource(R.string.emotion_name_happy)
-        EmotionId.SAD -> stringResource(R.string.emotion_name_sad)
-        EmotionId.SURPRISED -> stringResource(R.string.emotion_name_surprised)
-        EmotionId.ANGRY -> stringResource(R.string.emotion_name_angry)
-        EmotionId.SCARED -> stringResource(R.string.emotion_name_scared)
-        EmotionId.BORED -> stringResource(R.string.emotion_name_bored)
-    }
-
 private fun previewOption(
     id: String,
-    emotionId: EmotionId,
-) = GameOptionUi(imageId = ImageId(id), imagePath = "", emotionId = emotionId)
+    captionText: String,
+) = GameOptionUi(imageId = ImageId(id), imagePath = "", captionText = captionText)
 
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
 @Composable
@@ -347,7 +332,8 @@ private fun GameScreenOneOptionPreview() {
             uiState =
                 GameUiState.Content(
                     emotionId = EmotionId.HAPPY,
-                    options = listOf(null, previewOption("1", EmotionId.HAPPY), null),
+                    options = listOf(null, previewOption("1", "wesoły"), null),
+                    promptText = "wesoły",
                 ),
             onEvent = {},
         )
@@ -362,7 +348,8 @@ private fun GameScreenTwoOptionsPreview() {
             uiState =
                 GameUiState.Content(
                     emotionId = EmotionId.SAD,
-                    options = listOf(previewOption("1", EmotionId.SAD), null, previewOption("2", EmotionId.ANGRY)),
+                    options = listOf(previewOption("1", "smutny"), null, previewOption("2", "zły")),
+                    promptText = "smutna",
                 ),
             onEvent = {},
         )
@@ -379,10 +366,11 @@ private fun GameScreenThreeOptionsPreview() {
                     emotionId = EmotionId.HAPPY,
                     options =
                         listOf(
-                            previewOption("1", EmotionId.SAD),
-                            previewOption("2", EmotionId.ANGRY),
-                            previewOption("3", EmotionId.HAPPY),
+                            previewOption("1", "smutny"),
+                            previewOption("2", "zły"),
+                            previewOption("3", "wesoły"),
                         ),
+                    promptText = "wesoły",
                 ),
             onEvent = {},
         )
@@ -399,10 +387,11 @@ private fun GameScreenThreeOptionsNoCaptionsPreview() {
                     emotionId = EmotionId.HAPPY,
                     options =
                         listOf(
-                            previewOption("1", EmotionId.SAD),
-                            previewOption("2", EmotionId.ANGRY),
-                            previewOption("3", EmotionId.HAPPY),
+                            previewOption("1", "smutny"),
+                            previewOption("2", "zły"),
+                            previewOption("3", "wesoły"),
                         ),
+                    promptText = "wesoły",
                     captionsEnabled = false,
                 ),
             onEvent = {},
@@ -420,11 +409,12 @@ private fun GameScreenFourOptionsPreview() {
                     emotionId = EmotionId.SCARED,
                     options =
                         listOf(
-                            previewOption("1", EmotionId.SAD),
-                            previewOption("2", EmotionId.ANGRY),
-                            previewOption("3", EmotionId.SCARED),
-                            previewOption("4", EmotionId.BORED),
+                            previewOption("1", "smutny"),
+                            previewOption("2", "zły"),
+                            previewOption("3", "przestraszony"),
+                            previewOption("4", "znudzony"),
                         ),
+                    promptText = "przestraszony",
                 ),
             onEvent = {},
         )
@@ -441,12 +431,13 @@ private fun GameScreenFiveOptionsPreview() {
                     emotionId = EmotionId.SCARED,
                     options =
                         listOf(
-                            previewOption("1", EmotionId.SAD),
-                            previewOption("2", EmotionId.ANGRY),
-                            previewOption("3", EmotionId.SCARED),
-                            previewOption("4", EmotionId.BORED),
-                            previewOption("5", EmotionId.SURPRISED),
+                            previewOption("1", "smutny"),
+                            previewOption("2", "zły"),
+                            previewOption("3", "przestraszony"),
+                            previewOption("4", "znudzony"),
+                            previewOption("5", "zdziwiony"),
                         ),
+                    promptText = "przestraszony",
                 ),
             onEvent = {},
         )
@@ -463,13 +454,14 @@ private fun GameScreenSixOptionsPreview() {
                     emotionId = EmotionId.SCARED,
                     options =
                         listOf(
-                            previewOption("1", EmotionId.SAD),
-                            previewOption("2", EmotionId.ANGRY),
-                            previewOption("3", EmotionId.SCARED),
-                            previewOption("4", EmotionId.BORED),
-                            previewOption("5", EmotionId.SURPRISED),
-                            previewOption("6", EmotionId.HAPPY),
+                            previewOption("1", "smutny"),
+                            previewOption("2", "zły"),
+                            previewOption("3", "przestraszony"),
+                            previewOption("4", "znudzony"),
+                            previewOption("5", "zdziwiony"),
+                            previewOption("6", "wesoły"),
                         ),
+                    promptText = "przestraszony",
                 ),
             onEvent = {},
         )

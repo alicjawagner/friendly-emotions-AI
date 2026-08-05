@@ -15,7 +15,9 @@ import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
+import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
+import pg.autyzm.friendlyemotions.domain.service.PromptRenderer
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import javax.inject.Inject
@@ -37,10 +39,18 @@ class GameViewModel
     constructor(
         private val initializeSessionUseCase: InitializeSessionUseCase,
         private val observeActiveLearningStepUseCase: ObserveActiveLearningStepUseCase,
+        private val ttsController: TtsController,
     ) : ViewModel() {
+        private val promptRenderer = PromptRenderer()
+
         private var orchestrator: SessionOrchestrator? = null
         private var sessionMode: SessionMode = SessionMode.LEARNING
         private var captionsEnabled: Boolean = true
+        private var promptTemplate: PromptTemplate = PromptTemplate.EMOTION_ONLY
+        private var ttsEnabled: Boolean = true
+
+        /** The current trial's spoken text (per `PromptTemplate`), cached for the repeat/speaker button. */
+        private var spokenText: String = ""
 
         private val _uiState = MutableStateFlow<GameUiState>(GameUiState.Loading)
         val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -58,6 +68,16 @@ class GameViewModel
                     when (sessionMode) {
                         SessionMode.LEARNING -> learningStep?.learningParameters?.captionsEnabled ?: true
                         SessionMode.TEST -> learningStep?.testParameters?.captionsEnabled ?: false
+                    }
+                promptTemplate =
+                    when (sessionMode) {
+                        SessionMode.LEARNING -> learningStep?.learningParameters?.promptTemplate
+                        SessionMode.TEST -> learningStep?.testParameters?.promptTemplate
+                    } ?: PromptTemplate.EMOTION_ONLY
+                ttsEnabled =
+                    when (sessionMode) {
+                        SessionMode.LEARNING -> learningStep?.learningParameters?.ttsEnabled ?: true
+                        SessionMode.TEST -> learningStep?.testParameters?.ttsEnabled ?: false
                     }
 
                 when (val result = initializeSessionUseCase()) {
@@ -77,7 +97,17 @@ class GameViewModel
         fun onEvent(event: GameUiEvent) {
             when (event) {
                 is GameUiEvent.OptionTapped -> handleTap(event.imageId)
+                is GameUiEvent.RepeatPromptRequested -> repeatPrompt()
             }
+        }
+
+        override fun onCleared() {
+            ttsController.shutdown()
+        }
+
+        private fun repeatPrompt() {
+            if (_uiState.value !is GameUiState.Content) return
+            ttsController.speak(spokenText, TtsController.QUEUE_FLUSH)
         }
 
         /**
@@ -106,20 +136,47 @@ class GameViewModel
         private fun renderCurrentTrial() {
             val currentOrchestrator = orchestrator ?: return
             val trial = currentOrchestrator.currentTrial ?: return
+            val renderedPrompt =
+                promptRenderer.render(
+                    promptTemplate,
+                    trial.targetEmotionId,
+                    trial.promptGender,
+                    ttsController.localeCode,
+                )
+            spokenText = renderedPrompt.spokenText
             _uiState.value =
                 GameUiState.Content(
                     emotionId = trial.targetEmotionId,
                     options = currentOrchestrator.currentSlots.toOptionUiList(),
+                    promptText = renderedPrompt.displayText,
                     captionsEnabled = captionsEnabled,
                 )
+            if (ttsEnabled) {
+                ttsController.speak(spokenText, TtsController.QUEUE_FLUSH)
+            }
         }
 
         private fun List<TrialOption?>.toOptionUiList(): List<GameOptionUi?> =
             map { option ->
                 option?.let {
-                    GameOptionUi(imageId = it.imageId, imagePath = it.imagePath, emotionId = it.emotionId)
+                    GameOptionUi(
+                        imageId = it.imageId,
+                        imagePath = it.imagePath,
+                        captionText = optionCaptionText(it),
+                    )
                 }
             }
+
+        /**
+         * Each card's own caption is gender-inflected by *that option's* [TrialOption.gender] (not the
+         * trial's target `promptGender`, which only governs the big prompt title) — the template
+         * argument is irrelevant here since `RenderedPrompt.displayText` never depends on it, only
+         * `spokenText` does.
+         */
+        private fun optionCaptionText(option: TrialOption): String =
+            promptRenderer
+                .render(PromptTemplate.EMOTION_ONLY, option.emotionId, option.gender, ttsController.localeCode)
+                .displayText
 
         private fun DomainError.toMessage(): String =
             when (this) {

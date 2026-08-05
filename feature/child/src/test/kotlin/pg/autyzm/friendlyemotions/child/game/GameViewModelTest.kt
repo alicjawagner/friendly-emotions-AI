@@ -3,6 +3,7 @@ package pg.autyzm.friendlyemotions.child.game
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -18,6 +19,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
 import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
@@ -40,6 +42,10 @@ class GameViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val initializeSessionUseCase = mockk<InitializeSessionUseCase>()
     private val observeActiveLearningStepUseCase = mockk<ObserveActiveLearningStepUseCase>()
+    private val ttsController =
+        mockk<TtsController>(relaxUnitFun = true) {
+            every { localeCode } returns EmotionCatalog.LOCALE_POLISH
+        }
 
     @Before
     fun setUp() {
@@ -51,7 +57,7 @@ class GameViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = GameViewModel(initializeSessionUseCase, observeActiveLearningStepUseCase)
+    private fun viewModel() = GameViewModel(initializeSessionUseCase, observeActiveLearningStepUseCase, ttsController)
 
     private fun option(id: String) =
         TrialOption(
@@ -104,6 +110,7 @@ class GameViewModelTest {
             state as GameUiState.Content
             assertEquals(EmotionId.HAPPY, state.emotionId)
             assertEquals(3, state.options.size)
+            assertEquals("wesoły", state.promptText)
         }
 
     @Test
@@ -204,7 +211,8 @@ class GameViewModelTest {
     fun `startSession in LEARNING mode reflects captionsEnabled from LearningParameters`() =
         runTest(testDispatcher) {
             val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
-            val step = activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(captionsEnabled = false))
+            val step =
+                activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(captionsEnabled = false))
             every { observeActiveLearningStepUseCase() } returns flowOf(step)
             coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
             val viewModel = viewModel()
@@ -232,5 +240,80 @@ class GameViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state is GameUiState.Content)
             assertEquals(true, (state as GameUiState.Content).captionsEnabled)
+        }
+
+    @Test
+    fun `renderCurrentTrial speaks the rendered prompt when ttsEnabled`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(ttsEnabled = true))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            verify(exactly = 1) { ttsController.speak("wesoły", TtsController.QUEUE_FLUSH) }
+        }
+
+    @Test
+    fun `renderCurrentTrial does not speak when ttsEnabled is false`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(ttsEnabled = false))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            verify(exactly = 0) { ttsController.speak(any(), any()) }
+        }
+
+    @Test
+    fun `RepeatPromptRequested re-speaks the cached spoken text`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            viewModel.onEvent(GameUiEvent.RepeatPromptRequested)
+            advanceUntilIdle()
+
+            verify(exactly = 2) { ttsController.speak("wesoły", TtsController.QUEUE_FLUSH) }
+        }
+
+    @Test
+    fun `promptText reflects the correct option's grammatical gender`() =
+        runTest(testDispatcher) {
+            val correct =
+                TrialOption(
+                    imageId = ImageId("correct"),
+                    imagePath = "/images/correct.png",
+                    emotionId = EmotionId.HAPPY,
+                    gender = GrammaticalGender.FEMININE,
+                )
+            val feminineTrial =
+                Trial(
+                    targetEmotionId = EmotionId.HAPPY,
+                    promptGender = GrammaticalGender.FEMININE,
+                    correctOption = correct,
+                    allOptions = listOf(correct, option("d1"), option("d2")),
+                )
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(feminineTrial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            assertEquals("wesoła", (state as GameUiState.Content).promptText)
         }
 }

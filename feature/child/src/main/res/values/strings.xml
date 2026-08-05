@@ -7,10 +7,4 @@
     <string name="child_home_mode_test">test</string>
     <string name="child_home_no_active_step">brak aktywnego kroku</string>
     <string name="child_home_no_materials_message">Brak materiałów skonfigurowanych dla tego kroku</string>
-    <string name="emotion_name_happy">wesoły</string>
-    <string name="emotion_name_sad">smutny</string>
-    <string name="emotion_name_surprised">zdziwiony</string>
-    <string name="emotion_name_angry">zły</string>
-    <string name="emotion_name_scared">przestraszony</string>
-    <string name="emotion_name_bored">znudzony</string>
 </resources>
