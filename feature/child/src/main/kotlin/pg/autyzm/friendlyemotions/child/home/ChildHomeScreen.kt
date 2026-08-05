@@ -33,8 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.child.R
+import pg.autyzm.friendlyemotions.child.backgrounds.GameFloorBackground
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
-import pg.autyzm.friendlyemotions.ui.components.GameFloorBackground
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme

@@ -1,4 +1,4 @@
-package pg.autyzm.friendlyemotions.ui.components
+package pg.autyzm.friendlyemotions.child.backgrounds
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
