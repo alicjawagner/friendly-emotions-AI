@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +19,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Drives `ChildScreen.Game`'s trial loop. Delegates trial sequencing to a [SessionOrchestrator]
@@ -40,13 +38,9 @@ class GameViewModel
         private val initializeSessionUseCase: InitializeSessionUseCase,
         private val observeActiveLearningStepUseCase: ObserveActiveLearningStepUseCase,
     ) : ViewModel() {
-        private companion object {
-            const val CORRECT_FEEDBACK_DELAY_MS = 600L
-            const val INCORRECT_FEEDBACK_DELAY_MS = 600L
-        }
-
         private var orchestrator: SessionOrchestrator? = null
         private var sessionMode: SessionMode = SessionMode.LEARNING
+        private var captionsEnabled: Boolean = true
 
         private val _uiState = MutableStateFlow<GameUiState>(GameUiState.Loading)
         val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -54,11 +48,17 @@ class GameViewModel
         private val _navigationEvents = Channel<GameNavigationEvent>(Channel.BUFFERED)
         val navigationEvents: Flow<GameNavigationEvent> = _navigationEvents.receiveAsFlow()
 
-        /** Loads the active step's mode and generates a fresh trial list, then renders the first trial. */
+        /** Loads the active step's mode and captions setting, generates a fresh trial list, then renders the first trial. */
         fun startSession() {
             viewModelScope.launch {
                 _uiState.value = GameUiState.Loading
-                sessionMode = observeActiveLearningStepUseCase().first()?.activeMode ?: SessionMode.LEARNING
+                val learningStep = observeActiveLearningStepUseCase().first()
+                sessionMode = learningStep?.activeMode ?: SessionMode.LEARNING
+                captionsEnabled =
+                    when (sessionMode) {
+                        SessionMode.LEARNING -> learningStep?.learningParameters?.captionsEnabled ?: true
+                        SessionMode.TEST -> learningStep?.testParameters?.captionsEnabled ?: false
+                    }
 
                 when (val result = initializeSessionUseCase()) {
                     is Result.Success -> {
@@ -80,26 +80,26 @@ class GameViewModel
             }
         }
 
+        /**
+         * A wrong tap is a no-op — [SessionOrchestrator.submitAnswer] already mutates nothing and
+         * returns `false` for it, so there's nothing further to do here. A correct tap advances
+         * immediately (or completes the session): no delay, no visual feedback state — a reinforcement
+         * animation is an explicit Phase-7+ concern, not this phase's.
+         */
         private fun handleTap(imageId: ImageId) {
             val currentOrchestrator = orchestrator ?: return
             if (_uiState.value !is GameUiState.Content) return
 
             val isCorrect = currentOrchestrator.submitAnswer(imageId)
-            updateContent { it.copy(feedback = GameFeedback(imageId = imageId, isCorrect = isCorrect)) }
+            if (!isCorrect) return
 
-            viewModelScope.launch {
-                if (isCorrect) {
-                    delay(CORRECT_FEEDBACK_DELAY_MS.milliseconds)
-                    if (currentOrchestrator.isComplete) {
-                        val event = GameNavigationEvent.SessionCompleted(currentOrchestrator.buildResult(sessionMode))
-                        _navigationEvents.send(event)
-                    } else {
-                        renderCurrentTrial()
-                    }
-                } else {
-                    delay(INCORRECT_FEEDBACK_DELAY_MS.milliseconds)
-                    updateContent { it.copy(feedback = null) }
+            if (currentOrchestrator.isComplete) {
+                viewModelScope.launch {
+                    val event = GameNavigationEvent.SessionCompleted(currentOrchestrator.buildResult(sessionMode))
+                    _navigationEvents.send(event)
                 }
+            } else {
+                renderCurrentTrial()
             }
         }
 
@@ -110,14 +110,8 @@ class GameViewModel
                 GameUiState.Content(
                     emotionId = trial.targetEmotionId,
                     options = currentOrchestrator.currentSlots.toOptionUiList(),
+                    captionsEnabled = captionsEnabled,
                 )
-        }
-
-        private inline fun updateContent(transform: (GameUiState.Content) -> GameUiState.Content) {
-            val current = _uiState.value
-            if (current is GameUiState.Content) {
-                _uiState.value = transform(current)
-            }
         }
 
         private fun List<TrialOption?>.toOptionUiList(): List<GameOptionUi?> =

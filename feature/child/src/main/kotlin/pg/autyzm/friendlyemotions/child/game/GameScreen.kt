@@ -1,7 +1,6 @@
 package pg.autyzm.friendlyemotions.child.game
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -42,6 +40,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private const val MAX_FIXED_SLOTS = 3
+private const val SINGLE_ROW_OPTION_COUNT = 4
 private const val WRAP_GRID_MAX_ITEMS_PER_ROW = 3
 
 private val emotionNameTopPadding = 65.dp
@@ -50,14 +49,14 @@ private val optionRowHorizontalPadding = 48.dp
 private val cardCornerRadius = 13.64.dp
 private val photoCornerRadius = 5.46.dp
 private val cardShadowElevation = 6.5.dp
-private val feedbackBorderWidth = 4.dp
 private val cardShape = RoundedCornerShape(cardCornerRadius)
 private val photoShape = RoundedCornerShape(photoCornerRadius)
 
 /**
- * Per-card sizing, since the fixed three-slot layout (1–3 options, matching Figma's
- * `screens/game` reference exactly) and the wrapping grid (4–6 options, no Figma reference —
- * phase-6 plan decision #7) use different card/photo/text sizes to fit their available space.
+ * Per-card sizing: the fixed three-slot layout (1–3 options, matching Figma's `screens/game`
+ * reference exactly), the single full-width row (exactly 4 options), and the wrapping grid (5–6
+ * options) each use different card/photo/text sizes to fit their available space. Neither the
+ * 4-option nor 5–6-option cases have a Figma reference — their sizing is a tuned estimate.
  */
 private data class CardSizing(
     val photoSize: Dp,
@@ -78,7 +77,17 @@ private val baselineCardSizing =
         labelStyle = FriendlyEmotionsTextStyles.headingH2,
     )
 
-// No Figma reference exists for 4–6 options (plan decision #7) — shrunk so up to 2 rows of 3.
+// No Figma reference exists for exactly 4 options — sized so 4 cards + 3 gaps fit one full-width
+// row (estimate, tune visually like compactCardSizing below).
+private val fourOptionCardSizing =
+    CardSizing(
+        photoSize = 250.dp,
+        padding = 14.dp,
+        contentGap = 14.dp,
+        labelStyle = FriendlyEmotionsTextStyles.headingH3Regular,
+    )
+
+// No Figma reference exists for 5–6 options — shrunk so up to 2 rows of 3.
 private val compactCardSizing =
     CardSizing(
         photoSize = 220.dp,
@@ -140,20 +149,30 @@ private fun GameContent(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
-            if (uiState.options.size <= MAX_FIXED_SLOTS) {
-                FixedSlotRow(
-                    options = uiState.options,
-                    feedback = uiState.feedback,
-                    onOptionTapped = onOptionTapped,
-                    modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
-                )
-            } else {
-                WrappingOptionsGrid(
-                    options = uiState.options,
-                    feedback = uiState.feedback,
-                    onOptionTapped = onOptionTapped,
-                    modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
-                )
+            when {
+                uiState.options.size <= MAX_FIXED_SLOTS ->
+                    FixedSlotRow(
+                        options = uiState.options,
+                        captionsEnabled = uiState.captionsEnabled,
+                        onOptionTapped = onOptionTapped,
+                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
+                    )
+
+                uiState.options.size == SINGLE_ROW_OPTION_COUNT ->
+                    SingleRowGrid(
+                        options = uiState.options,
+                        captionsEnabled = uiState.captionsEnabled,
+                        onOptionTapped = onOptionTapped,
+                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
+                    )
+
+                else ->
+                    WrappingOptionsGrid(
+                        options = uiState.options,
+                        captionsEnabled = uiState.captionsEnabled,
+                        onOptionTapped = onOptionTapped,
+                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
+                    )
             }
         }
     }
@@ -168,7 +187,7 @@ private fun GameContent(
 @Composable
 private fun FixedSlotRow(
     options: List<GameOptionUi?>,
-    feedback: GameFeedback?,
+    captionsEnabled: Boolean,
     onOptionTapped: (ImageId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -187,7 +206,7 @@ private fun FixedSlotRow(
             } else {
                 OptionCard(
                     option = option,
-                    feedback = feedback,
+                    captionsEnabled = captionsEnabled,
                     sizing = baselineCardSizing,
                     onClick = { onOptionTapped(option.imageId) },
                 )
@@ -197,13 +216,41 @@ private fun FixedSlotRow(
 }
 
 /**
- * Wraps 4–6 displayed images into up to 2 centered rows (phase-6 plan decision #7 — no Figma
- * reference for this case). Never contains `null`s, unlike [FixedSlotRow].
+ * Renders exactly 4 displayed images as a single full-width row. Unlike [FixedSlotRow], a
+ * 4-option trial's [GameOptionUi] list never contains `null`s (`SessionOrchestrator`/
+ * `TrialPositionRandomizer` only produce `null` slots for 1–2 option trials), but this still
+ * defensively filters them like [WrappingOptionsGrid] does, for consistency between the two grids.
+ */
+@Composable
+private fun SingleRowGrid(
+    options: List<GameOptionUi?>,
+    captionsEnabled: Boolean,
+    onOptionTapped: (ImageId) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(optionGap, Alignment.CenterHorizontally),
+    ) {
+        options.filterNotNull().forEach { option ->
+            OptionCard(
+                option = option,
+                captionsEnabled = captionsEnabled,
+                sizing = fourOptionCardSizing,
+                onClick = { onOptionTapped(option.imageId) },
+            )
+        }
+    }
+}
+
+/**
+ * Wraps 5–6 displayed images into up to 2 centered rows (max 3 per row) — no Figma reference for
+ * this case. Never contains `null`s, unlike [FixedSlotRow].
  */
 @Composable
 private fun WrappingOptionsGrid(
     options: List<GameOptionUi?>,
-    feedback: GameFeedback?,
+    captionsEnabled: Boolean,
     onOptionTapped: (ImageId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -216,7 +263,7 @@ private fun WrappingOptionsGrid(
         options.filterNotNull().forEach { option ->
             OptionCard(
                 option = option,
-                feedback = feedback,
+                captionsEnabled = captionsEnabled,
                 sizing = compactCardSizing,
                 onClick = { onOptionTapped(option.imageId) },
             )
@@ -225,28 +272,20 @@ private fun WrappingOptionsGrid(
 }
 
 /**
- * One white rounded card: the option's image plus its own emotion-name caption below it (Figma's
- * `screens/game` reference shows a distinct caption per card, since distractor options always
- * belong to a different emotion than the trial's target — `TrialGenerator`). Highlights with a
- * green/red border while [feedback] matches this card's [GameOptionUi.imageId] (decision #8 —
- * basic, non-reinforcement tap feedback; self-clears via `GameViewModel`).
+ * One white rounded card: the option's image plus, when [captionsEnabled], its own emotion-name
+ * caption below it (Figma's `screens/game` reference shows a distinct caption per card, since
+ * distractor options always belong to a different emotion than the trial's target —
+ * `TrialGenerator`). Tapping only triggers [onClick] — no visual tap feedback here; a reinforcement
+ * animation on correct answers is an explicit Phase-7+ concern.
  */
 @Composable
 private fun OptionCard(
     option: GameOptionUi,
-    feedback: GameFeedback?,
+    captionsEnabled: Boolean,
     sizing: CardSizing,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val matchingFeedback = feedback?.takeIf { it.imageId == option.imageId }
-    val borderColor =
-        when (matchingFeedback?.isCorrect) {
-            true -> FriendlyEmotionsColors.States.Success700
-            false -> FriendlyEmotionsColors.States.Error700
-            null -> Color.Transparent
-        }
-
     Column(
         modifier =
             modifier
@@ -254,7 +293,6 @@ private fun OptionCard(
                 .shadow(elevation = cardShadowElevation, shape = cardShape, clip = false)
                 .clip(cardShape)
                 .background(FriendlyEmotionsColors.Shades.White, cardShape)
-                .border(width = feedbackBorderWidth, color = borderColor, shape = cardShape)
                 .clickable(onClick = onClick)
                 .padding(sizing.padding),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -269,12 +307,14 @@ private fun OptionCard(
                     .size(sizing.photoSize)
                     .clip(photoShape),
         )
-        Text(
-            text = option.emotionId.displayName(),
-            style = sizing.labelStyle,
-            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            textAlign = TextAlign.Center,
-        )
+        if (captionsEnabled) {
+            Text(
+                text = option.emotionId.displayName(),
+                style = sizing.labelStyle,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
@@ -343,7 +383,27 @@ private fun GameScreenThreeOptionsPreview() {
                             previewOption("2", EmotionId.ANGRY),
                             previewOption("3", EmotionId.HAPPY),
                         ),
-                    feedback = GameFeedback(imageId = ImageId("3"), isCorrect = true),
+                ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
+@Composable
+private fun GameScreenThreeOptionsNoCaptionsPreview() {
+    FriendlyEmotionsTheme {
+        GameScreen(
+            uiState =
+                GameUiState.Content(
+                    emotionId = EmotionId.HAPPY,
+                    options =
+                        listOf(
+                            previewOption("1", EmotionId.SAD),
+                            previewOption("2", EmotionId.ANGRY),
+                            previewOption("3", EmotionId.HAPPY),
+                        ),
+                    captionsEnabled = false,
                 ),
             onEvent = {},
         )
@@ -364,6 +424,51 @@ private fun GameScreenFourOptionsPreview() {
                             previewOption("2", EmotionId.ANGRY),
                             previewOption("3", EmotionId.SCARED),
                             previewOption("4", EmotionId.BORED),
+                        ),
+                ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
+@Composable
+private fun GameScreenFiveOptionsPreview() {
+    FriendlyEmotionsTheme {
+        GameScreen(
+            uiState =
+                GameUiState.Content(
+                    emotionId = EmotionId.SCARED,
+                    options =
+                        listOf(
+                            previewOption("1", EmotionId.SAD),
+                            previewOption("2", EmotionId.ANGRY),
+                            previewOption("3", EmotionId.SCARED),
+                            previewOption("4", EmotionId.BORED),
+                            previewOption("5", EmotionId.SURPRISED),
+                        ),
+                ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
+@Composable
+private fun GameScreenSixOptionsPreview() {
+    FriendlyEmotionsTheme {
+        GameScreen(
+            uiState =
+                GameUiState.Content(
+                    emotionId = EmotionId.SCARED,
+                    options =
+                        listOf(
+                            previewOption("1", EmotionId.SAD),
+                            previewOption("2", EmotionId.ANGRY),
+                            previewOption("3", EmotionId.SCARED),
+                            previewOption("4", EmotionId.BORED),
+                            previewOption("5", EmotionId.SURPRISED),
+                            previewOption("6", EmotionId.HAPPY),
                         ),
                 ),
             onEvent = {},

@@ -19,6 +19,7 @@ class TrialPositionRandomizer(private val random: Random = Random) {
     private val lastPositionByEmotion = mutableMapOf<EmotionId, Int>()
     private val usedSlotsByEmotion = mutableMapOf<EmotionId, MutableSet<Int>>()
     private val lastSlotByEmotion = mutableMapOf<EmotionId, Int>()
+    private val lastSlotSetByEmotion = mutableMapOf<EmotionId, Set<Int>>()
 
     /**
      * Returns [trial] with [Trial.allOptions] reordered so the correct option's position (a) never
@@ -61,9 +62,10 @@ class TrialPositionRandomizer(private val random: Random = Random) {
      * fixed. The correct option's slot follows the same no-immediate-repeat / cycle-all-before-reset
      * rule as [randomizePositions] (target-domain.md §8.9 protects the correct answer's position
      * specifically), tracked in its own history maps so it never interacts with [randomizePositions]'s.
-     * A second option (distractor), if present, fills one of the two remaining slots uniformly at
-     * random — only the correct answer's position is spec-mandated to avoid repeats. Unused slot(s)
-     * are `null`.
+     * A second option (distractor), if present, fills one of the two remaining slots — chosen so the
+     * full occupied slot-*set* (correct plus distractor) never exactly repeats the immediately
+     * previous trial's slot-set for this emotion, not just the correct answer's own slot. Unused
+     * slot(s) are `null`.
      */
     fun assignThreeSlotPositions(trial: Trial): List<TrialOption?> {
         val options = trial.allOptions
@@ -91,10 +93,19 @@ class TrialPositionRandomizer(private val random: Random = Random) {
         slots[candidateSlot] = trial.correctOption
 
         val distractor = options.firstOrNull { it != trial.correctOption }
-        if (distractor != null) {
-            val remainingSlot = (THREE_SLOTS - candidateSlot).random(random)
-            slots[remainingSlot] = distractor
-        }
+        val occupiedSlots =
+            if (distractor != null) {
+                val remainingSlots = THREE_SLOTS - candidateSlot
+                val previousSlotSet = lastSlotSetByEmotion[trial.targetEmotionId]
+                val chosenRemainingSlot =
+                    remainingSlots.firstOrNull { slot -> setOf(candidateSlot, slot) != previousSlotSet }
+                        ?: remainingSlots.random(random)
+                slots[chosenRemainingSlot] = distractor
+                setOf(candidateSlot, chosenRemainingSlot)
+            } else {
+                setOf(candidateSlot)
+            }
+        lastSlotSetByEmotion[trial.targetEmotionId] = occupiedSlots
 
         return slots.toList()
     }
@@ -105,6 +116,7 @@ class TrialPositionRandomizer(private val random: Random = Random) {
         lastPositionByEmotion.clear()
         usedSlotsByEmotion.clear()
         lastSlotByEmotion.clear()
+        lastSlotSetByEmotion.clear()
     }
 
     companion object {

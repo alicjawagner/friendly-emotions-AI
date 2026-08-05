@@ -8,14 +8,16 @@ sealed class GameUiState {
     data object Loading : GameUiState()
 
     /**
-     * [options] mirrors `SessionOrchestrator.currentSlots` (phase-6 plan decision #7): exactly 3
-     * entries (with `null` for empty slots) for 1–3 displayed images, exactly N entries (no
-     * `null`s) for 4–6.
+     * [options] mirrors `SessionOrchestrator.currentSlots`: exactly 3 entries (with `null` for empty
+     * slots) for 1–3 displayed images, exactly N entries (no `null`s) for 4–6. [captionsEnabled] is
+     * the active learning step's `captionsEnabled` (`LearningParameters`/`TestParameters`, selected by
+     * mode) — a session-level flag, fixed for the session's whole duration, gating the emotion-name
+     * label under every card.
      */
     data class Content(
         val emotionId: EmotionId,
         val options: List<GameOptionUi?>,
-        val feedback: GameFeedback? = null,
+        val captionsEnabled: Boolean = true,
     ) : GameUiState()
 
     data class Error(val message: String) : GameUiState()
@@ -31,13 +33,4 @@ data class GameOptionUi(
     val imageId: ImageId,
     val imagePath: String,
     val emotionId: EmotionId,
-)
-
-/**
- * Transient tap-highlight state (phase-6 plan decision #8 — basic, non-reinforcement feedback).
- * Self-clearing: [GameViewModel] removes it from [GameUiState.Content] after a short delay.
- */
-data class GameFeedback(
-    val imageId: ImageId,
-    val isCorrect: Boolean,
 )

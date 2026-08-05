@@ -72,18 +72,21 @@ class GameViewModelTest {
         allOptions = options,
     )
 
-    private fun activeStep(mode: SessionMode) =
-        LearningStep(
-            id = LearningStepId("step-1"),
-            name = "Step",
-            isActive = true,
-            activeMode = mode,
-            isExample = false,
-            materialSelection = MaterialSelection(emptyList()),
-            learningParameters = LearningParameters(),
-            testParameters = TestParameters(),
-            reinforcementSettings = ReinforcementSettings(),
-        )
+    private fun activeStep(
+        mode: SessionMode,
+        learningParameters: LearningParameters = LearningParameters(),
+        testParameters: TestParameters = TestParameters(),
+    ) = LearningStep(
+        id = LearningStepId("step-1"),
+        name = "Step",
+        isActive = true,
+        activeMode = mode,
+        isExample = false,
+        materialSelection = MaterialSelection(emptyList()),
+        learningParameters = learningParameters,
+        testParameters = testParameters,
+        reinforcementSettings = ReinforcementSettings(),
+    )
 
     @Test
     fun `startSession populates Content on success`() =
@@ -158,5 +161,76 @@ class GameViewModelTest {
             state as GameUiState.Content
             assertEquals(EmotionId.HAPPY, state.emotionId)
             assertTrue(state.options.any { it?.imageId == first.correctOption.imageId })
+        }
+
+    @Test
+    fun `wrong tap causes zero state mutation`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            val stateBeforeTap = viewModel.uiState.value
+            viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("d1")))
+            advanceUntilIdle()
+
+            assertEquals(stateBeforeTap, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `correct tap on a non-last trial immediately advances`() =
+        runTest(testDispatcher) {
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            state as GameUiState.Content
+            assertEquals(second.targetEmotionId, state.emotionId)
+        }
+
+    @Test
+    fun `startSession in LEARNING mode reflects captionsEnabled from LearningParameters`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(captionsEnabled = false))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            assertEquals(false, (state as GameUiState.Content).captionsEnabled)
+        }
+
+    @Test
+    fun `startSession in TEST mode reflects captionsEnabled from TestParameters`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.TEST, testParameters = TestParameters(captionsEnabled = true))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            assertEquals(true, (state as GameUiState.Content).captionsEnabled)
         }
 }

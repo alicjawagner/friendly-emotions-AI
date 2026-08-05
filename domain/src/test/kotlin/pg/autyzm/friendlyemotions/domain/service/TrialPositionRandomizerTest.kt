@@ -3,6 +3,7 @@ package pg.autyzm.friendlyemotions.domain.service
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
@@ -171,5 +172,53 @@ class TrialPositionRandomizerTest {
         val threeOptions = trial(listOf(correct, option("d1"), option("d2")))
 
         randomizer.assignThreeSlotPositions(threeOptions)
+    }
+
+    @Test
+    fun `assignThreeSlotPositions never repeats the exact previous slot-set for a two-option trial`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 20))
+        val correct = option("correct")
+        val distractor = option("distractor")
+        val pair = trial(listOf(correct, distractor))
+
+        fun occupiedSlots(result: List<TrialOption?>) =
+            result.indices.filter { result[it] != null }.toSet()
+
+        var previousSlotSet = occupiedSlots(randomizer.assignThreeSlotPositions(pair))
+        repeat(30) {
+            val slotSet = occupiedSlots(randomizer.assignThreeSlotPositions(pair))
+            assertNotEquals(previousSlotSet, slotSet)
+            previousSlotSet = slotSet
+        }
+    }
+
+    @Test
+    fun `assignThreeSlotPositions produces more than one distinct slot-set across repeated two-option trials`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 21))
+        val correct = option("correct")
+        val distractor = option("distractor")
+        val pair = trial(listOf(correct, distractor))
+
+        val slotSets =
+            List(10) {
+                val result = randomizer.assignThreeSlotPositions(pair)
+                result.indices.filter { result[it] != null }.toSet()
+            }
+
+        assertTrue(slotSets.toSet().size > 1)
+    }
+
+    @Test
+    fun `assignThreeSlotPositions single-option slot cycling is unaffected by slot-set tracking`() {
+        val randomizer = TrialPositionRandomizer(random = Random(seed = 22))
+        val correct = option("only")
+        val single = trial(listOf(correct))
+
+        val slots = List(9) { randomizer.assignThreeSlotPositions(single).indexOf(correct) }
+
+        assertEquals(setOf(0, 1, 2), slots.toSet())
+        for (i in 1 until slots.size) {
+            assertNotEquals(slots[i - 1], slots[i])
+        }
     }
 }
