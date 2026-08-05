@@ -273,7 +273,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - `PromptRenderer` integration — gender-inflected `displayText` + `spokenText` from correct option's gender
 - Hint timer — coroutine in `viewModelScope`; on expiry: show hints; first wrong tap in learning mode: show hints immediately
 - Hint visuals — `OUTLINE_CORRECT`, `ANIMATE_CORRECT`, `SCALE_CORRECT`, `DIM_INCORRECT` applied to image tiles
-- Reinforcement — `ReinforcementEngine` on clean-correct: TTS speaks praise word + sprite animation (flowers/butterflies/balloons/cars) for 4 s
+- Reinforcement — `ReinforcementEngine` on clean-correct: TTS speaks praise word + sprite animation (flowers/butterflies/balloons/cars/balls) for 4 s
 - `ErrorCorrectionController` integration — `repeatStage` logic, same-layout / shuffled-layout requeue
 - Gender handling — correct option gender drives Polish prompt form; `mixedGenderInAnswers` flag respected in distractor selection
 
