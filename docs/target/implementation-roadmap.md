@@ -308,7 +308,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - `SessionEndScreen` — displays percentage score + correct/total (test mode only)
 - `SessionEndViewModel` — calculates `SessionResult`, triggers end-of-session animation/fanfare if enabled
 - `SessionEndUiState`
-- End-of-session animation and fanfare TTS
+- End-of-session animation and fanfare, animation of konfetti e.g. from https://github.com/DanielMartinus/Konfetti, fanfare using fanfare.wav (tell me which folder should I put it in, I already have that file)
 - Session end navigation back to main screen (Play Again)
 
 **Documents:** `target-domain.md` §8.5–8.7, §9.2; `friendly-emotions-functional-specification.md` §5.7; `target-architecture.md` §7.3; **Figma** — test mode game screen, session end screen
