@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +30,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.runtime.Trial
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
+import pg.autyzm.friendlyemotions.domain.model.session.HintType
 import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStep
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
@@ -36,6 +40,7 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameViewModelTest {
@@ -171,20 +176,141 @@ class GameViewModelTest {
         }
 
     @Test
-    fun `wrong tap causes zero state mutation`() =
+    fun `wrong tap in LEARNING mode reveals hints immediately but does not advance the trial`() =
         runTest(testDispatcher) {
             val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
             coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
             val viewModel = viewModel()
             viewModel.startSession()
-            advanceUntilIdle()
+            runCurrent()
 
-            val stateBeforeTap = viewModel.uiState.value
             viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("d1")))
+            runCurrent()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            state as GameUiState.Content
+            assertEquals(EmotionId.HAPPY, state.emotionId)
+            assertTrue(state.hintsVisible)
+        }
+
+    @Test
+    fun `subsequent wrong taps while a hint is already showing are no-ops`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("d1")))
+            runCurrent()
+            val stateAfterFirstWrongTap = viewModel.uiState.value
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("d2")))
+            runCurrent()
+
+            assertEquals(stateAfterFirstWrongTap, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `wrong tap in TEST mode does not reveal hints`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.TEST))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("d1")))
+            runCurrent()
+
+            val state = viewModel.uiState.value
+            assertTrue(state is GameUiState.Content)
+            assertFalse((state as GameUiState.Content).hintsVisible)
+        }
+
+    @Test
+    fun `hint timer reveals hints after hintDelaySeconds elapses without any tap`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(hintDelaySeconds = 5))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            val beforeTimer = viewModel.uiState.value as GameUiState.Content
+            assertFalse(beforeTimer.hintsVisible)
+
+            advanceTimeBy(5_000.milliseconds)
+            runCurrent()
+
+            val afterTimer = viewModel.uiState.value as GameUiState.Content
+            assertTrue(afterTimer.hintsVisible)
+        }
+
+    @Test
+    fun `hint timer does not start in TEST mode`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.TEST, learningParameters = LearningParameters(hintDelaySeconds = 5))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
             advanceUntilIdle()
 
-            assertEquals(stateBeforeTap, viewModel.uiState.value)
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertFalse(state.hintsVisible)
+        }
+
+    @Test
+    fun `renderCurrentTrial populates correctImageId and activeHintTypes from LearningParameters`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step =
+                activeStep(
+                    SessionMode.LEARNING,
+                    learningParameters = LearningParameters(activeHintTypes = setOf(HintType.OUTLINE_CORRECT)),
+                )
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+
+            viewModel.startSession()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(onlyTrial.correctOption.imageId, state.correctImageId)
+            assertEquals(setOf(HintType.OUTLINE_CORRECT), state.activeHintTypes)
+        }
+
+    @Test
+    fun `advancing to the next trial resets hintsVisible`() =
+        runTest(testDispatcher) {
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("a-d1")))
+            runCurrent()
+            assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(second.targetEmotionId, state.emotionId)
+            assertFalse(state.hintsVisible)
         }
 
     @Test

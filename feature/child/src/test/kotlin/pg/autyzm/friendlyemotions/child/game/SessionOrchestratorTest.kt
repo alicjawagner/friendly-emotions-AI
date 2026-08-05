@@ -119,4 +119,54 @@ class SessionOrchestratorTest {
         assertEquals(4, orchestrator.currentSlots.size)
         assertTrue(orchestrator.currentSlots.none { it == null })
     }
+
+    @Test
+    fun `wrong tap in LEARNING mode marks hintShown`() {
+        val only = trial(listOf(option("correct"), option("d1"), option("d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(only),
+                sessionMode = SessionMode.LEARNING,
+                positionRandomizer = randomizer(8),
+            )
+
+        assertFalse(orchestrator.hintShown)
+        orchestrator.submitAnswer(ImageId("d1"))
+
+        assertTrue(orchestrator.hintShown)
+    }
+
+    @Test
+    fun `wrong tap in TEST mode does not mark hintShown`() {
+        val only = trial(listOf(option("correct"), option("d1"), option("d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(only),
+                sessionMode = SessionMode.TEST,
+                positionRandomizer = randomizer(9),
+            )
+
+        orchestrator.submitAnswer(ImageId("d1"))
+
+        assertFalse(orchestrator.hintShown)
+    }
+
+    @Test
+    fun `hintShown resets to false once the next trial becomes current`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.LEARNING,
+                positionRandomizer = randomizer(10),
+            )
+
+        orchestrator.submitAnswer(ImageId("a-d1"))
+        assertTrue(orchestrator.hintShown)
+
+        orchestrator.submitAnswer(first.correctOption.imageId)
+
+        assertFalse(orchestrator.hintShown)
+    }
 }

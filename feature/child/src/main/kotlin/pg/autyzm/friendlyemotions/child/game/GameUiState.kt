@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.child.game
 
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
+import pg.autyzm.friendlyemotions.domain.model.session.HintType
 
 /** UI state for `GameScreen`, sourced from [GameViewModel]. */
 sealed class GameUiState {
@@ -15,12 +16,21 @@ sealed class GameUiState {
      * label under every card. [promptText] is `PromptRenderer`'s gender-inflected `displayText` for
      * the current trial (target-domain.md §8.8) — the screen's big title, distinct from each option
      * card's own (never gender-inflected) caption.
+     *
+     * [correctImageId] is always populated (regardless of [hintsVisible]) so `GameScreen` can compute
+     * `isCorrectOption` per card without special-casing — the four hint visuals only *render*
+     * differently once [hintsVisible] flips true. [activeHintTypes] mirrors the active learning
+     * step's `LearningParameters.activeHintTypes` — copied once per session (session-constant, per
+     * target-architecture.md §7.3), not re-read per trial.
      */
     data class Content(
         val emotionId: EmotionId,
         val options: List<GameOptionUi?>,
         val promptText: String,
+        val correctImageId: ImageId,
         val captionsEnabled: Boolean = true,
+        val hintsVisible: Boolean = false,
+        val activeHintTypes: Set<HintType> = emptySet(),
     ) : GameUiState()
 
     data class Error(val message: String) : GameUiState()

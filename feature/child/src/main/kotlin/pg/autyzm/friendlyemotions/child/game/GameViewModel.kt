@@ -3,7 +3,9 @@ package pg.autyzm.friendlyemotions.child.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,12 +17,18 @@ import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
+import pg.autyzm.friendlyemotions.domain.model.runtime.TrialState
+import pg.autyzm.friendlyemotions.domain.model.session.HintType
+import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.service.PromptRenderer
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+
+private const val MILLIS_PER_SECOND = 1_000L
 
 /**
  * Drives `ChildScreen.Game`'s trial loop. Delegates trial sequencing to a [SessionOrchestrator]
@@ -48,9 +56,22 @@ class GameViewModel
         private var captionsEnabled: Boolean = true
         private var promptTemplate: PromptTemplate = PromptTemplate.EMOTION_ONLY
         private var ttsEnabled: Boolean = true
+        private var hintDelaySeconds: Int = LearningParameters.DEFAULT_HINT_DELAY_SECONDS
+        private var activeHintTypes: Set<HintType> = setOf(HintType.DIM_INCORRECT)
 
         /** The current trial's spoken text (per `PromptTemplate`), cached for the repeat/speaker button. */
         private var spokenText: String = ""
+
+        /**
+         * The current trial's phase (target-architecture.md §7.3). Held here, not in [GameUiState],
+         * since it's a ViewModel-internal decision input (e.g. "has a hint already fired for this
+         * instance") rather than something `GameScreen` renders directly — the screen only reads the
+         * derived `GameUiState.Content.hintsVisible` boolean.
+         */
+        private var trialState: TrialState = TrialState.AwaitingResponse
+
+        /** Delayed hint reveal for the current trial; started in `LEARNING` mode only, cancelled/replaced per trial. */
+        private var hintJob: Job? = null
 
         private val _uiState = MutableStateFlow<GameUiState>(GameUiState.Loading)
         val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -79,10 +100,16 @@ class GameViewModel
                         SessionMode.LEARNING -> learningStep?.learningParameters?.ttsEnabled ?: true
                         SessionMode.TEST -> learningStep?.testParameters?.ttsEnabled ?: false
                     }
+                // Hints are a LEARNING-only concept (no `TestParameters` equivalent) — read regardless
+                // of mode; harmless in TEST since no hint timer is ever started there.
+                hintDelaySeconds =
+                    learningStep?.learningParameters?.hintDelaySeconds ?: LearningParameters.DEFAULT_HINT_DELAY_SECONDS
+                activeHintTypes =
+                    learningStep?.learningParameters?.activeHintTypes ?: setOf(HintType.DIM_INCORRECT)
 
                 when (val result = initializeSessionUseCase()) {
                     is Result.Success -> {
-                        orchestrator = SessionOrchestrator(trials = result.value)
+                        orchestrator = SessionOrchestrator(trials = result.value, sessionMode = sessionMode)
                         renderCurrentTrial()
                     }
 
@@ -102,6 +129,7 @@ class GameViewModel
         }
 
         override fun onCleared() {
+            hintJob?.cancel()
             ttsController.shutdown()
         }
 
@@ -111,17 +139,25 @@ class GameViewModel
         }
 
         /**
-         * A wrong tap is a no-op — [SessionOrchestrator.submitAnswer] already mutates nothing and
-         * returns `false` for it, so there's nothing further to do here. A correct tap advances
-         * immediately (or completes the session): no delay, no visual feedback state — a reinforcement
-         * animation is an explicit Phase-7+ concern, not this phase's.
+         * A correct tap advances immediately (or completes the session): no delay, no visual feedback
+         * state — a reinforcement animation is an explicit Phase-7.4 concern, not this session's. A
+         * wrong tap never advances or requeues ([SessionOrchestrator.submitAnswer] already mutates
+         * nothing but its own [SessionOrchestrator.hintShown] bookkeeping and returns `false`), but in
+         * `LEARNING` mode it does immediately reveal hints (target-domain.md §12/§16 "the first wrong
+         * tap ... triggers hints") rather than waiting for [hintJob]'s timer — a no-op on any
+         * subsequent wrong tap once hints are already showing.
          */
         private fun handleTap(imageId: ImageId) {
             val currentOrchestrator = orchestrator ?: return
             if (_uiState.value !is GameUiState.Content) return
 
             val isCorrect = currentOrchestrator.submitAnswer(imageId)
-            if (!isCorrect) return
+            if (!isCorrect) {
+                if (sessionMode == SessionMode.LEARNING && trialState !is TrialState.HintVisible) {
+                    triggerHint()
+                }
+                return
+            }
 
             if (currentOrchestrator.isComplete) {
                 viewModelScope.launch {
@@ -144,16 +180,46 @@ class GameViewModel
                     ttsController.localeCode,
                 )
             spokenText = renderedPrompt.spokenText
+
+            trialState = TrialState.AwaitingResponse
+            hintJob?.cancel()
+            hintJob = startHintJobIfLearning()
+
             _uiState.value =
                 GameUiState.Content(
                     emotionId = trial.targetEmotionId,
                     options = currentOrchestrator.currentSlots.toOptionUiList(),
                     promptText = renderedPrompt.displayText,
+                    correctImageId = trial.correctOption.imageId,
                     captionsEnabled = captionsEnabled,
+                    activeHintTypes = activeHintTypes,
                 )
             if (ttsEnabled) {
                 ttsController.speak(spokenText, TtsController.QUEUE_FLUSH)
             }
+        }
+
+        /**
+         * `TEST` mode keeps Phase 6's pass-through behavior (no hint timer) — `TEST`'s own timeout
+         * handling (count as wrong, auto-advance) is Phase 8's job, not this session's.
+         */
+        private fun startHintJobIfLearning(): Job? =
+            if (sessionMode == SessionMode.LEARNING) {
+                viewModelScope.launch {
+                    delay((hintDelaySeconds * MILLIS_PER_SECOND).milliseconds)
+                    triggerHint()
+                }
+            } else {
+                null
+            }
+
+        /** Idempotent: cancels any pending [hintJob] and reveals hints, whether called by the timer or a wrong tap. */
+        private fun triggerHint() {
+            hintJob?.cancel()
+            hintJob = null
+            trialState = TrialState.HintVisible
+            val content = _uiState.value as? GameUiState.Content ?: return
+            _uiState.value = content.copy(hintsVisible = true)
         }
 
         private fun List<TrialOption?>.toOptionUiList(): List<GameOptionUi?> =
