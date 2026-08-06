@@ -45,4 +45,15 @@ class ChildHomeViewModelTest {
 
         assertEquals(ChildScreen.End(result), viewModel.screen.value)
     }
+
+    @Test
+    fun `onPlayAgainClicked navigates from the End screen back to Main`() {
+        val viewModel = viewModel()
+        val result = SessionResult(correctCount = 4, totalCount = 5, mode = SessionMode.TEST)
+        viewModel.onSessionComplete(result)
+
+        viewModel.onPlayAgainClicked()
+
+        assertEquals(ChildScreen.Main, viewModel.screen.value)
+    }
 }

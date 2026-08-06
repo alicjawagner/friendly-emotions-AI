@@ -7,4 +7,8 @@
     <string name="child_home_mode_test">test</string>
     <string name="child_home_no_active_step">no active step</string>
     <string name="child_home_no_materials_message">No materials configured for this step</string>
+    <string name="session_end_title">Game over!</string>
+    <string name="session_end_correct_label">Correct answers:</string>
+    <string name="session_end_incorrect_label">Incorrect answers:</string>
+    <string name="session_end_play_again_description">Play again</string>
 </resources>

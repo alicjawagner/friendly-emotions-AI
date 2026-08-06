@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
+import pg.autyzm.friendlyemotions.child.end.SessionEndSoundController
 import pg.autyzm.friendlyemotions.child.game.TtsController
 
 /**
@@ -22,4 +23,11 @@ object ChildModule {
     fun provideTtsController(
         @ApplicationContext context: Context,
     ): TtsController = TtsController(context)
+
+    /** Scoped to `SessionEndViewModel`'s lifecycle (phase-8 plan session 8.3) — same pattern as [provideTtsController]. */
+    @Provides
+    @ViewModelScoped
+    fun provideSessionEndSoundController(
+        @ApplicationContext context: Context,
+    ): SessionEndSoundController = SessionEndSoundController(context)
 }

@@ -91,6 +91,11 @@ class ChildHomeViewModel
             _screen.value = ChildScreen.End(result)
         }
 
+        /** "Play Again" on `ChildScreen.End` (domain state diagram's `COMPLETED --(Play Again)--> NOT_STARTED`). */
+        fun onPlayAgainClicked() {
+            _screen.value = ChildScreen.Main
+        }
+
         private fun advanceFromInfo() {
             if (_screen.value == ChildScreen.Info) {
                 _screen.value = ChildScreen.Main

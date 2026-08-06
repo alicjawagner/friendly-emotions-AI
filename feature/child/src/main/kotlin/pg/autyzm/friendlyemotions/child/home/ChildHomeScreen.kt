@@ -2,7 +2,6 @@ package pg.autyzm.friendlyemotions.child.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,19 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -34,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.child.R
 import pg.autyzm.friendlyemotions.child.backgrounds.GameFloorBackground
+import pg.autyzm.friendlyemotions.child.components.PlayButtonCircle
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
@@ -41,9 +37,6 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 private val logoSize = 140.dp
-private val playButtonSize = 370.dp
-private val playButtonIconSize = 88.dp
-private const val PLAY_BUTTON_DISABLED_ALPHA = 0.5f
 
 /**
  * The child app's main/home screen, per the Figma "screens/homepage" node (`321:12252`):
@@ -178,23 +171,11 @@ private fun PlayButtonArea(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Surface(
-            shape = CircleShape,
-            color = FriendlyEmotionsColors.Shades.White,
-            shadowElevation = 24.dp,
-            modifier =
-                Modifier
-                    .size(playButtonSize)
-                    .alpha(if (uiState.canPlay) 1f else PLAY_BUTTON_DISABLED_ALPHA)
-                    .clickable(enabled = uiState.canPlay, onClick = onPlayClick),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.PlayArrow,
-                contentDescription = stringResource(R.string.child_home_title),
-                tint = FriendlyEmotionsColors.States.Success700,
-                modifier = Modifier.size(playButtonIconSize).padding(start = 4.dp),
-            )
-        }
+        PlayButtonCircle(
+            onClick = onPlayClick,
+            enabled = uiState.canPlay,
+            contentDescription = stringResource(R.string.child_home_title),
+        )
         if (!uiState.canPlay) {
             Text(
                 text = stringResource(R.string.child_home_no_materials_message),

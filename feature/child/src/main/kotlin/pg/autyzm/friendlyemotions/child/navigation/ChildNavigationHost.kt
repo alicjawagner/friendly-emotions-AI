@@ -8,13 +8,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pg.autyzm.friendlyemotions.child.R
+import pg.autyzm.friendlyemotions.child.end.SessionEndScreen
+import pg.autyzm.friendlyemotions.child.end.SessionEndViewModel
 import pg.autyzm.friendlyemotions.child.game.GameNavigationEvent
 import pg.autyzm.friendlyemotions.child.game.GameScreen
 import pg.autyzm.friendlyemotions.child.game.GameViewModel
 import pg.autyzm.friendlyemotions.child.home.ChildHomeScreen
 import pg.autyzm.friendlyemotions.child.home.ChildHomeViewModel
 import pg.autyzm.friendlyemotions.ui.components.InfoSplashScreen
-import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
@@ -31,7 +32,7 @@ fun ChildNavigationHost(viewModel: ChildHomeViewModel = hiltViewModel()) {
 
     val screen by viewModel.screen.collectAsStateWithLifecycle()
 
-    when (screen) {
+    when (val currentScreen = screen) {
         ChildScreen.Info ->
             InfoSplashScreen(
                 appTitle = stringResource(R.string.child_home_title),
@@ -67,7 +68,16 @@ fun ChildNavigationHost(viewModel: ChildHomeViewModel = hiltViewModel()) {
             )
         }
 
-        // TODO(Phase 8): replace with SessionEndScreen.
-        is ChildScreen.End -> LoadingScreen(message = "Session end — coming in Phase 8")
+        is ChildScreen.End -> {
+            val sessionEndViewModel: SessionEndViewModel = hiltViewModel()
+            val result = currentScreen.result
+
+            // A LaunchedEffect(result), not init {}, for the same reason GameViewModel's session
+            // start is: SessionEndViewModel is Activity-scoped and outlives one visit to this branch.
+            LaunchedEffect(result) { sessionEndViewModel.initialize(result) }
+
+            val endUiState by sessionEndViewModel.uiState.collectAsStateWithLifecycle()
+            SessionEndScreen(uiState = endUiState, onPlayAgainClick = viewModel::onPlayAgainClicked)
+        }
     }
 }
