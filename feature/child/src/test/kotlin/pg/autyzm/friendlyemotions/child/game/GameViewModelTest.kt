@@ -23,6 +23,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
+import pg.autyzm.friendlyemotions.domain.catalog.PraiseCatalog
 import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
@@ -41,6 +42,11 @@ import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import kotlin.time.Duration.Companion.milliseconds
+
+private val ENGLISH_PRAISE_WORDS =
+    ReinforcementSettings.PRAISE_WORDS
+        .map { PraiseCatalog.resolve(it, EmotionCatalog.LOCALE_ENGLISH) }
+        .toSet()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameViewModelTest {
@@ -393,6 +399,7 @@ class GameViewModelTest {
             assertEquals(first.correctOption.imagePath, congrats.imagePath)
             assertTrue(congrats.praiseWord != null)
             assertTrue(congrats.animationTheme != null)
+            assertTrue(ReinforcementSettings.PRAISE_WORDS.contains(congrats.praiseWord))
             verify { ttsController.speak("wesoły", TtsController.QUEUE_FLUSH) }
             verify { ttsController.speak(congrats.praiseWord!!, TtsController.QUEUE_ADD) }
 
@@ -401,6 +408,30 @@ class GameViewModelTest {
 
             val state = viewModel.uiState.value as GameUiState.Content
             assertEquals(second.targetEmotionId, state.emotionId)
+        }
+
+    @Test
+    fun `correct tap in LEARNING speaks English praise when device locale is en`() =
+        runTest(testDispatcher) {
+            every { ttsController.localeCode } returns EmotionCatalog.LOCALE_ENGLISH
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+
+            val congrats = viewModel.uiState.value as GameUiState.Congrats
+            assertEquals("happy", congrats.displayText)
+            assertTrue(congrats.praiseWord != null)
+            assertTrue(ENGLISH_PRAISE_WORDS.contains(congrats.praiseWord))
+            verify { ttsController.speak("happy", TtsController.QUEUE_FLUSH) }
+            verify { ttsController.speak(congrats.praiseWord!!, TtsController.QUEUE_ADD) }
+
+            every { ttsController.localeCode } returns EmotionCatalog.LOCALE_POLISH
         }
 
     @Test

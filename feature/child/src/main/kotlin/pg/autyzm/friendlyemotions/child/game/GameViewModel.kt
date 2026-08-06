@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import pg.autyzm.friendlyemotions.domain.catalog.PraiseCatalog
 import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
@@ -218,18 +219,22 @@ class GameViewModel
             trialState = TrialState.Judged(verdict)
             val reinforcement =
                 reinforcementEngine.reinforce(sessionMode, verdict, reinforcementSettings)
+            val spokenPraise =
+                reinforcement?.praiseWord?.let { key ->
+                    PraiseCatalog.resolve(key, ttsController.localeCode)
+                }
 
             _uiState.value =
                 GameUiState.Congrats(
                     displayText = displayText,
                     imagePath = imagePath,
-                    praiseWord = reinforcement?.praiseWord,
+                    praiseWord = spokenPraise,
                     animationTheme = reinforcement?.animationTheme,
                 )
 
             // Congrats TTS sequence (target-domain.md §13): emotion name, then optional praise.
             ttsController.speak(displayText, TtsController.QUEUE_FLUSH)
-            reinforcement?.praiseWord?.let { praise ->
+            spokenPraise?.let { praise ->
                 ttsController.speak(praise, TtsController.QUEUE_ADD)
             }
 

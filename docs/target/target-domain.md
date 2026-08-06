@@ -316,7 +316,7 @@ Controls test-mode session behavior. By default mirrors `LearningParameters`.
 | `endSessionAnimationEnabled` | `Boolean` | `true` | Animation played at session end |
 | `endSessionFanfareEnabled` | `Boolean` | `true` | Audio fanfare played at session end |
 
-Available praise words: "dobrze", "super", "świetnie", "ekstra", "rewelacja", "brawo".
+Available praise word keys (stored in settings): "dobrze", "super", "świetnie", "ekstra", "rewelacja", "brawo". Spoken form follows device locale via `PraiseCatalog`: Polish for `pl`, English otherwise (`dobrze`→good, `super`→super, `świetnie`→great, `ekstra`→awesome, `rewelacja`→amazing, `brawo`→bravo).
 Available animation themes: flowers, butterflies, balloons, cars, balls. One theme selected at random from `enabledAnimationThemes` per event.
 
 ---
@@ -723,7 +723,7 @@ Reinforcement applies in `LEARNING` mode only. It consists of two independent co
 
 **End-of-session reinforcement** is separate: `endSessionAnimationEnabled` and `endSessionFanfareEnabled` control what plays when the session summary appears, independently of in-trial reinforcement.
 
-**Verbal praise:** one word chosen uniformly at random from `enabledPraiseWords` at the moment the congrats screen appears. The TTS sequence is: speak the emotion name → (if reinforcement) speak praise word.
+**Verbal praise:** one key chosen uniformly at random from `enabledPraiseWords` at the moment the congrats screen appears, then resolved to a spoken form for the device locale (`PraiseCatalog`: `pl` or English). The TTS sequence is: speak the emotion name → (if reinforcement) speak the localized praise word.
 
 **Animation themes:** flowers, butterflies, balloons, cars, balls. One theme selected uniformly at random from `enabledAnimationThemes` per reinforcement event when `animationsEnabled` is true.
 
