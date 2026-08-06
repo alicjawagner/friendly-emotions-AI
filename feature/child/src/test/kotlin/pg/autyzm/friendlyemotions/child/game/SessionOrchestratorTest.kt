@@ -342,4 +342,93 @@ class SessionOrchestratorTest {
         assertEquals(1, orchestrator.totalCount)
         assertTrue(orchestrator.isComplete)
     }
+
+    @Test
+    fun `advanceOnTimeout in TEST mode advances without incrementing correctCount`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.TEST,
+                positionRandomizer = randomizer(18),
+            )
+
+        orchestrator.advanceOnTimeout()
+
+        assertEquals(0, orchestrator.correctCount)
+        assertEquals(second, orchestrator.currentTrial)
+        assertFalse(orchestrator.isComplete)
+    }
+
+    @Test
+    fun `advanceOnTimeout completes the session after the last trial`() {
+        val only = trial(listOf(option("correct"), option("d1"), option("d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(only),
+                sessionMode = SessionMode.TEST,
+                positionRandomizer = randomizer(19),
+            )
+
+        orchestrator.advanceOnTimeout()
+
+        assertEquals(0, orchestrator.correctCount)
+        assertEquals(1, orchestrator.totalCount)
+        assertTrue(orchestrator.isComplete)
+        assertNull(orchestrator.currentTrial)
+    }
+
+    @Test
+    fun `advanceOnTimeout never requeues, unlike a LEARNING-mode mistake`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.TEST,
+                positionRandomizer = randomizer(20),
+            )
+
+        orchestrator.advanceOnTimeout()
+        orchestrator.advanceOnTimeout()
+
+        assertEquals(2, orchestrator.totalCount)
+        assertTrue(orchestrator.isComplete)
+    }
+
+    @Test
+    fun `advanceOnTimeout is a no-op outside TEST mode`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.LEARNING,
+                positionRandomizer = randomizer(21),
+            )
+
+        orchestrator.advanceOnTimeout()
+
+        assertEquals(first, orchestrator.currentTrial)
+        assertFalse(orchestrator.isComplete)
+    }
+
+    @Test
+    fun `advanceOnTimeout is idempotent once the session is already complete`() {
+        val only = trial(listOf(option("correct"), option("d1"), option("d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(only),
+                sessionMode = SessionMode.TEST,
+                positionRandomizer = randomizer(22),
+            )
+
+        orchestrator.advanceOnTimeout()
+        orchestrator.advanceOnTimeout()
+
+        assertTrue(orchestrator.isComplete)
+        assertNull(orchestrator.currentTrial)
+        assertEquals(1, orchestrator.totalCount)
+    }
 }

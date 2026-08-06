@@ -138,8 +138,10 @@ class GameViewModelTest {
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.TEST))
             coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
             val viewModel = viewModel()
+            // runCurrent (not advanceUntilIdle) so TEST mode's own answer timer is not drained
+            // before the manual tap below — see the identical LEARNING-mode caveat further down.
             viewModel.startSession()
-            advanceUntilIdle()
+            runCurrent()
 
             val events = mutableListOf<GameNavigationEvent>()
             val collector = launch { viewModel.navigationEvents.toList(events) }
@@ -466,16 +468,89 @@ class GameViewModelTest {
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.TEST))
             coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
             val viewModel = viewModel()
+            // runCurrent (not advanceUntilIdle) so TEST mode's own answer timer is not drained
+            // before the manual tap below — otherwise the trial would auto-advance via timeout
+            // instead of via the tap this test means to exercise.
             viewModel.startSession()
-            advanceUntilIdle()
+            runCurrent()
 
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
-            advanceUntilIdle()
+            runCurrent()
 
             val state = viewModel.uiState.value
             assertTrue(state is GameUiState.Content)
             state as GameUiState.Content
             assertEquals(second.targetEmotionId, state.emotionId)
+        }
+
+    @Test
+    fun `answer timer in TEST mode advances the trial after hintDelaySeconds elapses without any tap`() =
+        runTest(testDispatcher) {
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
+            val step = activeStep(SessionMode.TEST, learningParameters = LearningParameters(hintDelaySeconds = 5))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            advanceTimeBy(5_000.milliseconds)
+            runCurrent()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(second.targetEmotionId, state.emotionId)
+            assertFalse(state.hintsVisible)
+        }
+
+    @Test
+    fun `answer timer expiry on the last TEST trial emits SessionCompleted with the trial counted as wrong`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.TEST, learningParameters = LearningParameters(hintDelaySeconds = 5))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            val events = mutableListOf<GameNavigationEvent>()
+            val collector = launch { viewModel.navigationEvents.toList(events) }
+
+            advanceTimeBy(5_000.milliseconds)
+            runCurrent()
+            collector.cancel()
+
+            val event = events.single() as GameNavigationEvent.SessionCompleted
+            assertEquals(0, event.result.correctCount)
+            assertEquals(1, event.result.totalCount)
+            assertEquals(SessionMode.TEST, event.result.mode)
+        }
+
+    @Test
+    fun `a correct tap in TEST mode cancels that trial's timer so it never also fires`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step = activeStep(SessionMode.TEST, learningParameters = LearningParameters(hintDelaySeconds = 5))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            val events = mutableListOf<GameNavigationEvent>()
+            val collector = launch { viewModel.navigationEvents.toList(events) }
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(onlyTrial.correctOption.imageId))
+            // Drains the (would-be) 5 s timer too — if it weren't cancelled it would fire a second,
+            // spurious SessionCompleted since `advanceOnTimeout()`'s null-trial guard makes it a
+            // harmless no-op rather than a crash, but `advanceAfterAnswer` doesn't dedupe emissions.
+            advanceUntilIdle()
+            collector.cancel()
+
+            val event = events.single() as GameNavigationEvent.SessionCompleted
+            assertEquals(1, event.result.correctCount)
+            assertEquals(1, event.result.totalCount)
         }
 
     @Test

@@ -133,6 +133,18 @@ class SessionOrchestrator(
         SessionResult(correctCount = correctCount, totalCount = totalCount, mode = mode)
 
     /**
+     * Advances past the current trial on answer-timer expiry in `TEST` mode (target-domain.md
+     * §8.5/§8.6/§9.3): counts as wrong (no `correctCount` increment), never requeues — TEST mode
+     * never consults [errorCorrectionController]. No-op outside `TEST` mode. Idempotent once
+     * [currentTrial] is exhausted.
+     */
+    fun advanceOnTimeout() {
+        if (sessionMode != SessionMode.TEST || currentTrial == null) return
+        currentIndex++
+        renderCurrentTrial()
+    }
+
+    /**
      * Maps this attempt's [hintShown] + current `repeatStage` onto [TrialOutcome], matching
      * Friendly Words' end-of-round `(repeatStage, hadMistakeThisRound)` evaluation.
      */

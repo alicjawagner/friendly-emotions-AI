@@ -79,6 +79,13 @@ class GameViewModel
         /** Delayed hint reveal for the current trial; started in `LEARNING` mode only, cancelled/replaced per trial. */
         private var hintJob: Job? = null
 
+        /**
+         * Answer timer for the current trial in `TEST` mode only (target-domain.md §8.5/§8.10):
+         * expiry counts the trial as wrong and auto-advances, with no visual hint. Cancelled/replaced
+         * per trial, mirroring [hintJob].
+         */
+        private var answerTimeoutJob: Job? = null
+
         /** Holds the 4 s congrats delay before advancing; cancelled on [startSession]/[onCleared]. */
         private var congratsJob: Job? = null
 
@@ -92,6 +99,7 @@ class GameViewModel
         fun startSession() {
             viewModelScope.launch {
                 hintJob?.cancel()
+                answerTimeoutJob?.cancel()
                 congratsJob?.cancel()
                 _uiState.value = GameUiState.Loading
                 val learningStep = observeActiveLearningStepUseCase().first()
@@ -142,6 +150,7 @@ class GameViewModel
 
         override fun onCleared() {
             hintJob?.cancel()
+            answerTimeoutJob?.cancel()
             congratsJob?.cancel()
             ttsController.shutdown()
         }
@@ -181,6 +190,8 @@ class GameViewModel
 
             hintJob?.cancel()
             hintJob = null
+            answerTimeoutJob?.cancel()
+            answerTimeoutJob = null
 
             if (sessionMode == SessionMode.LEARNING) {
                 showCongratsThenAdvance(
@@ -257,6 +268,8 @@ class GameViewModel
             trialState = TrialState.AwaitingResponse
             hintJob?.cancel()
             hintJob = startHintJobIfLearning()
+            answerTimeoutJob?.cancel()
+            answerTimeoutJob = startTimeoutJobIfTest()
 
             _uiState.value =
                 GameUiState.Content(
@@ -272,10 +285,7 @@ class GameViewModel
             }
         }
 
-        /**
-         * `TEST` mode keeps Phase 6's pass-through behavior (no hint timer) — `TEST`'s own timeout
-         * handling (count as wrong, auto-advance) is Phase 8's job, not this session's.
-         */
+        /** `TEST` mode never shows hints — its own answer timer is [startTimeoutJobIfTest]. */
         private fun startHintJobIfLearning(): Job? =
             if (sessionMode == SessionMode.LEARNING) {
                 viewModelScope.launch {
@@ -285,6 +295,35 @@ class GameViewModel
             } else {
                 null
             }
+
+        /**
+         * `TEST` mode's answer timer (target-domain.md §8.5/§8.10): reuses `hintDelaySeconds` (no
+         * separate field) and, on expiry, counts the trial as wrong with no visual hint — the
+         * `LEARNING`-only counterpart is [startHintJobIfLearning].
+         */
+        private fun startTimeoutJobIfTest(): Job? =
+            if (sessionMode == SessionMode.TEST) {
+                viewModelScope.launch {
+                    delay((hintDelaySeconds * MILLIS_PER_SECOND).milliseconds)
+                    handleTimeout()
+                }
+            } else {
+                null
+            }
+
+        /**
+         * `TEST`-mode answer-timer expiry (target-domain.md §9.3 `JUDGED_TIMEOUT`): counts the
+         * trial as wrong and advances immediately, with no hint and no reinforcement — the same
+         * completion/render dispatch already used by the `TEST` correct-tap path.
+         */
+        private fun handleTimeout() {
+            val currentOrchestrator = orchestrator ?: return
+            answerTimeoutJob?.cancel()
+            answerTimeoutJob = null
+            trialState = TrialState.Judged(TrialVerdict.TIMEOUT)
+            currentOrchestrator.advanceOnTimeout()
+            advanceAfterAnswer(currentOrchestrator)
+        }
 
         /** Idempotent: cancels any pending [hintJob], reveals hints, and marks the attempt failed
          *  for error-correction (wrong tap **or** hint timeout both count as a mistake). */
