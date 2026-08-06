@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -19,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -35,11 +38,14 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val titleTopPadding = 52.dp
-private val playButtonSize = 280.dp
-private val playButtonIconSize = 66.dp
+private val playButtonSize = 150.dp
+private val playButtonIconSize = 22.dp
 private val playButtonBottomPadding = 40.dp
-private val smileySizeWithScorePanel = 256.dp
-private val smileySizeStandalone = 340.dp
+private val smileyCenterOffsetY = (-30).dp
+private val smileyShadowElevation = 24.dp
+private val smileySizeWithScorePanel = 290.dp
+private val smileySizeStandalone = 380.dp
+private val scorePanelTopSpacing = 32.dp
 private val scorePanelWidth = 600.dp
 private val scoreValueColumnWidth = 90.dp
 private val scoreValuesGap = 49.dp
@@ -69,19 +75,31 @@ fun SessionEndScreen(
         )
 
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier =
+                Modifier
+                    .align(Alignment.Center)
+                    .offset(y = smileyCenterOffsetY),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            val smileySize =
+                if (uiState.mode == SessionMode.TEST) smileySizeWithScorePanel else smileySizeStandalone
             Image(
                 painter = painterResource(R.drawable.smiley),
                 contentDescription = null,
                 modifier =
-                    Modifier.size(
-                        if (uiState.mode == SessionMode.TEST) smileySizeWithScorePanel else smileySizeStandalone,
-                    ),
+                    Modifier
+                        .size(smileySize)
+                        .shadow(
+                            elevation = smileyShadowElevation,
+                            shape = CircleShape,
+                            clip = false,
+                        ),
             )
             if (uiState.mode == SessionMode.TEST) {
-                ScorePanel(uiState = uiState)
+                ScorePanel(
+                    uiState = uiState,
+                    modifier = Modifier.padding(top = scorePanelTopSpacing),
+                )
             }
         }
 
@@ -113,7 +131,7 @@ private fun ScorePanel(
                 .width(scorePanelWidth)
                 .background(
                     FriendlyEmotionsColors.PrimaryFriendlyEmotions.P500,
-                    RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+                    RoundedCornerShape(10.dp),
                 ).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
