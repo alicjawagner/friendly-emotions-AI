@@ -316,7 +316,7 @@ class GameViewModelTest {
         }
 
     @Test
-    fun `a mistake requeues the trial (shuffled) instead of advancing to the next one, resetting hintsVisible`() =
+    fun `a mistake requeues the same layout first, then shuffled after a clean same-layout repeat`() =
         runTest(testDispatcher) {
             val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
             val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
@@ -326,11 +326,13 @@ class GameViewModelTest {
             viewModel.startSession()
             runCurrent()
 
+            val originalOptions = (viewModel.uiState.value as GameUiState.Content).options
+
             viewModel.onEvent(GameUiEvent.OptionTapped(ImageId("a-d1")))
             runCurrent()
             assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
 
-            // Correct, but not clean — Congrats (no reinforcement), then re-queues `first` (shuffled).
+            // Correct after mistake → Congrats (no reinforcement), then SAME-layout requeue.
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
             runCurrent()
             val congrats = viewModel.uiState.value as GameUiState.Congrats
@@ -340,10 +342,25 @@ class GameViewModelTest {
             advanceTimeBy(4_000.milliseconds)
             runCurrent()
 
-            val state = viewModel.uiState.value as GameUiState.Content
-            assertEquals(first.targetEmotionId, state.emotionId)
-            assertFalse(state.hintsVisible)
+            val sameLayoutState = viewModel.uiState.value as GameUiState.Content
+            assertEquals(first.targetEmotionId, sameLayoutState.emotionId)
+            assertEquals(originalOptions, sameLayoutState.options)
+            assertFalse(sameLayoutState.hintsVisible)
 
+            // Clean same-layout repeat → Congrats with reinforcement, then SHUFFLED requeue.
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+            val cleanCongrats = viewModel.uiState.value as GameUiState.Congrats
+            assertTrue(cleanCongrats.praiseWord != null)
+
+            advanceTimeBy(4_000.milliseconds)
+            runCurrent()
+
+            val shuffledState = viewModel.uiState.value as GameUiState.Content
+            assertEquals(first.targetEmotionId, shuffledState.emotionId)
+            assertFalse(originalOptions == shuffledState.options)
+
+            // Clean shuffled repeat → advance to `second`.
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
             runCurrent()
             advanceTimeBy(4_000.milliseconds)
@@ -385,25 +402,35 @@ class GameViewModelTest {
         }
 
     @Test
-    fun `correct tap after hint shows Congrats without reinforcement`() =
+    fun `correct tap after hint timeout shows Congrats without reinforcement and requeues same layout`() =
         runTest(testDispatcher) {
-            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
-            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
             val viewModel = viewModel()
             viewModel.startSession()
             runCurrent()
+
+            val originalOptions = (viewModel.uiState.value as GameUiState.Content).options
 
             advanceTimeBy(5_000.milliseconds)
             runCurrent()
             assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
 
-            viewModel.onEvent(GameUiEvent.OptionTapped(onlyTrial.correctOption.imageId))
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
             runCurrent()
 
             val congrats = viewModel.uiState.value as GameUiState.Congrats
             assertEquals(null, congrats.praiseWord)
             assertEquals(null, congrats.animationTheme)
+
+            advanceTimeBy(4_000.milliseconds)
+            runCurrent()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(first.targetEmotionId, state.emotionId)
+            assertEquals(originalOptions, state.options)
         }
 
     @Test

@@ -21,6 +21,11 @@ private const val FIXED_SLOT_OPTION_LIMIT = 2
  * session's lifetime, per ADR-014 — both are stateful and session-scoped.
  * [TrialPositionRandomizer]'s methods mutate their position history on every call, so recomputing
  * on every read (rather than reading the cached [currentSlots]) would corrupt that history.
+ *
+ * Error-correction evaluation runs **once per completed attempt** (when the child finally taps
+ * correctly), matching Friendly Words' `hadMistakeThisRound` / `repeatStage` table — not on every
+ * wrong tap. A wrong tap or hint-timeout only marks [hadMistakeThisInstance]; the eventual correct
+ * tap then feeds that flag into [ErrorCorrectionController.evaluate].
  */
 class SessionOrchestrator(
     private val trials: List<Trial>,
@@ -39,22 +44,9 @@ class SessionOrchestrator(
     private var currentIndex = 0
 
     /**
-     * Index in [queue] of the not-yet-current corrective repeat for the trial presently being
-     * corrected, if any. Repeated `evaluate()` calls during the same correction cycle (e.g. a 2nd/3rd
-     * wrong tap on the same still-displayed instance) update the entry at this index in place via
-     * [applyRequeue] instead of inserting a new one each time — otherwise every extra wrong tap on
-     * one instance would splice in its own duplicate, some of which would never get "consumed" once
-     * `repeatStage` recovers to 0, silently inflating [correctCount] past [totalCount] if answered.
-     * Cleared once [renderCurrentTrial] advances onto it (it's then the live current trial, not a
-     * pending one).
-     */
-    private var pendingRetryIndex: Int? = null
-
-    /**
      * [queue] indices that must reuse a previously captured slot layout rather than being freshly
-     * randomized by [positionRandomizer] — populated only for [RequeueLayout.SAME] requeues (target-
-     * domain.md §14 "re-inserted with identical option positions"). Consumed (removed) the moment
-     * [renderCurrentTrial] renders that index.
+     * randomized by [positionRandomizer] — populated only for [RequeueLayout.SAME] requeues.
+     * Consumed (removed) the moment [renderCurrentTrial] renders that index.
      */
     private val forcedSlotLayouts = mutableMapOf<Int, List<TrialOption?>>()
 
@@ -81,10 +73,10 @@ class SessionOrchestrator(
         private set
 
     /**
-     * Whether a hint has been shown for [currentTrial]'s current instance (target-domain.md §12) —
-     * reset to `false` whenever a new trial becomes current. Set by a wrong tap in `LEARNING` mode
-     * (this session/phase); consumed by `GameViewModel` in Phase 7.4 to compute `TrialVerdict`
-     * (`CLEAN_CORRECT` requires this to still be `false` at the time of a correct tap).
+     * Whether this attempt of [currentTrial] already counts as failed for error correction and
+     * reinforcement: a wrong tap **or** a hint-timeout (Friendly Words `hadMistakeThisRound`).
+     * Reset whenever a new trial instance becomes current. Exposed as [hintShown] for ViewModel
+     * reinforcement (`CLEAN_CORRECT` requires this still `false`).
      */
     var hintShown: Boolean = false
         private set
@@ -94,32 +86,35 @@ class SessionOrchestrator(
     }
 
     /**
+     * Marks the current attempt as failed (wrong tap or hint timeout) without advancing or
+     * evaluating [ErrorCorrectionController] — evaluation waits until the child eventually taps
+     * correctly. Idempotent; LEARNING-only.
+     */
+    fun markFailedAttempt() {
+        if (sessionMode != SessionMode.LEARNING || currentTrial == null) return
+        hintShown = true
+    }
+
+    /**
      * Compares [imageId] against [currentTrial]'s correct option.
      *
-     * On a correct answer in `LEARNING` mode, evaluates the error-correction outcome
-     * ([TrialOutcome.CLEAN_CORRECT] if no mistake has occurred yet this correction cycle,
-     * [TrialOutcome.CORRECT_NOT_CLEAN] otherwise per target-domain.md §14) and requeues a repeat via
-     * [applyRequeue] if the controller calls for one; [correctCount] only increments once the trial
-     * is fully resolved (no further requeue). In `TEST` mode (no error correction), a correct answer
-     * always increments [correctCount]. Either way, a correct answer then advances to the next
-     * queued trial.
+     * On a correct answer in `LEARNING` mode, evaluates error correction **once for this completed
+     * attempt** using Friendly Words' `(repeatStage, hadMistakeThisRound)` table:
+     * - failed attempt (`hintShown`) → [TrialOutcome.MISTAKE] (same-layout requeue at stages 0/1,
+     *   shuffled at stage 2)
+     * - clean attempt at stage 0 → [TrialOutcome.CLEAN_CORRECT] (no requeue)
+     * - clean attempt at stage 1/2 → [TrialOutcome.CORRECT_NOT_CLEAN] (shuffled requeue at 1;
+     *   recovery complete at 2)
      *
-     * On an incorrect answer in `LEARNING` mode, marks [hintShown] (per target-domain.md §12, "the
-     * first wrong tap ... marks the trial 'has mistake'" — hints are shown immediately on a wrong
-     * tap) and evaluates [TrialOutcome.MISTAKE], requeuing a repeat via [applyRequeue]. Either way,
-     * an incorrect answer never advances — the current trial stays displayed.
+     * On an incorrect answer in `LEARNING` mode, only marks [hintShown] — does not requeue yet.
+     * Incorrect answers never advance.
      */
     fun submitAnswer(imageId: ImageId): Boolean {
         val trial = currentTrial ?: return false
         val isCorrect = trial.correctOption.imageId == imageId
         if (isCorrect) {
             if (sessionMode == SessionMode.LEARNING) {
-                val outcome =
-                    if (errorCorrectionController.repeatStage == 0) {
-                        TrialOutcome.CLEAN_CORRECT
-                    } else {
-                        TrialOutcome.CORRECT_NOT_CLEAN
-                    }
+                val outcome = outcomeForCompletedAttempt()
                 val requeue = errorCorrectionController.evaluate(outcome)
                 applyRequeue(trial, requeue)
                 if (requeue == null) correctCount++
@@ -129,9 +124,7 @@ class SessionOrchestrator(
             currentIndex++
             renderCurrentTrial()
         } else if (sessionMode == SessionMode.LEARNING) {
-            hintShown = true
-            val requeue = errorCorrectionController.evaluate(TrialOutcome.MISTAKE)
-            applyRequeue(trial, requeue)
+            markFailedAttempt()
         }
         return isCorrect
     }
@@ -140,34 +133,34 @@ class SessionOrchestrator(
         SessionResult(correctCount = correctCount, totalCount = totalCount, mode = mode)
 
     /**
-     * Splices a repeat of [trial] into [queue] immediately after the current position, or — if a
-     * repeat for this same correction cycle is already pending (see [pendingRetryIndex]) — updates
-     * that pending entry's required layout in place rather than inserting another one.
+     * Maps this attempt's [hintShown] + current `repeatStage` onto [TrialOutcome], matching
+     * Friendly Words' end-of-round `(repeatStage, hadMistakeThisRound)` evaluation.
+     */
+    private fun outcomeForCompletedAttempt(): TrialOutcome =
+        when {
+            hintShown -> TrialOutcome.MISTAKE
+            errorCorrectionController.repeatStage == 0 -> TrialOutcome.CLEAN_CORRECT
+            else -> TrialOutcome.CORRECT_NOT_CLEAN
+        }
+
+    /**
+     * Splices a repeat of [trial] into [queue] immediately after the current position. Called at
+     * most once per completed attempt (right before advancing), so there is never a mid-attempt
+     * pending duplicate to update in place.
      */
     private fun applyRequeue(
         trial: Trial,
         requeue: RequeueLayout?,
     ) {
         if (requeue == null) return
-        val pendingIndex = pendingRetryIndex
-        if (pendingIndex != null) {
-            if (requeue == RequeueLayout.SAME) {
-                forcedSlotLayouts[pendingIndex] = currentSlots
-            } else {
-                forcedSlotLayouts.remove(pendingIndex)
-            }
-            return
-        }
         val insertIndex = currentIndex + 1
         queue.add(insertIndex, trial)
-        pendingRetryIndex = insertIndex
         if (requeue == RequeueLayout.SAME) {
             forcedSlotLayouts[insertIndex] = currentSlots
         }
     }
 
     private fun renderCurrentTrial() {
-        if (pendingRetryIndex == currentIndex) pendingRetryIndex = null
         val trial = queue.getOrNull(currentIndex)
         currentTrial = trial
         hintShown = false

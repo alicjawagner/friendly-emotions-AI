@@ -165,8 +165,8 @@ class GameViewModel
             val trial = currentOrchestrator.currentTrial ?: return
 
             // Capture before [SessionOrchestrator.submitAnswer] advances/resets hintShown.
-            // Use [trialState] (not only orchestrator.hintShown) so a timer-triggered hint with no
-            // mistake also disqualifies clean-correct (phase-7 plan session 7.3 subtlety / §12).
+            // Hint-timeout and wrong taps both mark the attempt failed (via [triggerHint] /
+            // [SessionOrchestrator.markFailedAttempt]); either disqualifies reinforcement.
             val hintShownThisInstance = trialState is TrialState.HintVisible
             val displayText = content.promptText
             val imagePath = trial.correctOption.imagePath
@@ -286,11 +286,13 @@ class GameViewModel
                 null
             }
 
-        /** Idempotent: cancels any pending [hintJob] and reveals hints, whether called by the timer or a wrong tap. */
+        /** Idempotent: cancels any pending [hintJob], reveals hints, and marks the attempt failed
+         *  for error-correction (wrong tap **or** hint timeout both count as a mistake). */
         private fun triggerHint() {
             hintJob?.cancel()
             hintJob = null
             trialState = TrialState.HintVisible
+            orchestrator?.markFailedAttempt()
             val content = _uiState.value as? GameUiState.Content ?: return
             _uiState.value = content.copy(hintsVisible = true)
         }

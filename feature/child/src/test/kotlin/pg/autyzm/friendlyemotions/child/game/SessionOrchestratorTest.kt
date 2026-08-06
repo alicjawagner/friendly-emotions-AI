@@ -190,7 +190,7 @@ class SessionOrchestratorTest {
     }
 
     @Test
-    fun `correct-not-clean requeues the trial shuffled, and completing it later does not inflate correctCount`() {
+    fun `correct after mistake requeues the same layout first, then a shuffled layout`() {
         val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
         val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
         val orchestrator =
@@ -199,23 +199,78 @@ class SessionOrchestratorTest {
                 sessionMode = SessionMode.LEARNING,
                 positionRandomizer = randomizer(12),
             )
-        val correctPositionBeforeMistake = orchestrator.currentSlots.indexOf(first.correctOption)
+        val originalLayout = orchestrator.currentSlots
+        val originalCorrectPosition = originalLayout.indexOf(first.correctOption)
 
-        orchestrator.submitAnswer(ImageId("a-d1")) // mistake: repeatStage 0 -> 1, requeue same
-        orchestrator.submitAnswer(first.correctOption.imageId) // correct-not-clean: 1 -> 2, requeue shuffled
+        // First attempt: mistake then correct → stage 0 hadMistake → requeue SAME.
+        orchestrator.submitAnswer(ImageId("a-d1"))
+        orchestrator.submitAnswer(first.correctOption.imageId)
 
-        // The re-queued repeat is the same trial again, but — per `TrialPositionRandomizer`'s
-        // no-immediate-repeat guarantee — a genuinely shuffled layout, not the mistake's layout.
+        assertEquals(first, orchestrator.currentTrial)
+        assertEquals(originalLayout, orchestrator.currentSlots)
+        assertEquals(0, orchestrator.correctCount)
+        assertFalse(orchestrator.hintShown)
+
+        // First repetition completed cleanly → stage 1 noMistake → requeue SHUFFLED.
+        orchestrator.submitAnswer(first.correctOption.imageId)
+
         assertEquals(first, orchestrator.currentTrial)
         assertEquals(0, orchestrator.correctCount)
-        assertFalse(orchestrator.isComplete)
-        assertFalse(correctPositionBeforeMistake == orchestrator.currentSlots.indexOf(first.correctOption))
+        assertFalse(originalCorrectPosition == orchestrator.currentSlots.indexOf(first.correctOption))
 
-        orchestrator.submitAnswer(first.correctOption.imageId) // correct-not-clean: 2 -> 0, recovery complete
+        // Second (shuffled) repetition completed cleanly → recovery done, advance to `second`.
+        orchestrator.submitAnswer(first.correctOption.imageId)
 
         assertEquals(1, orchestrator.correctCount)
         assertEquals(second, orchestrator.currentTrial)
         assertFalse(orchestrator.isComplete)
+    }
+
+    @Test
+    fun `hint timeout via markFailedAttempt also enters the same-layout repetition flow`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.LEARNING,
+                positionRandomizer = randomizer(16),
+            )
+        val originalLayout = orchestrator.currentSlots
+
+        orchestrator.markFailedAttempt() // hint timeout, no wrong tap
+        assertTrue(orchestrator.hintShown)
+        orchestrator.submitAnswer(first.correctOption.imageId)
+
+        assertEquals(first, orchestrator.currentTrial)
+        assertEquals(originalLayout, orchestrator.currentSlots)
+        assertEquals(0, orchestrator.correctCount)
+    }
+
+    @Test
+    fun `another mistake on the same-layout repetition keeps requeuing the same layout`() {
+        val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")))
+        val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")))
+        val orchestrator =
+            SessionOrchestrator(
+                trials = listOf(first, second),
+                sessionMode = SessionMode.LEARNING,
+                positionRandomizer = randomizer(17),
+            )
+        val originalLayout = orchestrator.currentSlots
+
+        orchestrator.submitAnswer(ImageId("a-d1"))
+        orchestrator.submitAnswer(first.correctOption.imageId) // → same-layout repeat
+        assertEquals(originalLayout, orchestrator.currentSlots)
+
+        // Mistake again on the identical repeat → stay at stage 1, requeue SAME again.
+        orchestrator.submitAnswer(ImageId("a-d1"))
+        orchestrator.submitAnswer(first.correctOption.imageId)
+
+        assertEquals(first, orchestrator.currentTrial)
+        assertEquals(originalLayout, orchestrator.currentSlots)
+        assertEquals(0, orchestrator.correctCount)
+        assertFalse(orchestrator.currentTrial == second)
     }
 
     @Test
@@ -228,9 +283,10 @@ class SessionOrchestratorTest {
                 positionRandomizer = randomizer(13),
             )
 
-        orchestrator.submitAnswer(ImageId("d1")) // mistake -> requeue same
-        orchestrator.submitAnswer(only.correctOption.imageId) // correct-not-clean -> requeue shuffled
-        orchestrator.submitAnswer(only.correctOption.imageId) // correct-not-clean -> recovery complete
+        orchestrator.submitAnswer(ImageId("d1"))
+        orchestrator.submitAnswer(only.correctOption.imageId) // → same-layout repeat
+        orchestrator.submitAnswer(only.correctOption.imageId) // → shuffled repeat
+        orchestrator.submitAnswer(only.correctOption.imageId) // → recovery complete
 
         assertEquals(1, orchestrator.totalCount)
         assertEquals(1, orchestrator.correctCount)
@@ -247,13 +303,18 @@ class SessionOrchestratorTest {
                 sessionMode = SessionMode.LEARNING,
                 positionRandomizer = randomizer(14),
             )
+        val originalLayout = orchestrator.currentSlots
 
-        orchestrator.submitAnswer(ImageId("a-d1")) // mistake: 0 -> 1, requeue same
-        orchestrator.submitAnswer(ImageId("a-d2")) // 2nd mistake on the same instance: 1 -> 1, requeue same
-        orchestrator.submitAnswer(first.correctOption.imageId) // correct-not-clean: 1 -> 2, requeue shuffled
-        orchestrator.submitAnswer(first.correctOption.imageId) // correct-not-clean: 2 -> 0, recovery complete
+        orchestrator.submitAnswer(ImageId("a-d1"))
+        orchestrator.submitAnswer(ImageId("a-d2")) // 2nd wrong tap — still one attempt, no evaluate yet
+        orchestrator.submitAnswer(first.correctOption.imageId) // → one SAME requeue
 
-        // Exactly one extra repeat of `first` was queued, not two — `second` is reached right after.
+        assertEquals(first, orchestrator.currentTrial)
+        assertEquals(originalLayout, orchestrator.currentSlots)
+
+        orchestrator.submitAnswer(first.correctOption.imageId) // clean same-layout → SHUFFLED
+        orchestrator.submitAnswer(first.correctOption.imageId) // clean shuffled → done
+
         assertEquals(second, orchestrator.currentTrial)
         assertEquals(1, orchestrator.correctCount)
 
