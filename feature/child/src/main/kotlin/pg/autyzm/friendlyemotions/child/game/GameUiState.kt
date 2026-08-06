@@ -38,13 +38,15 @@ sealed class GameUiState {
      * node `980:9511`) — not an overlay on [Content]. Shown for ~4 s (driven by `GameViewModel`),
      * then the next trial renders or the session completes. [praiseWord]/[animationTheme] are non-null
      * only when `ReinforcementEngine` fired (clean-correct); correct-after-hint still uses this state
-     * but with both null (target-domain.md §13, phase-7 plan session 7.4).
+     * but with both null (target-domain.md §13, phase-7 plan session 7.4). [captionsEnabled] is the same
+     * session-level flag as [Content.captionsEnabled] — gates the emotion-name label under the image.
      */
     data class Congrats(
         val displayText: String,
         val imagePath: String,
         val praiseWord: String?,
         val animationTheme: String?,
+        val captionsEnabled: Boolean = true,
     ) : GameUiState()
 
     data class Error(val message: String) : GameUiState()

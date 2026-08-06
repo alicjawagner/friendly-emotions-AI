@@ -230,6 +230,7 @@ class GameViewModel
                     imagePath = imagePath,
                     praiseWord = spokenPraise,
                     animationTheme = reinforcement?.animationTheme,
+                    captionsEnabled = captionsEnabled,
                 )
 
             // Congrats TTS sequence (target-domain.md §13): emotion name, then optional praise.

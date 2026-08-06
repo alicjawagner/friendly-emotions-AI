@@ -603,6 +603,25 @@ class GameViewModelTest {
         }
 
     @Test
+    fun `correct tap in LEARNING Congrats reflects captionsEnabled from LearningParameters`() =
+        runTest(testDispatcher) {
+            val trial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            val step =
+                activeStep(SessionMode.LEARNING, learningParameters = LearningParameters(captionsEnabled = false))
+            every { observeActiveLearningStepUseCase() } returns flowOf(step)
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(trial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(trial.correctOption.imageId))
+            runCurrent()
+
+            val congrats = viewModel.uiState.value as GameUiState.Congrats
+            assertEquals(false, congrats.captionsEnabled)
+        }
+
+    @Test
     fun `startSession in TEST mode reflects captionsEnabled from TestParameters`() =
         runTest(testDispatcher) {
             val trial = trial(listOf(option("correct"), option("d1"), option("d2")))

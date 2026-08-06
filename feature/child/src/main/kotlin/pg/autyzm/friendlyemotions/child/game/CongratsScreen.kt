@@ -57,6 +57,7 @@ fun CongratsScreen(
             CongratsCard(
                 displayText = uiState.displayText,
                 imagePath = uiState.imagePath,
+                captionsEnabled = uiState.captionsEnabled,
             )
             uiState.animationTheme?.let { theme ->
                 FloatingSpriteOverlay(
@@ -72,6 +73,7 @@ fun CongratsScreen(
 private fun CongratsCard(
     displayText: String,
     imagePath: String,
+    captionsEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val cardWidth = congratsPhotoSize + congratsCardPadding * 2
@@ -95,12 +97,14 @@ private fun CongratsCard(
                     .size(congratsPhotoSize)
                     .clip(congratsPhotoShape),
         )
-        Text(
-            text = displayText,
-            style = FriendlyEmotionsTextStyles.headingH1,
-            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            textAlign = TextAlign.Center,
-        )
+        if (captionsEnabled) {
+            Text(
+                text = displayText,
+                style = FriendlyEmotionsTextStyles.headingH1,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
@@ -115,6 +119,7 @@ private fun CongratsScreenPreview() {
                     imagePath = "",
                     praiseWord = "brawo",
                     animationTheme = null,
+                    captionsEnabled = true,
                 ),
         )
     }
