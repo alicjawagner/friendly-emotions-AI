@@ -293,8 +293,8 @@ class GameViewModelTest {
     @Test
     fun `advancing to the next trial resets hintsVisible`() =
         runTest(testDispatcher) {
-            // No prior mistake, so the correct tap is clean and advances straight to `second`
-            // (error correction only kicks in once `first` has recorded a mistake).
+            // No prior mistake, so the correct tap is clean — Congrats, then after 4 s advances to
+            // `second` (error correction only kicks in once `first` has recorded a mistake).
             val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
             val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
@@ -304,6 +304,10 @@ class GameViewModelTest {
             runCurrent()
 
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+            assertTrue(viewModel.uiState.value is GameUiState.Congrats)
+
+            advanceTimeBy(4_000.milliseconds)
             runCurrent()
 
             val state = viewModel.uiState.value as GameUiState.Content
@@ -326,9 +330,14 @@ class GameViewModelTest {
             runCurrent()
             assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
 
-            // Correct, but not clean (a mistake was already recorded this correction cycle) — per
-            // target-domain.md §14 this re-queues `first` (shuffled) instead of reaching `second`.
+            // Correct, but not clean — Congrats (no reinforcement), then re-queues `first` (shuffled).
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+            val congrats = viewModel.uiState.value as GameUiState.Congrats
+            assertEquals(null, congrats.praiseWord)
+            assertEquals(null, congrats.animationTheme)
+
+            advanceTimeBy(4_000.milliseconds)
             runCurrent()
 
             val state = viewModel.uiState.value as GameUiState.Content
@@ -337,17 +346,97 @@ class GameViewModelTest {
 
             viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
             runCurrent()
+            advanceTimeBy(4_000.milliseconds)
+            runCurrent()
 
             val finalState = viewModel.uiState.value as GameUiState.Content
             assertEquals(second.targetEmotionId, finalState.emotionId)
         }
 
     @Test
-    fun `correct tap on a non-last trial immediately advances`() =
+    fun `correct tap in LEARNING shows Congrats then advances after 4 seconds`() =
         runTest(testDispatcher) {
             val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
             val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
             every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
+            val viewModel = viewModel()
+            // runCurrent (not advanceUntilIdle) so the LEARNING hint timer's delay is not drained —
+            // otherwise the tap would be correct-after-hint and reinforcement would be null.
+            viewModel.startSession()
+            runCurrent()
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(first.correctOption.imageId))
+            runCurrent()
+
+            val congrats = viewModel.uiState.value as GameUiState.Congrats
+            assertEquals("wesoły", congrats.displayText)
+            assertEquals(first.correctOption.imagePath, congrats.imagePath)
+            assertTrue(congrats.praiseWord != null)
+            assertTrue(congrats.animationTheme != null)
+            verify { ttsController.speak("wesoły", TtsController.QUEUE_FLUSH) }
+            verify { ttsController.speak(congrats.praiseWord!!, TtsController.QUEUE_ADD) }
+
+            advanceTimeBy(4_000.milliseconds)
+            runCurrent()
+
+            val state = viewModel.uiState.value as GameUiState.Content
+            assertEquals(second.targetEmotionId, state.emotionId)
+        }
+
+    @Test
+    fun `correct tap after hint shows Congrats without reinforcement`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            advanceTimeBy(5_000.milliseconds)
+            runCurrent()
+            assertTrue((viewModel.uiState.value as GameUiState.Content).hintsVisible)
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(onlyTrial.correctOption.imageId))
+            runCurrent()
+
+            val congrats = viewModel.uiState.value as GameUiState.Congrats
+            assertEquals(null, congrats.praiseWord)
+            assertEquals(null, congrats.animationTheme)
+        }
+
+    @Test
+    fun `correct tap on the last LEARNING trial shows Congrats before SessionCompleted`() =
+        runTest(testDispatcher) {
+            val onlyTrial = trial(listOf(option("correct"), option("d1"), option("d2")))
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.LEARNING))
+            coEvery { initializeSessionUseCase() } returns Result.Success(listOf(onlyTrial))
+            val viewModel = viewModel()
+            viewModel.startSession()
+            runCurrent()
+
+            val events = mutableListOf<GameNavigationEvent>()
+            val collector = launch { viewModel.navigationEvents.toList(events) }
+
+            viewModel.onEvent(GameUiEvent.OptionTapped(onlyTrial.correctOption.imageId))
+            runCurrent()
+            assertTrue(viewModel.uiState.value is GameUiState.Congrats)
+            assertTrue(events.isEmpty())
+
+            advanceTimeBy(4_000.milliseconds)
+            runCurrent()
+            collector.cancel()
+
+            assertTrue(events.single() is GameNavigationEvent.SessionCompleted)
+        }
+
+    @Test
+    fun `correct tap in TEST mode advances immediately with no Congrats`() =
+        runTest(testDispatcher) {
+            val first = trial(listOf(option("a-correct"), option("a-d1"), option("a-d2")), emotionId = EmotionId.HAPPY)
+            val second = trial(listOf(option("b-correct"), option("b-d1"), option("b-d2")), emotionId = EmotionId.SAD)
+            every { observeActiveLearningStepUseCase() } returns flowOf(activeStep(SessionMode.TEST))
             coEvery { initializeSessionUseCase() } returns Result.Success(listOf(first, second))
             val viewModel = viewModel()
             viewModel.startSession()

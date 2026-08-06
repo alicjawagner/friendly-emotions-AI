@@ -129,27 +129,36 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
 ) {
-    GameEmptyBackground(
-        modifier = modifier,
-        onSpeakerClick = { onEvent(GameUiEvent.RepeatPromptRequested) },
-    ) {
-        when (uiState) {
-            GameUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+    // Congrats owns its own GameEmptyBackground (Figma correct-selection is a full replacement
+    // screen, not Content-with-overlay) — other states share the game empty backdrop + speaker.
+    when (uiState) {
+        is GameUiState.Congrats -> CongratsScreen(uiState = uiState, modifier = modifier)
 
-            is GameUiState.Error ->
+        GameUiState.Loading ->
+            GameEmptyBackground(modifier = modifier) {
+                LoadingScreen(modifier = Modifier.fillMaxSize())
+            }
+
+        is GameUiState.Error ->
+            GameEmptyBackground(modifier = modifier) {
                 ErrorScreen(
                     message = uiState.message,
                     onRetry = onRetry,
                     modifier = Modifier.fillMaxSize(),
                 )
+            }
 
-            is GameUiState.Content ->
+        is GameUiState.Content ->
+            GameEmptyBackground(
+                modifier = modifier,
+                onSpeakerClick = { onEvent(GameUiEvent.RepeatPromptRequested) },
+            ) {
                 GameContent(
                     uiState = uiState,
                     onOptionTapped = { onEvent(GameUiEvent.OptionTapped(it)) },
                     modifier = Modifier.fillMaxSize(),
                 )
-        }
+            }
     }
 }
 

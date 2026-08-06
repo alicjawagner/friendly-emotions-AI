@@ -84,6 +84,25 @@ class ReinforcementEngineTest {
     }
 
     @Test
+    fun `animation theme is always one of the five configured ANIMATION_THEMES, including balls`() {
+        val engine = ReinforcementEngine(random = Random(seed = 7))
+
+        val themesSeen = mutableSetOf<String?>()
+        repeat(200) {
+            val reinforcement =
+                engine.reinforce(
+                    mode = SessionMode.LEARNING,
+                    verdict = TrialVerdict.CLEAN_CORRECT,
+                    settings = ReinforcementSettings(),
+                )
+            themesSeen += reinforcement?.animationTheme
+        }
+
+        assertTrue("balls" in ReinforcementSettings.ANIMATION_THEMES)
+        assertTrue(themesSeen.all { it in ReinforcementSettings.ANIMATION_THEMES })
+    }
+
+    @Test
     fun `animation theme is null when animationsEnabled is false`() {
         val engine = ReinforcementEngine(random = Random(seed = 6))
         val settings = ReinforcementSettings(animationsEnabled = false)

@@ -33,6 +33,20 @@ sealed class GameUiState {
         val activeHintTypes: Set<HintType> = emptySet(),
     ) : GameUiState()
 
+    /**
+     * Full-screen replacement after a correct tap in `LEARNING` mode (Figma `screens/correct-selection`,
+     * node `980:9511`) — not an overlay on [Content]. Shown for ~4 s (driven by `GameViewModel`),
+     * then the next trial renders or the session completes. [praiseWord]/[animationTheme] are non-null
+     * only when `ReinforcementEngine` fired (clean-correct); correct-after-hint still uses this state
+     * but with both null (target-domain.md §13, phase-7 plan session 7.4).
+     */
+    data class Congrats(
+        val displayText: String,
+        val imagePath: String,
+        val praiseWord: String?,
+        val animationTheme: String?,
+    ) : GameUiState()
+
     data class Error(val message: String) : GameUiState()
 }
 

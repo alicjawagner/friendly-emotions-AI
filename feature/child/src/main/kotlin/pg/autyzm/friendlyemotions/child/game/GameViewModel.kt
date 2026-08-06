@@ -18,17 +18,21 @@ import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialState
+import pg.autyzm.friendlyemotions.domain.model.runtime.TrialVerdict
 import pg.autyzm.friendlyemotions.domain.model.session.HintType
 import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
+import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.service.PromptRenderer
+import pg.autyzm.friendlyemotions.domain.service.ReinforcementEngine
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.session.ObserveActiveLearningStepUseCase
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val MILLIS_PER_SECOND = 1_000L
+private const val CONGRATS_DURATION_MILLIS = 4_000L
 
 /**
  * Drives `ChildScreen.Game`'s trial loop. Delegates trial sequencing to a [SessionOrchestrator]
@@ -50,6 +54,7 @@ class GameViewModel
         private val ttsController: TtsController,
     ) : ViewModel() {
         private val promptRenderer = PromptRenderer()
+        private val reinforcementEngine = ReinforcementEngine()
 
         private var orchestrator: SessionOrchestrator? = null
         private var sessionMode: SessionMode = SessionMode.LEARNING
@@ -58,6 +63,7 @@ class GameViewModel
         private var ttsEnabled: Boolean = true
         private var hintDelaySeconds: Int = LearningParameters.DEFAULT_HINT_DELAY_SECONDS
         private var activeHintTypes: Set<HintType> = setOf(HintType.DIM_INCORRECT)
+        private var reinforcementSettings: ReinforcementSettings = ReinforcementSettings()
 
         /** The current trial's spoken text (per `PromptTemplate`), cached for the repeat/speaker button. */
         private var spokenText: String = ""
@@ -73,6 +79,9 @@ class GameViewModel
         /** Delayed hint reveal for the current trial; started in `LEARNING` mode only, cancelled/replaced per trial. */
         private var hintJob: Job? = null
 
+        /** Holds the 4 s congrats delay before advancing; cancelled on [startSession]/[onCleared]. */
+        private var congratsJob: Job? = null
+
         private val _uiState = MutableStateFlow<GameUiState>(GameUiState.Loading)
         val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
@@ -82,6 +91,8 @@ class GameViewModel
         /** Loads the active step's mode and captions setting, generates a fresh trial list, then renders the first trial. */
         fun startSession() {
             viewModelScope.launch {
+                hintJob?.cancel()
+                congratsJob?.cancel()
                 _uiState.value = GameUiState.Loading
                 val learningStep = observeActiveLearningStepUseCase().first()
                 sessionMode = learningStep?.activeMode ?: SessionMode.LEARNING
@@ -106,6 +117,7 @@ class GameViewModel
                     learningStep?.learningParameters?.hintDelaySeconds ?: LearningParameters.DEFAULT_HINT_DELAY_SECONDS
                 activeHintTypes =
                     learningStep?.learningParameters?.activeHintTypes ?: setOf(HintType.DIM_INCORRECT)
+                reinforcementSettings = learningStep?.reinforcementSettings ?: ReinforcementSettings()
 
                 when (val result = initializeSessionUseCase()) {
                     is Result.Success -> {
@@ -130,6 +142,7 @@ class GameViewModel
 
         override fun onCleared() {
             hintJob?.cancel()
+            congratsJob?.cancel()
             ttsController.shutdown()
         }
 
@@ -139,17 +152,24 @@ class GameViewModel
         }
 
         /**
-         * A correct tap advances immediately (or completes the session): no delay, no visual feedback
-         * state — a reinforcement animation is an explicit Phase-7.4 concern, not this session's. A
-         * wrong tap never advances or requeues ([SessionOrchestrator.submitAnswer] already mutates
-         * nothing but its own [SessionOrchestrator.hintShown] bookkeeping and returns `false`), but in
-         * `LEARNING` mode it does immediately reveal hints (target-domain.md §12/§16 "the first wrong
-         * tap ... triggers hints") rather than waiting for [hintJob]'s timer — a no-op on any
-         * subsequent wrong tap once hints are already showing.
+         * A correct tap in `LEARNING` shows the congrats screen for [CONGRATS_DURATION_MILLIS] (with
+         * optional reinforcement on clean-correct), then advances — including after the session's last
+         * trial, so [GameNavigationEvent.SessionCompleted] fires only after that delay
+         * (target-domain.md §10/§13). `TEST` mode still advances immediately with no congrats
+         * (target-domain.md §10). A wrong tap never advances; in `LEARNING` it reveals hints
+         * immediately (target-domain.md §12) rather than waiting for [hintJob].
          */
         private fun handleTap(imageId: ImageId) {
             val currentOrchestrator = orchestrator ?: return
-            if (_uiState.value !is GameUiState.Content) return
+            val content = _uiState.value as? GameUiState.Content ?: return
+            val trial = currentOrchestrator.currentTrial ?: return
+
+            // Capture before [SessionOrchestrator.submitAnswer] advances/resets hintShown.
+            // Use [trialState] (not only orchestrator.hintShown) so a timer-triggered hint with no
+            // mistake also disqualifies clean-correct (phase-7 plan session 7.3 subtlety / §12).
+            val hintShownThisInstance = trialState is TrialState.HintVisible
+            val displayText = content.promptText
+            val imagePath = trial.correctOption.imagePath
 
             val isCorrect = currentOrchestrator.submitAnswer(imageId)
             if (!isCorrect) {
@@ -159,6 +179,59 @@ class GameViewModel
                 return
             }
 
+            hintJob?.cancel()
+            hintJob = null
+
+            if (sessionMode == SessionMode.LEARNING) {
+                showCongratsThenAdvance(
+                    displayText = displayText,
+                    imagePath = imagePath,
+                    hintShownThisInstance = hintShownThisInstance,
+                )
+            } else {
+                advanceAfterAnswer(currentOrchestrator)
+            }
+        }
+
+        private fun showCongratsThenAdvance(
+            displayText: String,
+            imagePath: String,
+            hintShownThisInstance: Boolean,
+        ) {
+            val verdict =
+                if (!hintShownThisInstance) {
+                    TrialVerdict.CLEAN_CORRECT
+                } else {
+                    TrialVerdict.CORRECT_AFTER_HINT
+                }
+            trialState = TrialState.Judged(verdict)
+            val reinforcement =
+                reinforcementEngine.reinforce(sessionMode, verdict, reinforcementSettings)
+
+            _uiState.value =
+                GameUiState.Congrats(
+                    displayText = displayText,
+                    imagePath = imagePath,
+                    praiseWord = reinforcement?.praiseWord,
+                    animationTheme = reinforcement?.animationTheme,
+                )
+
+            // Congrats TTS sequence (target-domain.md §13): emotion name, then optional praise.
+            ttsController.speak(displayText, TtsController.QUEUE_FLUSH)
+            reinforcement?.praiseWord?.let { praise ->
+                ttsController.speak(praise, TtsController.QUEUE_ADD)
+            }
+
+            congratsJob?.cancel()
+            congratsJob =
+                viewModelScope.launch {
+                    delay(CONGRATS_DURATION_MILLIS.milliseconds)
+                    val currentOrchestrator = orchestrator ?: return@launch
+                    advanceAfterAnswer(currentOrchestrator)
+                }
+        }
+
+        private fun advanceAfterAnswer(currentOrchestrator: SessionOrchestrator) {
             if (currentOrchestrator.isComplete) {
                 viewModelScope.launch {
                     val event = GameNavigationEvent.SessionCompleted(currentOrchestrator.buildResult(sessionMode))

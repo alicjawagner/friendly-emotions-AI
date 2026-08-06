@@ -23,6 +23,7 @@ data class ReinforcementSettings(
                 "butterflies",
                 "balloons",
                 "cars",
+                "balls",
             )
     }
 }
