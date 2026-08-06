@@ -12,6 +12,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
+import pg.autyzm.friendlyemotions.domain.model.session.HintType
 import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
 import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepDraft
@@ -92,6 +93,23 @@ class DatabaseInitializer
             val materialSelection =
                 MaterialSelection(allImageIds.map { ImageUsage(it, inLearning = true, inTest = true) })
 
+            val podstawowyLearning =
+                LearningParameters(
+                    displayedImageCount = 2,
+                    repetitionsPerEmotion = 2,
+                    captionsEnabled = false,
+                    mixedGenderInAnswers = false,
+                )
+            val podstawowyTest =
+                TestParameters(
+                    overridesLearning = false,
+                    displayedImageCount = podstawowyLearning.displayedImageCount,
+                    repetitionsPerEmotion = podstawowyLearning.repetitionsPerEmotion,
+                    promptTemplate = podstawowyLearning.promptTemplate,
+                    ttsEnabled = podstawowyLearning.ttsEnabled,
+                    captionsEnabled = podstawowyLearning.captionsEnabled,
+                    mixedGenderInAnswers = podstawowyLearning.mixedGenderInAnswers,
+                )
             seedStep(
                 id = LearningStepId(PODSTAWOWY_ID),
                 isActive = true,
@@ -100,12 +118,27 @@ class DatabaseInitializer
                     LearningStepDraft(
                         name = "Podstawowy",
                         materialSelection = materialSelection,
-                        learningParameters = LearningParameters(displayedImageCount = 2, repetitionsPerEmotion = 2),
-                        testParameters = TestParameters(),
+                        learningParameters = podstawowyLearning,
+                        testParameters = podstawowyTest,
                         reinforcementSettings = ReinforcementSettings(),
                     ),
             )
 
+            val zaawansowanyLearning =
+                LearningParameters(
+                    displayedImageCount = 4,
+                    repetitionsPerEmotion = 3,
+                    promptTemplate = PromptTemplate.WHERE_IS,
+                    activeHintTypes = HintType.entries.toSet(),
+                )
+            val zaawansowanyTest =
+                TestParameters(
+                    overridesLearning = true,
+                    displayedImageCount = zaawansowanyLearning.displayedImageCount,
+                    repetitionsPerEmotion = zaawansowanyLearning.repetitionsPerEmotion,
+                    promptTemplate = PromptTemplate.POINT_TO,
+                    captionsEnabled = true,
+                )
             seedStep(
                 id = LearningStepId(ZAAWANSOWANY_ID),
                 isActive = false,
@@ -114,13 +147,8 @@ class DatabaseInitializer
                     LearningStepDraft(
                         name = "Zaawansowany",
                         materialSelection = materialSelection,
-                        learningParameters =
-                            LearningParameters(
-                                displayedImageCount = 4,
-                                repetitionsPerEmotion = 3,
-                                promptTemplate = PromptTemplate.WHERE_IS,
-                            ),
-                        testParameters = TestParameters(),
+                        learningParameters = zaawansowanyLearning,
+                        testParameters = zaawansowanyTest,
                         reinforcementSettings = ReinforcementSettings(),
                     ),
             )
