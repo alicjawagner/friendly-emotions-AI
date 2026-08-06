@@ -120,7 +120,10 @@ class DatabaseInitializer
                         materialSelection = materialSelection,
                         learningParameters = podstawowyLearning,
                         testParameters = podstawowyTest,
-                        reinforcementSettings = ReinforcementSettings(),
+                        reinforcementSettings =
+                            ReinforcementSettings(
+                                enabledAnimationThemes = setOf("balloons", "cars", "flowers"),
+                            ),
                     ),
             )
 

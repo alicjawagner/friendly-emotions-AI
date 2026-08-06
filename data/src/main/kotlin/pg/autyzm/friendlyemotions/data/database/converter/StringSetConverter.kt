@@ -3,8 +3,8 @@ package pg.autyzm.friendlyemotions.data.database.converter
 import androidx.room.TypeConverter
 
 /**
- * Comma-joins a `Set<String>`; used for `ReinforcementSettingsEmbedded.enabledPraiseWords`. Safe
- * because praise words are single Polish words that never contain commas.
+ * Comma-joins a `Set<String>`; used for praise-word and animation-theme sets on
+ * `ReinforcementSettingsEmbedded`. Safe because those values never contain commas.
  */
 class StringSetConverter {
     @TypeConverter

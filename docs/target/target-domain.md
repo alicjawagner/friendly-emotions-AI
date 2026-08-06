@@ -311,12 +311,13 @@ Controls test-mode session behavior. By default mirrors `LearningParameters`.
 | Field | Type | Default | Description |
 |---|---|---|---|
 | `enabledPraiseWords` | `Set<String>` | all 6 | Active verbal praise words; one selected randomly per reinforcement event |
+| `enabledAnimationThemes` | `Set<String>` | all 5 | Active sprite animation themes; one selected randomly per reinforcement event when animations are on |
 | `animationsEnabled` | `Boolean` | `true` | Sprite animations after clean-correct answers |
 | `endSessionAnimationEnabled` | `Boolean` | `true` | Animation played at session end |
 | `endSessionFanfareEnabled` | `Boolean` | `true` | Audio fanfare played at session end |
 
 Available praise words: "dobrze", "super", "świetnie", "ekstra", "rewelacja", "brawo".
-Available animation themes: flowers, butterflies, balloons, cars. One theme selected at random per event.
+Available animation themes: flowers, butterflies, balloons, cars, balls. One theme selected at random from `enabledAnimationThemes` per event.
 
 ---
 
@@ -385,7 +386,8 @@ LearningStep (aggregate root)
   │     └── activeHintTypes  (Set<HintType>)
   ├── TestParameters
   └── ReinforcementSettings
-        └── enabledPraiseWords (Set<String>)
+        ├── enabledPraiseWords (Set<String>)
+        └── enabledAnimationThemes (Set<String>)
 ```
 
 **Invariants enforced at LearningStep boundary:**
@@ -533,6 +535,7 @@ Manages the repeat-stage mechanism. Active in `LEARNING` mode only. See §14 for
 - Reinforcement fires only on clean-correct answers in `LEARNING` mode.
 - `TEST` mode has no in-trial reinforcement.
 - One praise word is selected randomly from `enabledPraiseWords` at the moment of reinforcement.
+- When `animationsEnabled` is true, one animation theme is selected randomly from `enabledAnimationThemes`.
 - Sprite animation is a separate toggle from verbal praise.
 - End-of-session reinforcement (animation, fanfare) is governed by `endSessionAnimationEnabled` and `endSessionFanfareEnabled`.
 
@@ -713,7 +716,7 @@ Reinforcement applies in `LEARNING` mode only. It consists of two independent co
 
 | Situation | Verbal praise | Animation |
 |---|---|---|
-| Clean-correct, `animationsEnabled = true` | Yes — random word from `enabledPraiseWords` | Yes — random theme |
+| Clean-correct, `animationsEnabled = true` | Yes — random word from `enabledPraiseWords` | Yes — random theme from `enabledAnimationThemes` |
 | Clean-correct, `animationsEnabled = false` | Yes | No |
 | Correct after mistake or hint | No | No |
 | Any correct in TEST mode | No | No |
@@ -722,7 +725,7 @@ Reinforcement applies in `LEARNING` mode only. It consists of two independent co
 
 **Verbal praise:** one word chosen uniformly at random from `enabledPraiseWords` at the moment the congrats screen appears. The TTS sequence is: speak the emotion name → (if reinforcement) speak praise word.
 
-**Animation themes:** flowers, butterflies, balloons, cars. One theme selected uniformly at random per reinforcement event.
+**Animation themes:** flowers, butterflies, balloons, cars, balls. One theme selected uniformly at random from `enabledAnimationThemes` per reinforcement event when `animationsEnabled` is true.
 
 ---
 

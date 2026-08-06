@@ -3,6 +3,7 @@ package pg.autyzm.friendlyemotions.domain.model.session
 /** Praise and animation settings (target-domain.md §4.11). */
 data class ReinforcementSettings(
     val enabledPraiseWords: Set<String> = PRAISE_WORDS,
+    val enabledAnimationThemes: Set<String> = ANIMATION_THEMES,
     val animationsEnabled: Boolean = true,
     val endSessionAnimationEnabled: Boolean = true,
     val endSessionFanfareEnabled: Boolean = true,

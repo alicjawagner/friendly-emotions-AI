@@ -21,14 +21,17 @@ class ReinforcementEngine(private val random: Random = Random) {
     ): Reinforcement? {
         if (mode != SessionMode.LEARNING || verdict != TrialVerdict.CLEAN_CORRECT) return null
         require(settings.enabledPraiseWords.isNotEmpty()) { "enabledPraiseWords must not be empty" }
+        if (settings.animationsEnabled) {
+            require(settings.enabledAnimationThemes.isNotEmpty()) {
+                "enabledAnimationThemes must not be empty when animationsEnabled is true"
+            }
+        }
 
         return Reinforcement(
             praiseWord = settings.enabledPraiseWords.random(random),
             animationTheme =
                 if (settings.animationsEnabled) {
-                    ReinforcementSettings.ANIMATION_THEMES.random(
-                        random,
-                    )
+                    settings.enabledAnimationThemes.random(random)
                 } else {
                     null
                 },

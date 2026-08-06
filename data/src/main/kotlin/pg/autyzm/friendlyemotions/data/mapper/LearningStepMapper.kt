@@ -117,6 +117,7 @@ private fun TestParameters.toEmbedded(): TestParametersEmbedded =
 private fun ReinforcementSettingsEmbedded.toDomain(): ReinforcementSettings =
     ReinforcementSettings(
         enabledPraiseWords = enabledPraiseWords.toStringSet(),
+        enabledAnimationThemes = enabledAnimationThemes.toStringSet(),
         animationsEnabled = animationsEnabled,
         endSessionAnimationEnabled = endSessionAnimationEnabled,
         endSessionFanfareEnabled = endSessionFanfareEnabled,
@@ -125,6 +126,7 @@ private fun ReinforcementSettingsEmbedded.toDomain(): ReinforcementSettings =
 private fun ReinforcementSettings.toEmbedded(): ReinforcementSettingsEmbedded =
     ReinforcementSettingsEmbedded(
         enabledPraiseWords = enabledPraiseWords.joinToString(separator = ","),
+        enabledAnimationThemes = enabledAnimationThemes.joinToString(separator = ","),
         animationsEnabled = animationsEnabled,
         endSessionAnimationEnabled = endSessionAnimationEnabled,
         endSessionFanfareEnabled = endSessionFanfareEnabled,

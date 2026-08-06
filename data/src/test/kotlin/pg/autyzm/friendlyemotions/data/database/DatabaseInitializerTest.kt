@@ -16,6 +16,7 @@ import pg.autyzm.friendlyemotions.data.repository.EmotionFolderRepositoryImpl
 import pg.autyzm.friendlyemotions.data.repository.LearningStepRepositoryImpl
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
+import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
 
@@ -80,6 +81,18 @@ class DatabaseInitializerTest {
             val active = db.learningStepDao().observeActive().first()
             assertEquals("Podstawowy", active?.name)
             assertEquals(SessionMode.LEARNING.name, active?.activeMode)
+
+            val repository =
+                LearningStepRepositoryImpl(db.learningStepDao(), db.imageUsageDao(), db.emotionImageDao())
+            val steps = repository.observeAllSteps().first().associateBy { it.name }
+            assertEquals(
+                setOf("balloons", "cars"),
+                steps.getValue("Podstawowy").reinforcementSettings.enabledAnimationThemes,
+            )
+            assertEquals(
+                ReinforcementSettings.ANIMATION_THEMES,
+                steps.getValue("Zaawansowany").reinforcementSettings.enabledAnimationThemes,
+            )
         }
 
     @Test

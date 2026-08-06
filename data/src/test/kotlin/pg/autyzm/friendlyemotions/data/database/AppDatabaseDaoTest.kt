@@ -257,6 +257,7 @@ class AppDatabaseDaoTest {
         reinforcementSettings =
             ReinforcementSettingsEmbedded(
                 enabledPraiseWords = "dobrze,super",
+                enabledAnimationThemes = "cars,flowers",
                 animationsEnabled = true,
                 endSessionAnimationEnabled = true,
                 endSessionFanfareEnabled = true,

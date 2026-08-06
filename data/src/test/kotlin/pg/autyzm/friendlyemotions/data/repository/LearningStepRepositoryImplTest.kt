@@ -223,6 +223,22 @@ class LearningStepRepositoryImplTest {
             assertEquals(setOf("Podstawowy", "Zaawansowany"), repository.getAllStepNames().toSet())
         }
 
+    @Test
+    fun `saveStep round-trips enabledAnimationThemes subset`() =
+        runTest {
+            val themes = setOf("cars", "flowers")
+            val draft =
+                draft(name = "Cars and flowers", usages = emptyList()).copy(
+                    reinforcementSettings =
+                        ReinforcementSettings(enabledAnimationThemes = themes),
+                )
+
+            val stepId = repository.saveStep(draft)
+            val loaded = repository.getStepById(stepId)
+
+            assertEquals(themes, loaded.reinforcementSettings.enabledAnimationThemes)
+        }
+
     private fun draft(
         name: String,
         usages: List<ImageUsage>,
