@@ -335,51 +335,50 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Goal:** Implement the therapist app welcome screen, main menu, and the full navigation graph skeleton. All routes declared; screens may be placeholder composables.
 
 **Components:**
-- `TherapistNavGraph`, `TherapistRoutes` (typed sealed class routes, Kotlin Serialization)
-- `TherapistHomeScreen` — welcome message (autism/developmental disorders context) + links + auto-advance to menu after 5 s (or tap)
-- `TherapistHomeViewModel`
-- Main menu screen — two buttons: "Materials" and "Learning Steps" navigating to their respective roots
+- `TherapistNavGraph`, `TherapistRoutes` (typed sealed class routes, Kotlin Serialization), `TherapistTopBar` + `TherapistScaffold` (reusable topbar: back arrow + title + home icon, on every screen)
+- `TherapistWelcomeScreen` — welcome message (autism/developmental disorders context) + links + auto-advance to home screen after 5 s (or tap); reuses `:core:ui`'s `InfoSplashScreen` (Figma `screens/Starting-board`)
+- `TherapistWelcomeViewModel`
+- `HomeScreen` — the real main menu (Figma `screens/Homepage`) — two buttons: "GALERIA OBRAZÓW" (Materials) and "KROKI UCZENIA" (Learning Steps) navigating to their respective roots
 - Placeholder screens for all remaining routes (to be filled in later phases)
-- Home button on every therapist screen (returns to main menu)
+- Home button on every therapist screen (returns to `HomeScreen`)
 
-**Documents:** `target-architecture.md` §5.2, §13.3; `friendly-emotions-functional-specification.md` §7.1–7.2; ADR-012; **Figma** — therapist welcome screen, main menu
+**Documents:** `target-architecture.md` §5.2, §13.3, §19; `friendly-emotions-functional-specification.md` §7.1–7.2; ADR-012; **Figma** — `screens/Starting-board` (`342:28764`), `screens/Homepage` (`342:36081`), `TopBar` component (`30:1361`)
 
-**Expected Outcome:** Therapist app launches, shows welcome screen, advances to main menu, both buttons navigate to placeholder screens. Home button works from all screens.
+**Expected Outcome:** Therapist app launches, shows welcome screen, advances to the home screen, both buttons navigate to placeholder screens. Home button works from all screens.
 
 **Manual Testing Checklist:**
 - [ ] Welcome screen appears on therapist launch
-- [ ] Auto-advance to main menu after 5 s
-- [ ] Tap advances to main menu immediately
-- [ ] "Materials" button navigates to materials placeholder
-- [ ] "Learning Steps" button navigates to steps placeholder
-- [ ] Home button returns to main menu from any therapist screen
+- [ ] Auto-advance to the home screen after 5 s
+- [ ] Tap advances to the home screen immediately
+- [ ] "GALERIA OBRAZÓW" (Materials) button navigates to materials placeholder
+- [ ] "KROKI UCZENIA" (Learning Steps) button navigates to steps placeholder
+- [ ] Home button returns to the home screen from any therapist screen
 - [ ] UI matches Figma
 
 **Dependencies:** Phase 2, Phase 4
 
-**Definition of Done:** Full therapist navigation structure in place, welcome and main menu screens functional.
+**Definition of Done:** Full therapist navigation structure in place, welcome and home screens functional.
 
 ---
 
 ## Phase 10 — Therapist App: Material Browse
 
-**Goal:** Implement read-only navigation through the material catalog: emotion list → folder list → folder detail (image list). Therapist can browse all example content.
+**Goal:** Implement read-only navigation through the material catalog: a master-detail folder browser (persistent emotion rail + folder gallery) drilling into folder detail (image list). Therapist can browse all example content.
 
 **Components:**
-- `EmotionListScreen` + `EmotionListViewModel` — static list of 6 emotions from `EmotionCatalog`; navigate to folder list
-- `FolderListScreen` + `FolderListViewModel` — `observeFoldersForEmotion()`, list folders with gender policy badge; filter example folders per `PreferencesRepository`
-- `FolderDetailScreen` + `FolderDetailViewModel` — `observeImagesForFolder()`, display images in grid with gender label; hide example images per preferences
-- Hide Example toggle (DataStore preference) accessible from folder list and image list
+- `MaterialsFoldersScreen` + `MaterialsFoldersViewModel` + `MaterialsFoldersUiState` — persistent left rail listing all 6 emotions from `EmotionCatalog` (selection is in-screen state, not a separate route); `observeFoldersForEmotion()` drives the folder gallery for the selected emotion, with gender policy badge; filter example folders per `PreferencesRepository`
+- `MaterialsInsideFolderScreen` + `MaterialsInsideFolderViewModel` + `MaterialsInsideFolderUiState` — same emotion rail (selection carried over) + `observeImagesForFolder()`, display images in grid with gender label; hide example images per preferences
+- Hide Example toggle (DataStore preference) accessible from both screens
 
-**Documents:** `target-architecture.md` §8.2; `friendly-emotions-functional-specification.md` §6, §8; `target-domain.md` §3.2–3.3; **Figma** — emotion list, folder list, image grid screens
+**Documents:** `target-architecture.md` §8.2; `friendly-emotions-functional-specification.md` §6, §8; `target-domain.md` §3.2–3.3; **Figma** — `screens/materials/folders` (`910:8000`), `screens/materials/inside-folder` (`983:4441`)
 
 **Expected Outcome:** Full browse of all 6 emotions, example folders, and example images. Gender badges visible. Example content filtered when preference is toggled.
 
 **Manual Testing Checklist:**
-- [ ] All 6 emotions listed with correct names (Polish + English)
-- [ ] Selecting an emotion shows its folders
+- [ ] All 6 emotions listed with correct names (Polish + English) in the persistent rail
+- [ ] Selecting an emotion updates the folder gallery in place (no navigation/route change)
 - [ ] Folder gender policy displayed on folder row
-- [ ] Selecting a folder shows its images in a grid
+- [ ] Selecting a folder shows its images in a grid, with the emotion rail still visible/unchanged
 - [ ] Image gender label displayed on each image tile
 - [ ] Toggle hide example folders/images works and persists across app restarts
 - [ ] UI matches Figma
@@ -395,17 +394,17 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Goal:** Implement full CRUD for folders and images, including camera/gallery image upload, gender assignment for MIXED folders, and all delete confirmations.
 
 **Components:**
-- Create folder: name input + gender policy selector (M/F/N/MIXED) + `CreateFolderUseCase`
-- Rename folder: inline edit + `RenameFolderUseCase`
+- `MaterialsNewFolderScreen` + `MaterialsNewFolderViewModel` — a real, separate screen (Figma `screens/materials/create-new-folder`): name input + gender policy selector (M/F/N/MIXED) + `CreateFolderUseCase`
+- Rename folder: inline edit on `MaterialsFoldersScreen`/`MaterialsInsideFolderScreen` + `RenameFolderUseCase`
 - Delete folder: `YesNoConfirmationDialog` + `DeleteFolderUseCase` (cascade + file deletion); block on example folders
-- Add images: `PickVisualMedia` (gallery) + `TakePicture()` + FileProvider (camera)
-- Gender assignment for MIXED folders: per-image gender selector; `canSave` gated on all images assigned; highlight missing assignments
+- `MaterialsNewMaterialScreen` + `MaterialsNewMaterialViewModel` — a real, separate screen (Figma `screens/materials/new-material`): `PickVisualMedia` (gallery) + `TakePicture()` + FileProvider (camera)
+- Gender assignment for MIXED folders: per-image gender selector (Figma's `screens/materials/new-material/mixed` variant of the same screen); `canSave` gated on all images assigned; highlight missing assignments
 - Edit image gender: `UpdateImageGenderUseCase`
 - Delete image: `YesNoConfirmationDialog` + `DeleteImageUseCase`; block on example images
 - Gender info dialog explaining grammatical gender concept
 - Error states: `DomainError` mapped to inline errors and dialogs
 
-**Documents:** `target-domain.md` §3.2–3.3, §8.2–8.3, §9.4; `target-architecture.md` §8.2, §9.5; `friendly-emotions-functional-specification.md` §6.3–6.6, §8; ADR-009, ADR-011; **Figma** — folder creation, image upload, gender assignment, delete confirmation
+**Documents:** `target-domain.md` §3.2–3.3, §8.2–8.3, §9.4; `target-architecture.md` §8.2, §9.5; `friendly-emotions-functional-specification.md` §6.3–6.6, §8; ADR-009, ADR-011; **Figma** — `screens/materials/create-new-folder` (`980:35249`), `screens/materials/new-material` (`983:4442`) + `mixed` variant (`983:4450`), delete confirmation
 
 **Expected Outcome:** Therapist can create custom folders (with any gender policy), add photos, assign genders, and delete user content. All destructive actions require confirmation. Example content cannot be deleted.
 
@@ -432,7 +431,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Goal:** Implement the learning step list screen with activate, toggle mode, copy, and delete operations.
 
 **Components:**
-- `LearningStepListScreen` + `LearningStepListViewModel` + `LearningStepListUiState`
+- `LearningStepsListScreen` + `LearningStepsListViewModel` + `LearningStepsListUiState` (Figma names this frame "Tasks-list" internally — same screen/concept, "Learning Steps" is the correct product-facing name)
 - Display step list: name, active badge, mode badge (LEARNING/TEST), example badge
 - Activate step: mode picker dialog → `ActivateLearningStepUseCase` (atomic transaction)
 - Toggle active mode: `SetActiveModeUseCase` for already-active step
@@ -440,7 +439,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - Delete step: `YesNoConfirmationDialog` + `DeleteLearningStepUseCase` (fallback activation if active); block on example steps
 - Filter hide example steps toggle
 
-**Documents:** `target-domain.md` §8.4, §9.1, §11; `target-architecture.md` §8.3; ADR-009; **Figma** — learning step list screen
+**Documents:** `target-domain.md` §8.4, §9.1, §11; `target-architecture.md` §8.3; ADR-009; **Figma** — `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`)
 
 **Expected Outcome:** Therapist can view all steps, activate any step in LEARNING or TEST mode, toggle active step's mode, copy example steps, and delete user steps. Active step propagates to child app.
 
@@ -467,15 +466,16 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 
 **Components:**
 - `WizardContainerViewModel` + `WizardStepDraft` — shared draft state, scoped to wizard back-stack entry via `hiltNavGraphViewModel()`
-- **Materials Tab** — `MaterialTabViewModel` + `MaterialTabScreen`: pick emotion → view folders → select/deselect folders (auto-selects all images for L+T) → expand folder to deselect individual images → per-image LEARNING/TEST checkboxes
-- **Learning Tab** — `LearningTabViewModel` + `LearningTabScreen`: `NumberSelector` for image count (1–6) and repetitions (1–3), prompt template picker, TTS toggle, captions toggle, hint delay slider, hint type checkboxes (≥1 required), mixed gender toggle
-- **Reinforcement Tab** — `ReinforcementTabViewModel` + `ReinforcementTabScreen`: praise word checkboxes, animation toggle, end-of-session animation toggle, end-of-session fanfare toggle
-- **Test Tab** — `TestTabViewModel` + `TestTabScreen`: override toggle; when overriding: independent image count, repetitions, prompt, TTS, captions, mixed gender toggle; uses `DeriveTestParametersUseCase` when not overriding
-- **Save Tab** — `SaveTabViewModel` + `SaveTabScreen`: name input with validation (blank / duplicate check via `ValidateLearningStepNameUseCase`), read-only summary table (learning vs. test parameters), Save button → `SaveLearningStepUseCase`
+- `WizardSubNavBar` — shared 5-tab sub-navigation bar (Figma component `subnavbar-settings`) rendered below the main `TherapistTopBar` on every wizard screen, for jumping directly between tabs
+- **Material Tab** — `WizardMaterialViewModel` + `WizardMaterialScreen`: per Figma (`screens/settings/material/*`, 5 sub-states), this is itself a multi-state flow: pick emotion → view folders → select/deselect folders (auto-selects all images for L+T) → expand folder to deselect individual images → per-image LEARNING/TEST checkboxes. Re-verify the exact sub-state flow against Figma before implementing (not fully inspected during Phase 9 planning — API rate limit)
+- **Learning Tab** — `WizardLearningViewModel` + `WizardLearningScreen`: `NumberSelector` for image count (1–6) and repetitions (1–3), prompt template picker, TTS toggle, captions toggle, hint delay slider, hint type checkboxes (≥1 required), mixed gender toggle
+- **Reinforcements Tab** — `WizardReinforcementsViewModel` + `WizardReinforcementsScreen`: praise word checkboxes, animation toggle, end-of-session animation toggle, end-of-session fanfare toggle
+- **Test Tab** — `WizardTestViewModel` + `WizardTestScreen`: override toggle; when overriding: independent image count, repetitions, prompt, TTS, captions, mixed gender toggle; uses `DeriveTestParametersUseCase` when not overriding
+- **Summary Tab** — `WizardSummaryViewModel` + `WizardSummaryScreen`: a real, separate screen (Figma `screens/settings/summary`, not content merged into the tab above it) — name input with validation (blank / duplicate check via `ValidateLearningStepNameUseCase`), read-only summary table (learning vs. test parameters), Save button → `SaveLearningStepUseCase`. Not yet inspected field-by-field in Figma — re-verify before implementing
 - Edit mode: pre-populate wizard from existing `LearningStep` via `GetLearningStepUseCase`
 - Discard confirmation on back navigation
 
-**Documents:** `target-domain.md` §15; `target-architecture.md` §8.1; ADR-013; `friendly-emotions-functional-specification.md` §9; **Figma** — all 5 wizard tab screens, navigation between tabs
+**Documents:** `target-domain.md` §15; `target-architecture.md` §8.1; ADR-013; `friendly-emotions-functional-specification.md` §9; **Figma** — `screens/settings/material/*`, `screens/settings/learning` (`342:42591`), `screens/settings/reinforcements` (`342:42589`), `screens/settings/test` (`909:6002`), `screens/settings/summary` (`342:42588`), `subnavbar-settings` component
 
 **Expected Outcome:** Therapist can create a new learning step selecting any subset of emotions/images with full configuration, save it, and then activate it from the list screen. Editing existing steps pre-populates all tabs correctly.
 
@@ -488,9 +488,9 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - [ ] Hint type: cannot deselect last active hint type
 - [ ] Test tab: override off → mirrors learning params; override on → independent fields
 - [ ] Toggling override back to off reverts test params immediately
-- [ ] Save tab: blank name shows error
-- [ ] Save tab: duplicate name shows error
-- [ ] Save tab: summary table shows all parameter values correctly
+- [ ] Summary tab: blank name shows error
+- [ ] Summary tab: duplicate name shows error
+- [ ] Summary tab: summary table shows all parameter values correctly
 - [ ] Save creates step, navigates to list; step visible and inactive
 - [ ] Edit pre-populates all 5 tabs
 - [ ] Navigating away without saving shows discard confirmation

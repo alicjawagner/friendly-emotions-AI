@@ -301,7 +301,7 @@ Two example learning steps are included:
 - Basic - Simple configuration intended for beginners (e.g. 2 images, 2 repetitions).
 - Advanced - Demonstrates more advanced configuration possibilities.
 
-### 9.1 Materials Tab (Changed)
+### 9.1 Material Tab (Changed)
 
 Instead of selecting resources from a flat list, the therapist:
 
@@ -318,7 +318,7 @@ Per-image mode assignment (Learning / Test checkboxes) works the same as in Frie
 
 Identical to Friendly Words: image count per round (1–6, default 3), repetitions per emotion (1–3, default 2), command type, TTS toggle, captions toggle, hint timer, hint type checkboxes, **mixed gender in answers set** (disabled: if the question and the correct answer is e.g. feminine, all other images sholud also be feminine, e.g. correct answer: znudzona, available choices: znudzona, smutna, wesoła; enabled: only the correct answer and the question must be the same gender, the rest can be arbitrary, e.g. correct answer: znudzony, available choices: znudzony, smutna, zdziwiony).
 
-### 9.3 Reinforcement Tab (Almost Unchanged)
+### 9.3 Reinforcements Tab (Almost Unchanged)
 
 Praise words checkboxes, animation sprites checkboxes, **animation at the end of the session** toggable, **the sound of fanfares at the end of the session** toggable.
 
@@ -326,7 +326,7 @@ Praise words checkboxes, animation sprites checkboxes, **animation at the end of
 
 Inherits learning settings by default; independent settings unlockable via checkbox. Hints and reinforcements inactive. Identical to Friendly Words (but based on Friendly Emotions learning tab).
 
-### 9.5 Save Tab (Unchanged)
+### 9.5 Summary Tab (Unchanged)
 
 Name input + read-only summary comparison table. Identical to Friendly Words (but containing all Friendly Emotions settings listed).
 

@@ -332,45 +332,54 @@ WizardContainerViewModel  (@HiltViewModel — scoped to the wizard NavBackStackE
   │ holds: WizardStepDraft (in-memory aggregate of all 5 tabs)
   │ exposes: SharedFlow<WizardNavigationEvent>
   │
-  ├── MaterialTabViewModel  (@HiltViewModel)
+  ├── WizardMaterialViewModel  (@HiltViewModel)
   │     reads:  EmotionCatalog, EmotionFolderRepository, EmotionImageRepository
   │     writes: WizardStepDraft.materialSelection
+  │     note: per Figma (`screens/settings/material/*`), this tab is itself a multi-state
+  │           flow (pick emotion → pick/add folders → drill into a folder's images), not a
+  │           single flat form — see §19's `WizardMaterialScreen` for the corrected naming
   │
-  ├── LearningTabViewModel  (@HiltViewModel)
+  ├── WizardLearningViewModel  (@HiltViewModel)
   │     reads:  WizardStepDraft.materialSelection (for image count bounds)
   │     writes: WizardStepDraft.learningParameters
   │
-  ├── ReinforcementTabViewModel  (@HiltViewModel)
+  ├── WizardReinforcementsViewModel  (@HiltViewModel)
   │     writes: WizardStepDraft.reinforcementSettings
   │
-  ├── TestTabViewModel  (@HiltViewModel)
+  ├── WizardTestViewModel  (@HiltViewModel)
   │     reads:  WizardStepDraft.learningParameters (for inheritance)
   │     writes: WizardStepDraft.testParameters
   │
-  └── SaveTabViewModel  (@HiltViewModel)
+  └── WizardSummaryViewModel  (@HiltViewModel)
         uses:   ValidateLearningStepNameUseCase
                 SaveLearningStepUseCase
 ```
+
+Every wizard screen renders a shared `WizardSubNavBar` (Figma component `subnavbar-settings`, five tab buttons: Material/Learning/Reinforcements/Test/Summary) below the main `TherapistTopBar`, letting the therapist jump directly between tabs instead of only stepping forward/back.
 
 **Cross-tab state sharing:** `WizardContainerViewModel` owns the single `WizardStepDraft` StateFlow. Tab ViewModels read it and write slices of it through exposed update functions. This avoids the God-ViewModel anti-pattern while maintaining a single source of truth for the wizard draft.
 
 **Draft persistence:** The draft lives only in the `WizardContainerViewModel`'s scope. Navigating away without saving prompts a discard confirmation dialog. There is no auto-save to the database.
 
-**Test parameters inheritance:** `TestTabViewModel` applies `LearningStepActivationService.deriveTestFromLearning()` whenever `overridesLearning = false` and learning parameters change. This is a domain service call, not a UI-layer derivation.
+**Test parameters inheritance:** `WizardTestViewModel` applies `LearningStepActivationService.deriveTestFromLearning()` whenever `overridesLearning = false` and learning parameters change. This is a domain service call, not a UI-layer derivation.
 
 ### 8.2 Material Management Architecture
 
-Material management follows a three-tier drill-down: Emotion list → Folder list → Image list. Each tier is a separate screen with its own ViewModel.
+Material management is a two-screen master-detail flow, not a three-tier drill-down — there is no separate emotion-list screen. Per Figma (`screens/materials/folders`, `screens/materials/inside-folder`), emotion selection is a persistent left-hand rail present on both screens, not its own route:
 
 ```
-EmotionListViewModel       — reads EmotionCatalog (static); navigates to folder list
-FolderListViewModel        — reads EmotionFolderRepository for one emotion; creates/deletes folders
-FolderDetailViewModel      — reads EmotionImageRepository for one folder; adds/edits/deletes images
+MaterialsFoldersViewModel      — reads EmotionCatalog for the rail; reads EmotionFolderRepository
+                                  for the selected emotion's folder gallery; tracks selectedEmotion
+                                  as in-screen state (not a nav argument)
+MaterialsInsideFolderViewModel — reads EmotionImageRepository for one folder; adds/edits/deletes
+                                  images; renders the same emotion rail (selection carried over)
 ```
+
+`MaterialsNewFolderScreen` (create/rename a folder, with gender-policy selection) and `MaterialsNewMaterialScreen` (add images to a folder) are real, separate screens/routes in Figma — not inline dialogs on the two screens above.
 
 **Image upload flow:**
-1. `FolderDetailViewModel` handles the gallery/camera result via `ActivityResultRegistry`.
-2. For `MIXED` gender policy: images arrive in an `AWAITING_GENDER` state stored in a `List<PendingImage>` within the ViewModel.
+1. `MaterialsNewMaterialViewModel` handles the gallery/camera result via `ActivityResultRegistry`.
+2. For `MIXED` gender policy: images arrive in an `AWAITING_GENDER` state stored in a `List<PendingImage>` within the ViewModel (Figma's `screens/materials/new-material/mixed` variant of this same screen).
 3. The ViewModel exposes `canSave: Boolean` derived from "all pending images have a gender assigned".
 4. On save: `AssignImagesUseCase` validates all genders are assigned, copies files to `filesDir`, inserts `EmotionImage` records.
 
@@ -379,7 +388,7 @@ FolderDetailViewModel      — reads EmotionImageRepository for one folder; adds
 Activation from the step list screen:
 
 ```
-LearningStepListViewModel
+LearningStepsListViewModel
   → user taps activate
   → calls ActivateLearningStepUseCase(stepId, mode)
         → LearningStepActivationService.activate(stepId, mode)
@@ -587,11 +596,11 @@ ViewModels live in `:feature:child` and `:feature:therapist`. They follow strict
 | `ChildHomeViewModel` | child | Observes active step, evaluates `canPlay`, drives info→main transition |
 | `GameViewModel` | child | Owns `SessionOrchestrator` delegate; manages trial state machine; drives hint timer; delegates TTS to `TtsController`; calls `ErrorCorrectionController`; emits session results |
 | `SessionEndViewModel` | child | Displays session results; pre-generates next session asynchronously |
-| `LearningStepListViewModel` | therapist | Observes step list; handles activate/copy/delete events |
+| `LearningStepsListViewModel` | therapist | Observes step list; handles activate/copy/delete events |
 | `WizardContainerViewModel` | therapist | Owns `WizardStepDraft`; coordinates tab ViewModels; saves on final submit |
-| `MaterialTabViewModel` | therapist | Manages material selection within the wizard |
-| `FolderListViewModel` | therapist | Manages folders for one emotion |
-| `FolderDetailViewModel` | therapist | Manages images within one folder; handles MIXED gender assignment |
+| `WizardMaterialViewModel` | therapist | Manages material selection within the wizard |
+| `MaterialsFoldersViewModel` | therapist | Manages the emotion rail + folders for the selected emotion |
+| `MaterialsInsideFolderViewModel` | therapist | Manages images within one folder; handles MIXED gender assignment |
 
 ---
 
@@ -710,7 +719,7 @@ Screen reads UiState:
 
 | Error Category | Source | Handling |
 |---|---|---|
-| Validation errors (blank name, duplicate name) | `ValidateLearningStep*UseCase` | Inline field error in Save tab |
+| Validation errors (blank name, duplicate name) | `ValidateLearningStep*UseCase` | Inline field error in Summary tab |
 | Constraint violations (delete example content) | Repository/use case | Error dialog with explanation |
 | MIXED gender assignment incomplete | `AssignImagesUseCase` | Highlighted images + blocked Save |
 | File I/O failure (image copy fails) | Repository impl | Snackbar with retry or skip option |
@@ -808,8 +817,8 @@ The domain layer's independence from Android eliminates the need for robolectric
    │ :feature:child   │  │:feature:therapist│   │    :data         │   │ :core:ui │
    │                  │  │                  │   │  Room Entities   │   │  Theme   │
    │ ChildHomeVM      │  │ WizardContainerVM│   │  DAOs            │   │Components│
-   │ GameViewModel    │  │ FolderDetailVM   │   │  Repo Impls      │   └────┬─────┘
-   │ SessionEndVM     │  │ LearningStepVM   │   │  DataStore       │        │
+   │ GameViewModel    │  │ MaterialsInside- │   │  Repo Impls      │   └────┬─────┘
+   │ SessionEndVM     │  │ FolderVM, ...    │   │  DataStore       │        │
    └──────────┬───────┘  └────────┬─────────┘   └────────┬─────────┘        │
               │                   │                       │                  │
               │  ┌────────────────┘                       │                  │
@@ -1023,49 +1032,59 @@ pg.autyzm.friendlyemotions.child/
 
 ### `:feature:therapist`
 
+> Screen names below were verified directly against the Figma design file (`s9A3mZqgk4HT6VA1nNwZfR`, "all therapist screens" frame `9764:4370`) during Phase 9 planning and corrected from an earlier draft that didn't match the real screens. Verified node IDs, for traceability: `screens/Starting-board` `342:28764`, `screens/Homepage` `342:36081`, `TopBar` component `30:1361`, `screens/materials/folders` `910:8000`, `screens/materials/create-new-folder` `980:35249`, `screens/materials/inside-folder` `983:4441`, `screens/materials/new-material` `983:4442` (+ `mixed` variant `983:4450`), `screens/Tasks-list/default` `360:28282` (+ `list` variant `896:18299`), `screens/settings/material/*` (`342:44060`, `897:39267`, `969:14560`, `912:18624`, `912:18623`), `screens/settings/learning` `342:42591`, `screens/settings/reinforcements` `342:42589`, `screens/settings/test` `909:6002`, `screens/settings/summary` `342:42588`. The `screens/settings/summary` screen and the `subnavbar-settings` component were confirmed to exist and were positioned in the flow, but not inspected field-by-field (Figma API rate limit) — re-verify before Phase 13 is planned in detail.
+
 ```
 pg.autyzm.friendlyemotions.therapist/
 ├── navigation/
 │   ├── TherapistNavGraph.kt
-│   └── TherapistRoutes.kt           # sealed class typed routes
-├── home/
-│   ├── TherapistHomeScreen.kt
-│   └── TherapistHomeViewModel.kt
+│   ├── TherapistRoutes.kt           # sealed class typed routes
+│   ├── TherapistTopBar.kt           # reusable topbar: back arrow + title + home icon, every screen
+│   └── TherapistScaffold.kt         # Scaffold wrapper pairing TherapistTopBar with screen content
+├── welcome/                         # Figma "screens/Starting-board" — reuses :core:ui's InfoSplashScreen
+│   ├── TherapistWelcomeScreen.kt
+│   └── TherapistWelcomeViewModel.kt
+├── home/                            # Figma "screens/Homepage" — the real main menu (2 buttons)
+│   └── HomeScreen.kt
 ├── materials/
-│   ├── emotionList/
-│   │   ├── EmotionListScreen.kt
-│   │   └── EmotionListViewModel.kt
-│   ├── folderList/
-│   │   ├── FolderListScreen.kt
-│   │   ├── FolderListViewModel.kt
-│   │   └── FolderListUiState.kt
-│   └── folderDetail/
-│       ├── FolderDetailScreen.kt
-│       ├── FolderDetailViewModel.kt
-│       └── FolderDetailUiState.kt
+│   ├── folders/                     # Figma "screens/materials/folders" — master-detail:
+│   │   ├── MaterialsFoldersScreen.kt   #   persistent 6-emotion rail + folder gallery for selection
+│   │   ├── MaterialsFoldersViewModel.kt
+│   │   └── MaterialsFoldersUiState.kt
+│   ├── newFolder/                   # Figma "screens/materials/create-new-folder" — real screen
+│   │   ├── MaterialsNewFolderScreen.kt
+│   │   └── MaterialsNewFolderViewModel.kt
+│   ├── insideFolder/                # Figma "screens/materials/inside-folder" — same rail + folder detail
+│   │   ├── MaterialsInsideFolderScreen.kt
+│   │   ├── MaterialsInsideFolderViewModel.kt
+│   │   └── MaterialsInsideFolderUiState.kt
+│   └── newMaterial/                 # Figma "screens/materials/new-material" (+ "mixed" state) — real screen
+│       ├── MaterialsNewMaterialScreen.kt
+│       └── MaterialsNewMaterialViewModel.kt
 └── learningStep/
-    ├── list/
-    │   ├── LearningStepListScreen.kt
-    │   ├── LearningStepListViewModel.kt
-    │   └── LearningStepListUiState.kt
+    ├── list/                        # Figma "screens/Tasks-list" (dev-internal name; same concept)
+    │   ├── LearningStepsListScreen.kt
+    │   ├── LearningStepsListViewModel.kt
+    │   └── LearningStepsListUiState.kt
     └── wizard/
         ├── WizardContainerViewModel.kt
         ├── WizardStepDraft.kt
-        ├── material/
-        │   ├── MaterialTabScreen.kt
-        │   └── MaterialTabViewModel.kt
+        ├── WizardSubNavBar.kt       # Figma "subnavbar-settings" — 5-tab bar on every wizard screen
+        ├── material/                # Figma "screens/settings/material/*" — multi-state (see §8.1)
+        │   ├── WizardMaterialScreen.kt
+        │   └── WizardMaterialViewModel.kt
         ├── learning/
-        │   ├── LearningTabScreen.kt
-        │   └── LearningTabViewModel.kt
-        ├── reinforcement/
-        │   ├── ReinforcementTabScreen.kt
-        │   └── ReinforcementTabViewModel.kt
+        │   ├── WizardLearningScreen.kt
+        │   └── WizardLearningViewModel.kt
+        ├── reinforcements/
+        │   ├── WizardReinforcementsScreen.kt
+        │   └── WizardReinforcementsViewModel.kt
         ├── test/
-        │   ├── TestTabScreen.kt
-        │   └── TestTabViewModel.kt
-        └── save/
-            ├── SaveTabScreen.kt
-            └── SaveTabViewModel.kt
+        │   ├── WizardTestScreen.kt
+        │   └── WizardTestViewModel.kt
+        └── summary/                 # Figma "screens/settings/summary" — real separate screen,
+            ├── WizardSummaryScreen.kt   #   not content merged into a "Save tab"
+            └── WizardSummaryViewModel.kt
 ```
 
 ### `:app`

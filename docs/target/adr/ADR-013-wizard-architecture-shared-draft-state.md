@@ -4,7 +4,7 @@
 Accepted
 
 # Context
-The Learning Step configuration wizard has five tabs: Materials, Learning, Reinforcement, Test, and Save. The tabs are not independent — the Learning tab drives the default values for the Test tab (test parameters inheritance), and the Materials tab determines the valid range for image count in the Learning tab. All five tabs contribute to a single aggregate (`LearningStepDraft`) that is saved atomically only when the therapist confirms on the Save tab.
+The Learning Step configuration wizard has five tabs: Material, Learning, Reinforcements, Test, and Summary. The tabs are not independent — the Learning tab drives the default values for the Test tab (test parameters inheritance), and the Material tab determines the valid range for image count in the Learning tab. All five tabs contribute to a single aggregate (`LearningStepDraft`) that is saved atomically only when the therapist confirms on the Summary tab.
 
 The Friendly Words analysis (C-1 and C-2 findings) identified that this kind of wizard was implemented with a single God-ViewModel that owned all state for all five tabs, resulting in a class with hundreds of lines of mixed concerns that was untestable in isolation.
 
@@ -20,8 +20,8 @@ The wizard is coordinated by a two-tier ViewModel structure:
 - **Five focused tab ViewModels** (one per tab): each ViewModel reads the slice of `WizardStepDraft` it needs, exposes its own `UiState`, and calls the appropriate update function on `WizardContainerViewModel` when the user makes a change. Tab ViewModels have no direct reference to each other.
 
 Cross-tab state flow:
-- `TestTabViewModel` reads `WizardStepDraft.learningParameters` and calls `DeriveTestParametersUseCase` whenever `overridesLearning = false` and learning parameters change.
-- `LearningTabViewModel` reads `WizardStepDraft.materialSelection.imageCount` to enforce the valid display image count range.
+- `WizardTestViewModel` reads `WizardStepDraft.learningParameters` and calls `DeriveTestParametersUseCase` whenever `overridesLearning = false` and learning parameters change.
+- `WizardLearningViewModel` reads `WizardStepDraft.materialSelection.imageCount` to enforce the valid display image count range.
 
 The draft exists only in memory. There is no auto-save to the database. Navigating away without saving triggers a discard confirmation dialog.
 
