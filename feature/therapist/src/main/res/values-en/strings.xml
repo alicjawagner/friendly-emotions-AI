@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="therapist_topbar_back_description">Back</string>
+    <string name="therapist_topbar_home_description">Home</string>
+    <string name="therapist_placeholder_coming_soon">Coming soon</string>
+
+    <string name="therapist_welcome_title">Friendly Emotions Settings</string>
+    <string name="therapist_home_title">Friendly Emotions Settings</string>
+    <string name="therapist_home_materials_button">MATERIALS</string>
+    <string name="therapist_home_learning_steps_button">LEARNING STEPS</string>
+    <string name="therapist_route_title_materials_folders">Materials</string>
+    <string name="therapist_route_title_materials_new_folder">New folder</string>
+    <string name="therapist_route_title_materials_inside_folder">Materials</string>
+    <string name="therapist_route_title_materials_new_material">Add material</string>
+    <string name="therapist_route_title_learning_steps_list">Learning Steps</string>
+    <string name="therapist_route_title_wizard_material">Material</string>
+    <string name="therapist_route_title_wizard_learning">Learning</string>
+    <string name="therapist_route_title_wizard_reinforcements">Reinforcements</string>
+    <string name="therapist_route_title_wizard_test">Test</string>
+    <string name="therapist_route_title_wizard_summary">Summary</string>
+</resources>
