@@ -1,1 +1,2 @@
-Use the documents in `docs/target` as the authoritative source of truth. Use `docs/reference/friendly-words` only to understand legacy behavior when the target documentation does not fully specify it. If there is any conflict, always follow the target documentation.
+1. Use the documents in `docs/target` as the authoritative source of truth. Use `docs/reference/friendly-words` only to understand legacy behavior when the target documentation does not fully specify it. If there is any conflict, always follow the target documentation.
+2. When verifying do not use the emulator. Only check if the project compiles, passes tests and ktlint shows no errors (other than function naming - Composable functions are Pascal Case).
