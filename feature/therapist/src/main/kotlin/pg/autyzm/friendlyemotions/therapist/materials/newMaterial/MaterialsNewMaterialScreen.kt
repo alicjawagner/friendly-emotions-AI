@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -54,6 +55,7 @@ import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
+import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -225,7 +227,10 @@ private fun MaterialsNewMaterialContent(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
+            val gridState = rememberLazyGridState()
+            gridState.ScrollToNewlyAdded(state.pendingImages, key = { it.localId })
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -235,6 +240,7 @@ private fun MaterialsNewMaterialContent(
                     PendingImageTile(
                         filePath = image.filePath,
                         gender = image.gender,
+                        highlightUnassigned = state.showValidationErrors,
                         onDeleteClick = { onImageRemoved(image.localId) },
                         onGenderClick =
                             { onGenderCycled(image.localId) }

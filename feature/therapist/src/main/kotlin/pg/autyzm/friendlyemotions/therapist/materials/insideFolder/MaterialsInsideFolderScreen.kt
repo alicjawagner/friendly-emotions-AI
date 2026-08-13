@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -48,6 +49,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
+import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -190,7 +192,10 @@ private fun MaterialsInsideFolderContent(
                             },
                 )
             }
+            val gridState = rememberLazyGridState()
+            gridState.ScrollToNewlyAdded(state.images, key = { it.id.value }, indexOffset = 1)
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),

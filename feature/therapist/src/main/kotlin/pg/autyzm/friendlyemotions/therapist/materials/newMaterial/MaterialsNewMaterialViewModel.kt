@@ -101,7 +101,7 @@ class MaterialsNewMaterialViewModel
                 content.folderGenderPolicy == FolderGenderPolicy.MIXED &&
                     content.pendingImages.any { it.gender == null }
             if (missingGender) {
-                updateContent { it.copy(showGenderRequiredDialog = true) }
+                updateContent { it.copy(showGenderRequiredDialog = true, showValidationErrors = true) }
                 return
             }
             viewModelScope.launch {

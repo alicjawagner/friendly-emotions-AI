@@ -23,7 +23,8 @@ private val UNASSIGNED_BORDER_WIDTH = 2.dp
  * `Material` nodes, e.g. `933:24833`): same visual shell as [pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile],
  * but [onDeleteClick] removes it from the in-memory pending list (nothing is persisted yet) and
  * [gender] may be `null` — the "not yet assigned" state for a MIXED folder, shown with the
- * `empty_set` icon and a red border until [onGenderClick] cycles it to a real value.
+ * `empty_set` icon. Once [highlightUnassigned] is set (after a failed save attempt), an
+ * unassigned tile also gets a red border until [onGenderClick] cycles it to a real value.
  */
 @Composable
 fun PendingImageTile(
@@ -31,10 +32,11 @@ fun PendingImageTile(
     gender: GrammaticalGender?,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    highlightUnassigned: Boolean = false,
     onGenderClick: (() -> Unit)? = null,
 ) {
     val tileModifier =
-        if (gender == null) {
+        if (gender == null && highlightUnassigned) {
             modifier.border(
                 width = UNASSIGNED_BORDER_WIDTH,
                 color = FriendlyEmotionsColors.States.Error700,
@@ -68,6 +70,7 @@ private fun PendingImageTileUnassignedPreview() {
             filePath = "",
             gender = null,
             onDeleteClick = {},
+            highlightUnassigned = true,
             onGenderClick = {},
         )
     }

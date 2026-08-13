@@ -15,6 +15,7 @@ sealed class MaterialsNewMaterialUiState {
         val emotionId: EmotionId,
         val pendingImages: List<PendingImage> = emptyList(),
         val showGenderRequiredDialog: Boolean = false,
+        val showValidationErrors: Boolean = false,
         val error: DomainError? = null,
     ) : MaterialsNewMaterialUiState()
 
