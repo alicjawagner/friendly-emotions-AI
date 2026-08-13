@@ -1,0 +1,80 @@
+package pg.autyzm.friendlyemotions.therapist.materials.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
+import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
+import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
+import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+
+/**
+ * A folder in the materials gallery (Figma `Material` node, e.g. `910:16572`): a folder icon,
+ * the folder's name, and a [GenderBadge] showing its gender policy — with a delete action only
+ * when [isExample] is false. Uses the built-in [Icons.Filled.Folder] rather than the user-supplied
+ * `folder.png` drawable, whose quality didn't hold up at this size. Reusable wherever a folder
+ * gallery is needed (e.g. the Phase 13 Wizard material tab).
+ */
+@Composable
+fun FolderTile(
+    name: String,
+    genderPolicy: FolderGenderPolicy,
+    isExample: Boolean,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MaterialTileContainer(modifier = modifier.clickable(onClick = onClick)) {
+        Column(
+            modifier = Modifier.matchParentSize().padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Folder,
+                contentDescription = null,
+                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+                modifier = Modifier.size(112.dp),
+            )
+            Text(
+                text = name,
+                style = FriendlyEmotionsTextStyles.bodyRegular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+            )
+        }
+        GenderBadge(
+            iconRes = genderPolicy.badgeIconRes(),
+            showDeleteAction = !isExample,
+            onDeleteClick = onDeleteClick,
+            modifier = Modifier.align(Alignment.TopEnd),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FolderTilePreview() {
+    FriendlyEmotionsTheme {
+        FolderTile(
+            name = "Kobiety",
+            genderPolicy = FolderGenderPolicy.FEMININE,
+            isExample = false,
+            onClick = {},
+            onDeleteClick = {},
+        )
+    }
+}

@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
+import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
+import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
 import pg.autyzm.friendlyemotions.therapist.welcome.TherapistWelcomeScreen
 import pg.autyzm.friendlyemotions.therapist.welcome.TherapistWelcomeViewModel
 import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
@@ -47,17 +49,22 @@ fun TherapistNavGraph(navController: NavHostController = rememberNavController()
         }
         composable<TherapistRoutes.Home> {
             HomeScreen(
-                onMaterialsClick = { navController.navigate(TherapistRoutes.MaterialsFolders) },
+                onMaterialsClick = { navController.navigate(TherapistRoutes.MaterialsFolders()) },
                 onLearningStepsClick = { navController.navigate(TherapistRoutes.LearningStepsList) },
                 onBackClick = onBackClick,
                 onHomeClick = onHomeClick,
             )
         }
         composable<TherapistRoutes.MaterialsFolders> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_materials_folders),
+            MaterialsFoldersScreen(
                 onBackClick = onBackClick,
                 onHomeClick = onHomeClick,
+                onFolderClick = { folderId ->
+                    navController.navigate(TherapistRoutes.MaterialsInsideFolder(folderId.value))
+                },
+                onAddFolderClick = { emotionId ->
+                    navController.navigate(TherapistRoutes.MaterialsNewFolder(emotionId.name))
+                },
             )
         }
         composable<TherapistRoutes.MaterialsNewFolder> {
@@ -68,10 +75,17 @@ fun TherapistNavGraph(navController: NavHostController = rememberNavController()
             )
         }
         composable<TherapistRoutes.MaterialsInsideFolder> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_materials_inside_folder),
+            MaterialsInsideFolderScreen(
                 onBackClick = onBackClick,
                 onHomeClick = onHomeClick,
+                onAddImageClick = { folderId ->
+                    navController.navigate(TherapistRoutes.MaterialsNewMaterial(folderId.value))
+                },
+                onEmotionSelectedElsewhere = { emotionId ->
+                    navController.navigate(TherapistRoutes.MaterialsFolders(emotionId.name)) {
+                        popUpTo(TherapistRoutes.MaterialsFolders()) { inclusive = true }
+                    }
+                },
             )
         }
         composable<TherapistRoutes.MaterialsNewMaterial> {

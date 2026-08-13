@@ -18,4 +18,21 @@
     <string name="therapist_route_title_wizard_reinforcements">Wzmocnienia</string>
     <string name="therapist_route_title_wizard_test">Test</string>
     <string name="therapist_route_title_wizard_summary">Podsumowanie</string>
+
+    <string name="therapist_materials_rail_caption">Lista emocji:</string>
+    <string name="therapist_materials_legend_caption">Legenda:</string>
+    <string name="therapist_materials_gender_masculine">rodzaj męski</string>
+    <string name="therapist_materials_gender_feminine">rodzaj żeński</string>
+    <string name="therapist_materials_gender_neuter">rodzaj nijaki</string>
+    <string name="therapist_materials_gender_mixed">bez przypisanego rodzaju</string>
+    <string name="therapist_materials_add_folder">Dodaj nowy folder</string>
+    <string name="therapist_materials_add_image">Dodaj własne zdjęcie</string>
+    <string name="therapist_materials_hide_examples">Ukryj przykładowe materiały</string>
+    <string name="therapist_materials_delete_action">Usuń</string>
+    <string name="therapist_materials_delete_confirm">USUŃ</string>
+    <string name="therapist_materials_delete_cancel">ANULUJ</string>
+    <string name="therapist_materials_delete_folder_title">Usunąć folder?</string>
+    <string name="therapist_materials_delete_folder_message">Ten folder i znajdujące się w nim zdjęcia zostaną trwale usunięte.</string>
+    <string name="therapist_materials_delete_image_title">Usunąć zdjęcie?</string>
+    <string name="therapist_materials_delete_image_message">To zdjęcie zostanie trwale usunięte.</string>
 </resources>

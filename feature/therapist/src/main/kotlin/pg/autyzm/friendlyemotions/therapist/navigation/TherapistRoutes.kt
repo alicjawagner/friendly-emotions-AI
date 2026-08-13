@@ -16,8 +16,16 @@ sealed class TherapistRoutes {
     @Serializable
     data object Home : TherapistRoutes()
 
+    /**
+     * [initialEmotionKey] (an [pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId] name)
+     * seeds the emotion rail's selection when navigating here from
+     * [MaterialsInsideFolder] after tapping a different emotion in its rail — the rail's
+     * selection must switch immediately rather than showing whatever emotion this route's
+     * retained `ViewModel` last held (target-architecture.md §8.2). `null` (the default) means
+     * "fresh entry", which seeds the rail's first emotion.
+     */
     @Serializable
-    data object MaterialsFolders : TherapistRoutes()
+    data class MaterialsFolders(val initialEmotionKey: String? = null) : TherapistRoutes()
 
     @Serializable
     data class MaterialsNewFolder(val emotionKey: String) : TherapistRoutes()

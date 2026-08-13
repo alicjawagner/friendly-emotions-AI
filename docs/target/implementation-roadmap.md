@@ -368,7 +368,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Components:**
 - `MaterialsFoldersScreen` + `MaterialsFoldersViewModel` + `MaterialsFoldersUiState` — persistent left rail listing all 6 emotions from `EmotionCatalog` (selection is in-screen state, not a separate route); `observeFoldersForEmotion()` drives the folder gallery for the selected emotion, with gender policy badge; filter example folders per `PreferencesRepository`
 - `MaterialsInsideFolderScreen` + `MaterialsInsideFolderViewModel` + `MaterialsInsideFolderUiState` — same emotion rail (selection carried over) + `observeImagesForFolder()`, display images in grid with gender label; hide example images per preferences
-- Hide Example toggle (DataStore preference) accessible from both screens
+- Hide Example toggle (DataStore preference) accessible from `MaterialsInsideFolderScreen`
 
 **Documents:** `target-architecture.md` §8.2; `friendly-emotions-functional-specification.md` §6, §8; `target-domain.md` §3.2–3.3; **Figma** — `screens/materials/folders` (`910:8000`), `screens/materials/inside-folder` (`983:4441`)
 
