@@ -46,7 +46,7 @@ fun FolderTile(
                 imageVector = Icons.Filled.Folder,
                 contentDescription = null,
                 tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                modifier = Modifier.size(112.dp),
+                modifier = Modifier.size(186.dp),
             )
             Text(
                 text = name,

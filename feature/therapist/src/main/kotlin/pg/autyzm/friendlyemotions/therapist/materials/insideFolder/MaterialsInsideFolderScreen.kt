@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
+import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
@@ -134,7 +135,7 @@ private fun MaterialsInsideFolderContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
             EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
             GenderLegend()
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
@@ -211,7 +212,21 @@ private fun MaterialsInsideFolderContentPreview() {
                     folderName = "Kobiety",
                     folderGenderPolicy = FolderGenderPolicy.FEMININE,
                     selectedEmotionId = EmotionId.SAD,
-                    images = emptyList(),
+                    images =
+                        listOf(
+                            ImageUi(
+                                id = ImageId("image-1"),
+                                filePath = "",
+                                gender = GrammaticalGender.FEMININE,
+                                isExample = true,
+                            ),
+                            ImageUi(
+                                id = ImageId("image-2"),
+                                filePath = "",
+                                gender = GrammaticalGender.FEMININE,
+                                isExample = false,
+                            ),
+                        ),
                     hideExampleMaterials = false,
                 ),
             onBackClick = {},

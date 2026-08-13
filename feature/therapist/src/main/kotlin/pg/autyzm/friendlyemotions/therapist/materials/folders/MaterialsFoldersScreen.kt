@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
+import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
@@ -95,7 +95,7 @@ private fun MaterialsFoldersContent(
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
             EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
             GenderLegend()
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
@@ -110,6 +110,7 @@ private fun MaterialsFoldersContent(
                     icon = rememberVectorPainter(Icons.Filled.CreateNewFolder),
                     label = stringResource(R.string.therapist_materials_add_folder),
                     onClick = onAddFolderClick,
+                    iconSize = 186.dp,
                 )
             }
             items(state.folders, key = { it.id.value }) { folder ->
@@ -143,7 +144,21 @@ private fun MaterialsFoldersContentPreview() {
             state =
                 MaterialsFoldersUiState.Content(
                     selectedEmotionId = EmotionId.HAPPY,
-                    folders = emptyList(),
+                    folders =
+                        listOf(
+                            FolderUi(
+                                id = FolderId("folder-men"),
+                                name = "Mężczyźni",
+                                genderPolicy = FolderGenderPolicy.MASCULINE,
+                                isExample = true,
+                            ),
+                            FolderUi(
+                                id = FolderId("folder-women"),
+                                name = "Kobiety",
+                                genderPolicy = FolderGenderPolicy.FEMININE,
+                                isExample = false,
+                            ),
+                        ),
                 ),
             onEmotionSelected = {},
             onFolderClick = {},
