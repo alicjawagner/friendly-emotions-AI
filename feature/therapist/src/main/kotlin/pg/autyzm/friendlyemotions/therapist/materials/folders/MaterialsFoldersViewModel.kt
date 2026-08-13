@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
+import pg.autyzm.friendlyemotions.domain.error.DomainError
+import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionFolder
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
@@ -49,6 +51,7 @@ class MaterialsFoldersViewModel
                     ?: EmotionCatalog.all.first().id,
             )
         private val pendingDeleteFolderId = MutableStateFlow<FolderId?>(null)
+        private val error = MutableStateFlow<DomainError?>(null)
         private val retrySignal = MutableStateFlow(0)
 
         val uiState: StateFlow<MaterialsFoldersUiState> =
@@ -58,15 +61,17 @@ class MaterialsFoldersViewModel
                         observeFoldersUseCase(query.emotionId),
                         observeHideExampleFoldersUseCase(),
                         pendingDeleteFolderId,
-                    ) { folders, hideExamples, pendingDelete ->
+                        error,
+                    ) { folders, hideExamples, pendingDelete, currentError ->
                         val visibleFolders = folders.filter { !hideExamples || !it.isExample }
                         MaterialsFoldersUiState.Content(
                             selectedEmotionId = query.emotionId,
                             folders = visibleFolders.map(EmotionFolder::toFolderUi),
                             pendingDeleteFolderId = pendingDelete,
+                            error = currentError,
                         ) as MaterialsFoldersUiState
-                    }.catch { error ->
-                        emit(MaterialsFoldersUiState.Error(error.message ?: "Unknown error"))
+                    }.catch { throwable ->
+                        emit(MaterialsFoldersUiState.Error(throwable.message ?: "Unknown error"))
                     }
                 }.stateIn(
                     viewModelScope,
@@ -89,9 +94,16 @@ class MaterialsFoldersViewModel
         fun onDeleteFolderConfirmed() {
             val folderId = pendingDeleteFolderId.value ?: return
             viewModelScope.launch {
-                deleteFolderUseCase(folderId)
+                when (val result = deleteFolderUseCase(folderId)) {
+                    is Result.Success -> Unit
+                    is Result.Failure -> error.value = result.error
+                }
                 pendingDeleteFolderId.value = null
             }
+        }
+
+        fun onErrorDismissed() {
+            error.value = null
         }
 
         fun onRetry() {

@@ -33,8 +33,10 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.FolderTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.GenderLegend
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
+import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
+import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -76,6 +78,7 @@ fun MaterialsFoldersScreen(
                         onDeleteFolderRequested = viewModel::onDeleteFolderRequested,
                         onDeleteFolderCancelled = viewModel::onDeleteFolderCancelled,
                         onDeleteFolderConfirmed = viewModel::onDeleteFolderConfirmed,
+                        onErrorDismissed = viewModel::onErrorDismissed,
                     )
             }
         }
@@ -91,6 +94,7 @@ private fun MaterialsFoldersContent(
     onDeleteFolderRequested: (FolderId) -> Unit,
     onDeleteFolderCancelled: () -> Unit,
     onDeleteFolderConfirmed: () -> Unit,
+    onErrorDismissed: () -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
@@ -134,6 +138,13 @@ private fun MaterialsFoldersContent(
             onDismiss = onDeleteFolderCancelled,
         )
     }
+    if (state.error != null) {
+        InfoDialog(
+            title = stringResource(R.string.therapist_materials_gender_required_dialog_title),
+            message = stringResource(state.error.toMessageRes()),
+            onDismiss = onErrorDismissed,
+        )
+    }
 }
 
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
@@ -166,6 +177,7 @@ private fun MaterialsFoldersContentPreview() {
             onDeleteFolderRequested = {},
             onDeleteFolderCancelled = {},
             onDeleteFolderConfirmed = {},
+            onErrorDismissed = {},
         )
     }
 }

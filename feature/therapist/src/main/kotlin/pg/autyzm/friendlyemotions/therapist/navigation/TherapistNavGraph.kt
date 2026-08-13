@@ -11,6 +11,10 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
 import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
 import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
+import pg.autyzm.friendlyemotions.therapist.materials.newFolder.MaterialsNewFolderScreen
+import pg.autyzm.friendlyemotions.therapist.materials.newFolder.MaterialsNewFolderViewModel
+import pg.autyzm.friendlyemotions.therapist.materials.newMaterial.MaterialsNewMaterialScreen
+import pg.autyzm.friendlyemotions.therapist.materials.newMaterial.MaterialsNewMaterialViewModel
 import pg.autyzm.friendlyemotions.therapist.welcome.TherapistWelcomeScreen
 import pg.autyzm.friendlyemotions.therapist.welcome.TherapistWelcomeViewModel
 import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
@@ -68,11 +72,9 @@ fun TherapistNavGraph(navController: NavHostController = rememberNavController()
             )
         }
         composable<TherapistRoutes.MaterialsNewFolder> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_materials_new_folder),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
+            val viewModel: MaterialsNewFolderViewModel = hiltViewModel()
+            viewModel.folderCreated.collectAsEffect { onBackClick() }
+            MaterialsNewFolderScreen(onBackClick = onBackClick, onHomeClick = onHomeClick)
         }
         composable<TherapistRoutes.MaterialsInsideFolder> {
             MaterialsInsideFolderScreen(
@@ -89,11 +91,9 @@ fun TherapistNavGraph(navController: NavHostController = rememberNavController()
             )
         }
         composable<TherapistRoutes.MaterialsNewMaterial> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_materials_new_material),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
+            val viewModel: MaterialsNewMaterialViewModel = hiltViewModel()
+            viewModel.materialsSaved.collectAsEffect { onBackClick() }
+            MaterialsNewMaterialScreen(onBackClick = onBackClick, onHomeClick = onHomeClick)
         }
         composable<TherapistRoutes.LearningStepsList> {
             PlaceholderScreen(

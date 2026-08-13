@@ -35,4 +35,30 @@
     <string name="therapist_materials_delete_folder_message">This folder and the photos inside it will be permanently deleted.</string>
     <string name="therapist_materials_delete_image_title">Delete photo?</string>
     <string name="therapist_materials_delete_image_message">This photo will be permanently deleted.</string>
+
+    <string name="therapist_materials_new_folder_name_label">Enter the new folder\'s name:</string>
+    <string name="therapist_materials_new_folder_gender_label">Choose the gender for photos in this folder:</string>
+    <string name="therapist_materials_new_folder_save">CREATE FOLDER</string>
+
+    <string name="therapist_materials_new_material_emotion_label">Selected emotion:</string>
+    <string name="therapist_materials_new_material_folder_label">Selected folder:</string>
+    <string name="therapist_materials_new_material_add_prompt">Choose how you want to add photo(s):</string>
+    <string name="therapist_materials_new_material_take_photo">TAKE A PHOTO</string>
+    <string name="therapist_materials_new_material_from_gallery">FROM DEVICE GALLERY</string>
+    <string name="therapist_materials_new_material_save">SAVE</string>
+    <string name="therapist_materials_new_material_gallery_header">Added photos:</string>
+    <string name="therapist_materials_new_material_mixed_info">Remember to set the gender for each photo by tapping the crossed-out circle in the top-right corner.</string>
+    <string name="therapist_materials_new_material_fixed_info">This folder has a fixed %1$s, so every photo added to it will automatically be marked as %1$s.</string>
+
+    <string name="therapist_materials_gender_required_dialog_title">Info</string>
+    <string name="therapist_materials_gender_required_dialog_message">Set the gender for each photo by tapping the crossed-out circle in the top-right corner.</string>
+
+    <string name="therapist_materials_rename_folder_title">Rename folder</string>
+    <string name="therapist_materials_rename_folder_hint">Folder name</string>
+    <string name="therapist_materials_rename_folder_save">SAVE</string>
+    <string name="therapist_materials_rename_folder_cancel">CANCEL</string>
+
+    <string name="therapist_materials_error_example_not_editable">Example folders cannot be changed.</string>
+    <string name="therapist_materials_error_example_not_deletable">Example materials cannot be deleted.</string>
+    <string name="therapist_materials_error_generic">Something went wrong. Please try again.</string>
 </resources>

@@ -15,15 +15,20 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
+import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.usecase.material.DeleteImageUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.GetFolderUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveImagesForFolderUseCase
+import pg.autyzm.friendlyemotions.domain.usecase.material.RenameFolderUseCase
+import pg.autyzm.friendlyemotions.domain.usecase.material.UpdateImageGenderUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.preferences.SetHideExampleFoldersUseCase
+import pg.autyzm.friendlyemotions.therapist.materials.components.cycled
 import javax.inject.Inject
 
 private const val UI_STATE_SUBSCRIPTION_TIMEOUT_MS = 5_000L
@@ -45,10 +50,14 @@ class MaterialsInsideFolderViewModel
         private val observeHideExampleFoldersUseCase: ObserveHideExampleFoldersUseCase,
         private val setHideExampleFoldersUseCase: SetHideExampleFoldersUseCase,
         private val deleteImageUseCase: DeleteImageUseCase,
+        private val updateImageGenderUseCase: UpdateImageGenderUseCase,
+        private val renameFolderUseCase: RenameFolderUseCase,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val folderId = FolderId(savedStateHandle.get<String>("folderId")!!)
         private val pendingDeleteImageId = MutableStateFlow<ImageId?>(null)
+        private val renamingFolder = MutableStateFlow(false)
+        private val error = MutableStateFlow<DomainError?>(null)
         private val retrySignal = MutableStateFlow(0)
 
         val uiState: StateFlow<MaterialsInsideFolderUiState> =
@@ -63,11 +72,14 @@ class MaterialsInsideFolderViewModel
                                         observeImagesForFolderUseCase(folderId),
                                         observeHideExampleFoldersUseCase(),
                                         pendingDeleteImageId,
-                                    ) { images, hideExamples, pendingDelete ->
+                                        renamingFolder,
+                                        error,
+                                    ) { images, hideExamples, pendingDelete, renaming, currentError ->
                                         MaterialsInsideFolderUiState.Content(
                                             folderId = folderId,
                                             folderName = folder.name,
                                             folderGenderPolicy = folder.genderPolicy,
+                                            folderIsExample = folder.isExample,
                                             selectedEmotionId = folder.emotionId,
                                             images =
                                                 images
@@ -75,6 +87,8 @@ class MaterialsInsideFolderViewModel
                                                     .map(EmotionImage::toImageUi),
                                             hideExampleMaterials = hideExamples,
                                             pendingDeleteImageId = pendingDelete,
+                                            renamingFolder = renaming,
+                                            error = currentError,
                                         ) as MaterialsInsideFolderUiState
                                     },
                                 )
@@ -82,8 +96,8 @@ class MaterialsInsideFolderViewModel
                             is Result.Failure ->
                                 emit(MaterialsInsideFolderUiState.Error(result.error.toString()))
                         }
-                    }.catch { error ->
-                        emit(MaterialsInsideFolderUiState.Error(error.message ?: "Unknown error"))
+                    }.catch { throwable ->
+                        emit(MaterialsInsideFolderUiState.Error(throwable.message ?: "Unknown error"))
                     }
                 }.stateIn(
                     viewModelScope,
@@ -102,9 +116,46 @@ class MaterialsInsideFolderViewModel
         fun onDeleteImageConfirmed() {
             val imageId = pendingDeleteImageId.value ?: return
             viewModelScope.launch {
-                deleteImageUseCase(imageId)
+                when (val result = deleteImageUseCase(imageId)) {
+                    is Result.Success -> Unit
+                    is Result.Failure -> error.value = result.error
+                }
                 pendingDeleteImageId.value = null
             }
+        }
+
+        fun onImageGenderClicked(
+            imageId: ImageId,
+            currentGender: GrammaticalGender,
+        ) {
+            viewModelScope.launch {
+                when (val result = updateImageGenderUseCase(imageId, currentGender.cycled())) {
+                    is Result.Success -> Unit
+                    is Result.Failure -> error.value = result.error
+                }
+            }
+        }
+
+        fun onRenameRequested() {
+            renamingFolder.value = true
+        }
+
+        fun onRenameCancelled() {
+            renamingFolder.value = false
+        }
+
+        fun onRenameConfirmed(newName: String) {
+            viewModelScope.launch {
+                when (val result = renameFolderUseCase(folderId, newName)) {
+                    is Result.Success -> retrySignal.value += 1
+                    is Result.Failure -> error.value = result.error
+                }
+                renamingFolder.value = false
+            }
+        }
+
+        fun onErrorDismissed() {
+            error.value = null
         }
 
         fun onHideExampleMaterialsToggled(hide: Boolean) {

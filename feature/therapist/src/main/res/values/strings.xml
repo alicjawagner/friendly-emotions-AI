@@ -35,4 +35,30 @@
     <string name="therapist_materials_delete_folder_message">Ten folder i znajdujące się w nim zdjęcia zostaną trwale usunięte.</string>
     <string name="therapist_materials_delete_image_title">Usunąć zdjęcie?</string>
     <string name="therapist_materials_delete_image_message">To zdjęcie zostanie trwale usunięte.</string>
+
+    <string name="therapist_materials_new_folder_name_label">Wpisz nazwę nowego folderu:</string>
+    <string name="therapist_materials_new_folder_gender_label">Wybierz rodzaj dla zdjęć w folderze:</string>
+    <string name="therapist_materials_new_folder_save">UTWÓRZ FOLDER</string>
+
+    <string name="therapist_materials_new_material_emotion_label">Wybrana emocja:</string>
+    <string name="therapist_materials_new_material_folder_label">Wybrany folder:</string>
+    <string name="therapist_materials_new_material_add_prompt">Wybierz, jak chcesz dodać obrazek/obrazki:</string>
+    <string name="therapist_materials_new_material_take_photo">ZRÓB ZDJĘCIE</string>
+    <string name="therapist_materials_new_material_from_gallery">Z GALERII URZĄDZENIA</string>
+    <string name="therapist_materials_new_material_save">ZAPISZ</string>
+    <string name="therapist_materials_new_material_gallery_header">Dodane obrazki:</string>
+    <string name="therapist_materials_new_material_mixed_info">Pamiętaj, aby dostosować rodzaj dla każdego obrazka klikając w przekreślone kółeczko w prawym górnym rogu.</string>
+    <string name="therapist_materials_new_material_fixed_info">Ten folder ma na stałe przypisany %1$s, dlatego wszystkie dodawane do niego obrazki będą automatycznie oznaczane jako %1$s.</string>
+
+    <string name="therapist_materials_gender_required_dialog_title">Info</string>
+    <string name="therapist_materials_gender_required_dialog_message">Dostosuj rodzaj dla każdego obrazka klikając w przekreślone kółeczko w prawym górnym rogu.</string>
+
+    <string name="therapist_materials_rename_folder_title">Zmień nazwę folderu</string>
+    <string name="therapist_materials_rename_folder_hint">Nazwa folderu</string>
+    <string name="therapist_materials_rename_folder_save">ZAPISZ</string>
+    <string name="therapist_materials_rename_folder_cancel">ANULUJ</string>
+
+    <string name="therapist_materials_error_example_not_editable">Przykładowych folderów nie można zmieniać.</string>
+    <string name="therapist_materials_error_example_not_deletable">Przykładowych materiałów nie można usuwać.</string>
+    <string name="therapist_materials_error_generic">Wystąpił błąd. Spróbuj ponownie.</string>
 </resources>

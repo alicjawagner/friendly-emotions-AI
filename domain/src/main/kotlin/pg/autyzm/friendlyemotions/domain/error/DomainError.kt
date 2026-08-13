@@ -16,6 +16,8 @@ sealed class DomainError {
 
     object ExampleContentNotDeletable : DomainError()
 
+    object ExampleContentNotEditable : DomainError()
+
     object InsufficientMaterialForSession : DomainError()
 
     data class FileOperationFailed(val cause: Throwable) : DomainError()

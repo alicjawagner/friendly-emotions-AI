@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions.therapist.materials.insideFolder
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,9 +48,12 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
+import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
+import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
+import pg.autyzm.friendlyemotions.therapist.components.RenameFolderDialog
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
@@ -98,6 +102,11 @@ fun MaterialsInsideFolderScreen(
                         onDeleteImageRequested = viewModel::onDeleteImageRequested,
                         onDeleteImageCancelled = viewModel::onDeleteImageCancelled,
                         onDeleteImageConfirmed = viewModel::onDeleteImageConfirmed,
+                        onImageGenderClicked = viewModel::onImageGenderClicked,
+                        onRenameRequested = viewModel::onRenameRequested,
+                        onRenameCancelled = viewModel::onRenameCancelled,
+                        onRenameConfirmed = viewModel::onRenameConfirmed,
+                        onErrorDismissed = viewModel::onErrorDismissed,
                     )
             }
         }
@@ -114,6 +123,11 @@ private fun MaterialsInsideFolderContent(
     onDeleteImageRequested: (ImageId) -> Unit,
     onDeleteImageCancelled: () -> Unit,
     onDeleteImageConfirmed: () -> Unit,
+    onImageGenderClicked: (ImageId, GrammaticalGender) -> Unit,
+    onRenameRequested: () -> Unit,
+    onRenameCancelled: () -> Unit,
+    onRenameConfirmed: (String) -> Unit,
+    onErrorDismissed: () -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
@@ -162,7 +176,18 @@ private fun MaterialsInsideFolderContent(
                     text = "${state.folderName} (${stringResource(state.folderGenderPolicy.descriptionRes())})",
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                    modifier = Modifier.padding(start = 4.dp),
+                    modifier =
+                        Modifier
+                            .padding(start = 4.dp)
+                            .let { textModifier ->
+                                if (state.folderIsExample) {
+                                    textModifier
+                                } else {
+                                    textModifier.clickable(
+                                        onClick = onRenameRequested,
+                                    )
+                                }
+                            },
                 )
             }
             LazyVerticalGrid(
@@ -184,6 +209,9 @@ private fun MaterialsInsideFolderContent(
                         gender = image.gender,
                         isExample = image.isExample,
                         onDeleteClick = { onDeleteImageRequested(image.id) },
+                        onGenderClick =
+                            { onImageGenderClicked(image.id, image.gender) }
+                                .takeIf { state.folderGenderPolicy == FolderGenderPolicy.MIXED },
                     )
                 }
             }
@@ -199,6 +227,24 @@ private fun MaterialsInsideFolderContent(
             onDismiss = onDeleteImageCancelled,
         )
     }
+    if (state.renamingFolder) {
+        RenameFolderDialog(
+            title = stringResource(R.string.therapist_materials_rename_folder_title),
+            currentName = state.folderName,
+            hint = stringResource(R.string.therapist_materials_rename_folder_hint),
+            confirmLabel = stringResource(R.string.therapist_materials_rename_folder_save),
+            dismissLabel = stringResource(R.string.therapist_materials_rename_folder_cancel),
+            onConfirm = onRenameConfirmed,
+            onDismiss = onRenameCancelled,
+        )
+    }
+    if (state.error != null) {
+        InfoDialog(
+            title = stringResource(R.string.therapist_materials_gender_required_dialog_title),
+            message = stringResource(state.error.toMessageRes()),
+            onDismiss = onErrorDismissed,
+        )
+    }
 }
 
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
@@ -211,6 +257,7 @@ private fun MaterialsInsideFolderContentPreview() {
                     folderId = FolderId("folder-1"),
                     folderName = "Kobiety",
                     folderGenderPolicy = FolderGenderPolicy.FEMININE,
+                    folderIsExample = false,
                     selectedEmotionId = EmotionId.SAD,
                     images =
                         listOf(
@@ -236,6 +283,11 @@ private fun MaterialsInsideFolderContentPreview() {
             onDeleteImageRequested = {},
             onDeleteImageCancelled = {},
             onDeleteImageConfirmed = {},
+            onImageGenderClicked = { _, _ -> },
+            onRenameRequested = {},
+            onRenameCancelled = {},
+            onRenameConfirmed = {},
+            onErrorDismissed = {},
         )
     }
 }

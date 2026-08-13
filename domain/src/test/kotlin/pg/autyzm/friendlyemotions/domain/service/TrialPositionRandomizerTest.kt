@@ -181,8 +181,7 @@ class TrialPositionRandomizerTest {
         val distractor = option("distractor")
         val pair = trial(listOf(correct, distractor))
 
-        fun occupiedSlots(result: List<TrialOption?>) =
-            result.indices.filter { result[it] != null }.toSet()
+        fun occupiedSlots(result: List<TrialOption?>) = result.indices.filter { result[it] != null }.toSet()
 
         var previousSlotSet = occupiedSlots(randomizer.assignThreeSlotPositions(pair))
         repeat(30) {

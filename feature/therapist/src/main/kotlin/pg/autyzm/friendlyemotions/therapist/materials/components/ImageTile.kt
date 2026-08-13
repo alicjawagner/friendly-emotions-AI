@@ -13,7 +13,9 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
  * A photo in a folder's image grid (Figma `Material` node, e.g. `910:8163`): the image loaded
  * from [filePath] via Coil, and a [GenderBadge] showing its assigned gender — with a delete
  * action only when [isExample] is false. Reusable wherever an image grid is needed (e.g. the
- * Phase 13 Wizard material tab). No click/navigation: Phase 10 does not support editing gender.
+ * Phase 13 Wizard material tab). [onGenderClick], when non-null (Phase 11: editing an already-
+ * saved MIXED folder's image gender), makes the gender icon clickable; `null` keeps it read-only,
+ * as Phase 10 browsing and fixed-gender folders require.
  */
 @Composable
 fun ImageTile(
@@ -22,6 +24,7 @@ fun ImageTile(
     isExample: Boolean,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onGenderClick: (() -> Unit)? = null,
 ) {
     MaterialTileContainer(modifier = modifier) {
         AsyncImage(
@@ -34,6 +37,7 @@ fun ImageTile(
             iconRes = gender.badgeIconRes(),
             showDeleteAction = !isExample,
             onDeleteClick = onDeleteClick,
+            onIconClick = onGenderClick,
             modifier = Modifier.align(Alignment.TopEnd),
         )
     }

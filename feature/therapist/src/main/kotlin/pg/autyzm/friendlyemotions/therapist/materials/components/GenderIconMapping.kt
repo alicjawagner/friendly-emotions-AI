@@ -38,3 +38,22 @@ fun GrammaticalGender.badgeIconRes(): Int =
         GrammaticalGender.FEMININE -> R.drawable.face_woman
         GrammaticalGender.NEUTER -> R.drawable.circle
     }
+
+/**
+ * A not-yet-assigned image gender (Phase 11 MIXED-folder upload flow) has no [GrammaticalGender]
+ * value yet — displayed with the same `empty_set` icon a MIXED folder itself uses.
+ */
+@DrawableRes
+fun GrammaticalGender?.badgeIconResOrEmpty(): Int = this?.badgeIconRes() ?: R.drawable.empty_set
+
+/**
+ * Cycles a per-image gender assignment feminine -> masculine -> neuter -> feminine -> ...,
+ * starting from feminine the first time it's assigned (i.e. when [this] is `null`).
+ */
+fun GrammaticalGender?.cycled(): GrammaticalGender =
+    when (this) {
+        null -> GrammaticalGender.FEMININE
+        GrammaticalGender.FEMININE -> GrammaticalGender.MASCULINE
+        GrammaticalGender.MASCULINE -> GrammaticalGender.NEUTER
+        GrammaticalGender.NEUTER -> GrammaticalGender.FEMININE
+    }

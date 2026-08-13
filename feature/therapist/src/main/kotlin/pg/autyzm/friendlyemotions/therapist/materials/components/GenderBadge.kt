@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.therapist.materials.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,9 @@ private val BADGE_CORNER_RADIUS = 10.dp
  * Small white badge overlaid on the top-right corner of a folder/image tile (Figma tile-level
  * badge box, e.g. node `932:23778`): always shows the gender/type icon, and additionally shows a
  * delete action only when [showDeleteAction] is true — i.e. never for example content.
+ * [onIconClick], when non-null (Phase 11 gender editing/assignment), makes the icon itself
+ * clickable — e.g. to cycle a MIXED folder image's gender; `null` keeps it purely informational,
+ * as for fixed-gender folders or Phase 10 browsing.
  */
 @Composable
 fun GenderBadge(
@@ -36,6 +40,7 @@ fun GenderBadge(
     showDeleteAction: Boolean,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onIconClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier =
@@ -51,7 +56,12 @@ fun GenderBadge(
             painter = painterResource(iconRes),
             contentDescription = null,
             tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-            modifier = Modifier.size(24.dp),
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .let { iconModifier ->
+                        if (onIconClick != null) iconModifier.clickable(onClick = onIconClick) else iconModifier
+                    },
         )
         if (showDeleteAction) {
             IconButton(onClick = onDeleteClick, modifier = Modifier.size(24.dp)) {
