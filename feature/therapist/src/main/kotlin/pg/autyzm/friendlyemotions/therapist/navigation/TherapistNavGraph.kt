@@ -1,8 +1,6 @@
 package pg.autyzm.friendlyemotions.therapist.navigation
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -22,18 +20,18 @@ import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
  */
 @Composable
 fun TherapistNavGraph(navController: NavHostController = rememberNavController()) {
-    val activity = LocalContext.current as? Activity
-
     val onHomeClick: () -> Unit = {
         navController.navigate(TherapistRoutes.Home) {
             popUpTo(TherapistRoutes.Home) { inclusive = true }
         }
     }
+    // `Home` is the graph's effective root (Welcome pops itself off via popUpTo/inclusive on
+    // arrival), so there's no previous entry to pop from there. Rather than falling back to
+    // activity.finish() — which made the topbar back arrow silently exit the app from Home — a
+    // missing previous entry is treated as a no-op, same as a root screen ignoring back elsewhere.
     val onBackClick: () -> Unit = {
         if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
-        } else {
-            activity?.finish()
         }
     }
 
