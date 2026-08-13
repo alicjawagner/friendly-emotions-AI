@@ -267,7 +267,7 @@ private fun InfoSplashScreenPreview() {
     FriendlyEmotionsTheme {
         InfoSplashScreen(
             appTitle = "Friendly Emotions",
-            appIconRes = R.drawable.friendly_emotions_logo,
+            appIconRes = R.drawable.mascot,
             onContinue = {},
         )
     }

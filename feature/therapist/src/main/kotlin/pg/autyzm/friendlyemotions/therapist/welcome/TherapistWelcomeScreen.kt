@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.components.InfoSplashScreen
-import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 /**
  * The therapist app's welcome screen (Figma `screens/Starting-board`) — reuses the shared
@@ -20,7 +19,7 @@ fun TherapistWelcomeScreen(
 ) {
     InfoSplashScreen(
         appTitle = stringResource(R.string.therapist_welcome_title),
-        appIconRes = CoreUiR.drawable.friendly_emotions_settings_logo,
+        appIconRes = R.drawable.friendly_emotions_settings_logo,
         onContinue = onContinue,
         modifier = modifier,
     )

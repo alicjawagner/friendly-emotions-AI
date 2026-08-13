@@ -34,7 +34,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
-import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 private val logoSize = 140.dp
 
@@ -80,7 +79,7 @@ private fun Header(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         Image(
-            painter = painterResource(CoreUiR.drawable.friendly_emotions_logo),
+            painter = painterResource(R.drawable.friendly_emotions_logo),
             contentDescription = null,
             modifier =
                 Modifier

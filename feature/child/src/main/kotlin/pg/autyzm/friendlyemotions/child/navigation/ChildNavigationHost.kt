@@ -17,7 +17,6 @@ import pg.autyzm.friendlyemotions.child.home.ChildHomeScreen
 import pg.autyzm.friendlyemotions.child.home.ChildHomeViewModel
 import pg.autyzm.friendlyemotions.ui.components.InfoSplashScreen
 import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
-import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 /**
  * Single root composable for the child app, routing on [ChildHomeViewModel.screen] instead of a
@@ -36,7 +35,7 @@ fun ChildNavigationHost(viewModel: ChildHomeViewModel = hiltViewModel()) {
         ChildScreen.Info ->
             InfoSplashScreen(
                 appTitle = stringResource(R.string.child_home_title),
-                appIconRes = CoreUiR.drawable.friendly_emotions_logo,
+                appIconRes = R.drawable.friendly_emotions_logo,
                 onContinue = viewModel::onInfoContinueClicked,
             )
 
