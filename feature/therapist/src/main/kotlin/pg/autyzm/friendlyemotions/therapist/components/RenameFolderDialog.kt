@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,22 +73,14 @@ fun RenameFolderDialog(
             )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = dismissLabel,
-                    style = FriendlyEmotionsTextStyles.button,
-                    color = FriendlyEmotionsColors.Neutral.N300,
-                )
-            }
+            TherapistButton(text = dismissLabel, onClick = onDismiss)
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(name.trim()) }, enabled = name.isNotBlank()) {
-                Text(
-                    text = confirmLabel,
-                    style = FriendlyEmotionsTextStyles.button,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                )
-            }
+            TherapistButton(
+                text = confirmLabel,
+                onClick = { onConfirm(name.trim()) },
+                enabled = name.isNotBlank(),
+            )
         },
     )
 }

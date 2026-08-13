@@ -24,8 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,17 +50,17 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
+import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
+import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
-import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
-import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 import java.util.Locale
@@ -173,23 +171,25 @@ private fun MaterialsNewMaterialContent(
                     style = FriendlyEmotionsTextStyles.captionC1,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
-                ActionButton(
+                TherapistButton(
+                    text = stringResource(R.string.therapist_materials_new_material_take_photo),
                     icon = Icons.Filled.CameraAlt,
-                    label = stringResource(R.string.therapist_materials_new_material_take_photo),
                     onClick = {
                         val (_, uri) = createCameraCaptureTarget(context)
                         pendingCameraUri = uri
                         cameraLauncher.launch(uri)
                     },
+                    modifier = Modifier.fillMaxWidth(),
                 )
-                ActionButton(
+                TherapistButton(
+                    text = stringResource(R.string.therapist_materials_new_material_from_gallery),
                     icon = Icons.Filled.Photo,
-                    label = stringResource(R.string.therapist_materials_new_material_from_gallery),
                     onClick = {
                         galleryLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                         )
                     },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
             InfoBox(
@@ -203,21 +203,11 @@ private fun MaterialsNewMaterialContent(
                         )
                     },
             )
-            Button(
+            TherapistButton(
+                text = stringResource(R.string.therapist_materials_new_material_save),
                 onClick = onSaveClicked,
-                shape = FriendlyEmotionsModalShape,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                        contentColor = FriendlyEmotionsColors.Shades.White,
-                    ),
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = stringResource(R.string.therapist_materials_new_material_save),
-                    style = FriendlyEmotionsTextStyles.button,
-                )
-            }
+            )
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
@@ -225,7 +215,11 @@ private fun MaterialsNewMaterialContent(
                 text = stringResource(R.string.therapist_materials_new_material_gallery_header),
                 style = FriendlyEmotionsTextStyles.bodyRegular,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
             )
             val gridState = rememberLazyGridState()
             gridState.ScrollToNewlyAdded(state.pendingImages, key = { it.localId })
@@ -296,28 +290,6 @@ private fun ReadOnlyField(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             )
         }
-    }
-}
-
-@Composable
-private fun ActionButton(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Button(
-        onClick = onClick,
-        shape = FriendlyEmotionsModalShape,
-        colors =
-            ButtonDefaults.buttonColors(
-                containerColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                contentColor = FriendlyEmotionsColors.Shades.White,
-            ),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.padding(end = 10.dp))
-        Text(text = label, style = FriendlyEmotionsTextStyles.button)
     }
 }
 

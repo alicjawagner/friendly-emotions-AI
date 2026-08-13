@@ -32,8 +32,8 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.AddNewTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.EmotionRail
 import pg.autyzm.friendlyemotions.therapist.materials.components.FolderTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.GenderLegend
-import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
+import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold

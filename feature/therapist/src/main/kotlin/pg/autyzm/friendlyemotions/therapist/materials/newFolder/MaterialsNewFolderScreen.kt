@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -24,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,12 +30,11 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
+import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
-import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
-import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
@@ -143,23 +139,12 @@ private fun MaterialsNewFolderContent(
                 }
             }
 
-            Button(
+            TherapistButton(
+                text = stringResource(R.string.therapist_materials_new_folder_save),
                 onClick = onSaveClicked,
                 enabled = state.name.isNotBlank(),
-                shape = FriendlyEmotionsModalShape,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                        contentColor = FriendlyEmotionsColors.Shades.White,
-                    ),
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = stringResource(R.string.therapist_materials_new_folder_save),
-                    style = FriendlyEmotionsTextStyles.button,
-                    textAlign = TextAlign.Center,
-                )
-            }
+            )
         }
     }
     if (state.error != null) {
