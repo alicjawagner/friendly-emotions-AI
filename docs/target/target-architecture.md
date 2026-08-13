@@ -768,6 +768,29 @@ Components generally reference `FriendlyEmotionsColors.*` and `FriendlyEmotionsT
 
 The Emotion catalog (6 fixed emotions with all label forms) is defined once in `:domain/EmotionCatalog.kt` and shared across all features. The praise word set and animation theme list are defined in `:domain/model/session/ReinforcementSettings.kt` as companion object constants.
 
+### 16.5 Therapist Background Components (`:feature:therapist`)
+
+The Figma `Background` component (node `65:2100`) defines 6 variants of the therapist app's
+settings/wizard screen backdrop, distinguished by mascot presence/position and help-text
+presence/width. Each variant is ported to its own composable in the `backgrounds/` package
+(§19) rather than one heavily-parametrized composable, matching the existing
+`:feature:child/backgrounds` convention (`GameEmptyBackground`, `GameFloorBackground`). Every
+composable takes a `content: @Composable BoxScope.() -> Unit` slot so the owning screen layers
+its real UI (buttons, lists, previews) on top of the decoration.
+
+| Component | Figma node | Purpose |
+|---|---|---|
+| `HomeBackground` | `64:2092` | Mascot=yes, Default position — used by `HomeScreen` |
+| `LowMascotNarrowHelpBackground` | `92:8050` | Mascot=yes, Low position + narrow vertical help-text bubble |
+| `LowMascotWideHelpBackground` | `109:12087` | Mascot=yes, Low position + wide horizontal help-text bubble |
+| `PlainBackground` | `65:2101` | Mascot=no — flat background, no illustrations |
+| `SplitBackground` | `1097:5043` | Mascot=no — darker right-hand panel (e.g. for a preview pane) |
+| `SplitMascotHelpBackground` | `1097:5046` | Darker right-hand panel + mascot + help-text bubble |
+
+`HelpTextBubble` is an `internal` helper (not one of the 6 variants) shared by the 3
+help-text-bearing backgrounds above, reproducing the rounded speech-bubble shape/position from
+Figma while taking the actual copy as a `helpText: String` parameter from the caller.
+
 ---
 
 ## 17. Scalability, Maintainability, and Testability
@@ -1041,6 +1064,14 @@ pg.autyzm.friendlyemotions.therapist/
 │   ├── TherapistRoutes.kt           # sealed class typed routes
 │   ├── TherapistTopBar.kt           # reusable topbar: back arrow + title + home icon, every screen
 │   └── TherapistScaffold.kt         # Scaffold wrapper pairing TherapistTopBar with screen content
+├── backgrounds/                     # Figma "Background" component (node 65:2100), 6 variants — see §16.5
+│   ├── HomeBackground.kt            # Mascot=yes, Default (64:2092) — used by HomeScreen
+│   ├── LowMascotNarrowHelpBackground.kt  # 92:8050
+│   ├── LowMascotWideHelpBackground.kt    # 109:12087
+│   ├── PlainBackground.kt           # 65:2101
+│   ├── SplitBackground.kt           # 1097:5043
+│   ├── SplitMascotHelpBackground.kt # 1097:5046
+│   └── HelpTextBubble.kt            # internal — shared speech-bubble used by the 3 "help text" variants
 ├── welcome/                         # Figma "screens/Starting-board" — reuses :core:ui's InfoSplashScreen
 │   ├── TherapistWelcomeScreen.kt
 │   └── TherapistWelcomeViewModel.kt
