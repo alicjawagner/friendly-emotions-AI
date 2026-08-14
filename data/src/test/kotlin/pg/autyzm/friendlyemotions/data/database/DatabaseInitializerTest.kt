@@ -86,7 +86,7 @@ class DatabaseInitializerTest {
                 LearningStepRepositoryImpl(db.learningStepDao(), db.imageUsageDao(), db.emotionImageDao())
             val steps = repository.observeAllSteps().first().associateBy { it.name }
             assertEquals(
-                setOf("balloons", "cars"),
+                setOf("balloons", "cars", "flowers"),
                 steps.getValue("Podstawowy").reinforcementSettings.enabledAnimationThemes,
             )
             assertEquals(
