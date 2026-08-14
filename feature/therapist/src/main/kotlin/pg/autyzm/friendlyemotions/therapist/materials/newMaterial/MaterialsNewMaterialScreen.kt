@@ -1,5 +1,7 @@
 package pg.autyzm.friendlyemotions.therapist.materials.newMaterial
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -38,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
@@ -122,6 +125,7 @@ private fun MaterialsNewMaterialContent(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
+    var showCameraPermissionDeniedDialog by remember { mutableStateOf(false) }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -136,6 +140,19 @@ private fun MaterialsNewMaterialContent(
                         }
                     onImageAdded(outputFile.absolutePath)
                 }
+            }
+        }
+    val launchCamera = {
+        val (_, uri) = createCameraCaptureTarget(context)
+        pendingCameraUri = uri
+        cameraLauncher.launch(uri)
+    }
+    val cameraPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                launchCamera()
+            } else {
+                showCameraPermissionDeniedDialog = true
             }
         }
     val galleryLauncher =
@@ -175,9 +192,13 @@ private fun MaterialsNewMaterialContent(
                     text = stringResource(R.string.therapist_materials_new_material_take_photo),
                     icon = Icons.Filled.CameraAlt,
                     onClick = {
-                        val (_, uri) = createCameraCaptureTarget(context)
-                        pendingCameraUri = uri
-                        cameraLauncher.launch(uri)
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            launchCamera()
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -256,6 +277,13 @@ private fun MaterialsNewMaterialContent(
             title = stringResource(R.string.therapist_materials_gender_required_dialog_title),
             message = stringResource(state.error.toMessageRes()),
             onDismiss = onErrorDismissed,
+        )
+    }
+    if (showCameraPermissionDeniedDialog) {
+        InfoDialog(
+            title = stringResource(R.string.therapist_materials_gender_required_dialog_title),
+            message = stringResource(R.string.therapist_materials_new_material_camera_permission_denied),
+            onDismiss = { showCameraPermissionDeniedDialog = false },
         )
     }
 }
