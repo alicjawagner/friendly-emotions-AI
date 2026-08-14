@@ -389,15 +389,21 @@ Activation from the step list screen:
 
 ```
 LearningStepsListViewModel
-  → user taps activate
-  → calls ActivateLearningStepUseCase(stepId, mode)
-        → LearningStepActivationService.activate(stepId, mode)
+  → user taps the row's mode toggle (any row, active or not)
+  → calls SetLearningStepModeUseCase(stepId, mode)
+        → persists LearningStep.mode directly; does not touch isActive
+  → user taps the row or its checkbox
+  → calls ActivateLearningStepUseCase(stepId)
+        → LearningStepActivationService.activate(stepId)
               → wrapped in a single @Transaction:
-                    deactivate currently active step
-                    activate target step in given mode
+                    deactivate currently active step (mode left untouched)
+                    activate target step (using its already-stored mode)
   → emits LearningStepActivated domain event
   → Child App reacts via active step Flow emission
 ```
+
+There is no mode-picker dialog — the per-row toggle and the activate action are independent,
+both directly reachable from `LearningStepsListScreen` (Figma `screens/Tasks-list/*`).
 
 The child app collects `LearningStepRepository.observeActiveStep()` as a `StateFlow`. Any activation by the therapist automatically reaches the child app through the shared Room database and Kotlin Flow infrastructure.
 
@@ -421,7 +427,7 @@ Room entities are internal to `:data`. They do not leak into `:domain`. Mappers 
 |---|---|---|
 | `EmotionFolderEntity` | `EmotionFolder` | Stored with `emotionId` as String (EmotionId.name), `genderPolicy` as String (enum name) |
 | `EmotionImageEntity` | `EmotionImage` | `gender` stored as String (GrammaticalGender.name) |
-| `LearningStepEntity` | `LearningStep` aggregate root | Flat columns; `activeMode` stored as String (SessionMode.name or null) |
+| `LearningStepEntity` | `LearningStep` aggregate root | Flat columns; `mode` stored as a non-null String (`SessionMode.name`) — always present, independent of `isActive`; schema v3 (migrated from the nullable `activeMode` column in v2) |
 | `ImageUsageEntity` | `ImageUsage` | Junction: `(stepId, imageId)`, `inLearning`, `inTest` |
 | `LearningParametersEmbedded` | `LearningParameters` | `@Embedded(prefix = "lp_")`; `activeHintTypes` stored as comma-separated enum names via TypeConverter |
 | `TestParametersEmbedded` | `TestParameters` | `@Embedded(prefix = "tp_")` |
@@ -492,8 +498,8 @@ LearningStepRepository
   saveStep(draft: LearningStepDraft): LearningStepId
   updateStep(stepId, draft: LearningStepDraft)
   deleteStep(stepId)                ← @Transaction: fallback activation if active
-  activateStep(stepId, mode)        ← @Transaction: clear + activate
-  setActiveMode(stepId, mode)
+  activateStep(stepId)               ← @Transaction: clear + activate, mode left untouched
+  setMode(stepId, mode)              ← valid for any step, active or not
   copyStep(stepId): LearningStepId
   getAllStepNames(): List<String>    ← for uniqueness validation
 
@@ -541,7 +547,7 @@ learningStep/
 ├── DeleteLearningStepUseCase       @Transaction: deletes step; activates example fallback if active
 ├── CopyLearningStepUseCase         deep-copies step with auto-generated unique name
 ├── ActivateLearningStepUseCase     @Transaction: deactivates current; activates target
-├── SetActiveModeUseCase            changes mode of already-active step
+├── SetLearningStepModeUseCase      sets mode of any step (active or not); persists across restarts
 └── DeriveTestParametersUseCase     produces TestParameters mirroring LearningParameters
 ```
 

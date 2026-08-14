@@ -27,9 +27,7 @@ class InitializeSessionUseCase
             val activeStep =
                 learningStepRepository.observeActiveStep().first()
                     ?: return Result.Failure(DomainError.InsufficientMaterialForSession)
-            val mode =
-                activeStep.activeMode
-                    ?: return Result.Failure(DomainError.InsufficientMaterialForSession)
+            val mode = activeStep.mode
 
             val eligibleImages = learningStepRepository.getImagesEligibleForStep(activeStep.id, mode)
             if (eligibleImages.isEmpty()) {

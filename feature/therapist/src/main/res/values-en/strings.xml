@@ -66,4 +66,21 @@
     <string name="therapist_materials_error_example_not_editable">Example folders cannot be changed.</string>
     <string name="therapist_materials_error_example_not_deletable">Example materials cannot be deleted.</string>
     <string name="therapist_materials_error_generic">Something went wrong. Please try again.</string>
+
+    <string name="therapist_learning_steps_help_text">Here you\'ll find all the learning steps. Check out the example step by copying it, or create a new one!</string>
+    <string name="therapist_learning_steps_create_new">CREATE NEW</string>
+    <string name="therapist_learning_steps_play">RUN</string>
+    <string name="therapist_learning_steps_search_placeholder">Search</string>
+    <string name="therapist_learning_steps_hide_examples">Hide example steps</string>
+    <string name="therapist_learning_steps_header_label">Learning steps:</string>
+    <string name="therapist_learning_steps_header_mode">Mode</string>
+    <string name="therapist_learning_steps_header_actions">Actions</string>
+    <string name="therapist_learning_steps_mode_learning">Learning</string>
+    <string name="therapist_learning_steps_mode_test">Test for the child</string>
+    <string name="therapist_learning_steps_edit_description">Edit</string>
+    <string name="therapist_learning_steps_copy_description">Copy</string>
+    <string name="therapist_learning_steps_delete_description">Delete</string>
+    <string name="therapist_learning_steps_delete_title">Delete learning step?</string>
+    <string name="therapist_learning_steps_delete_message">This learning step will be permanently deleted.</string>
+    <string name="therapist_learning_steps_error_dialog_title">Info</string>
 </resources>

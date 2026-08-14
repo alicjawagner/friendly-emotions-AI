@@ -50,7 +50,7 @@ class SessionEndViewModelTest {
             id = LearningStepId("step-1"),
             name = "Step",
             isActive = true,
-            activeMode = SessionMode.TEST,
+            mode = SessionMode.TEST,
             isExample = false,
             materialSelection = MaterialSelection(emptyList()),
             learningParameters = LearningParameters(),

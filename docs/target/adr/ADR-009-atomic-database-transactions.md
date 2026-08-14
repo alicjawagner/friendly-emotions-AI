@@ -19,7 +19,7 @@ Specifically:
 
 | Operation | Why a transaction is required |
 |---|---|
-| `LearningStepDao.activateStep(stepId, mode)` | Deactivates the current active step and activates the target in one atomic unit |
+| `LearningStepDao.activateStep(stepId)` | Deactivates the current active step and activates the target in one atomic unit (mode is set independently via `updateMode`, not by this transaction) |
 | `LearningStepDao.deleteStepWithFallback(stepId)` | Deletes the step and activates the fallback example step together |
 | `EmotionFolderDao.deleteFolderWithCascade(folderId)` | Deletes the folder, its images, and removes their image usage records from all steps |
 | `ImageUsageDao.replaceForStep(stepId, usages)` | Deletes all existing usages for a step and inserts the new batch as one unit |

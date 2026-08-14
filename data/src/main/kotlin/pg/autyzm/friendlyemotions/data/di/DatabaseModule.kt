@@ -12,6 +12,7 @@ import pg.autyzm.friendlyemotions.data.dao.EmotionImageDao
 import pg.autyzm.friendlyemotions.data.dao.ImageUsageDao
 import pg.autyzm.friendlyemotions.data.dao.LearningStepDao
 import pg.autyzm.friendlyemotions.data.database.AppDatabase
+import pg.autyzm.friendlyemotions.data.database.migration.MIGRATION_2_3
 import javax.inject.Singleton
 
 /** Provides the singleton [AppDatabase] (ADR-005) and every DAO derived from it. */
@@ -25,6 +26,7 @@ object DatabaseModule {
     ): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
             .addCallback(AppDatabase.CALLBACK)
+            .addMigrations(MIGRATION_2_3)
             .build()
 
     @Provides

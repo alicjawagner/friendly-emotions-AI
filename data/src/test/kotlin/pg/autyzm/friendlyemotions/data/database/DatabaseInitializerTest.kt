@@ -80,7 +80,7 @@ class DatabaseInitializerTest {
             assertEquals(setOf("Podstawowy", "Zaawansowany"), db.learningStepDao().getAllNames().toSet())
             val active = db.learningStepDao().observeActive().first()
             assertEquals("Podstawowy", active?.name)
-            assertEquals(SessionMode.LEARNING.name, active?.activeMode)
+            assertEquals(SessionMode.LEARNING.name, active?.mode)
 
             val repository =
                 LearningStepRepositoryImpl(db.learningStepDao(), db.imageUsageDao(), db.emotionImageDao())

@@ -23,7 +23,7 @@ class SessionEligibilityCheckerTest {
             id = LearningStepId("step-1"),
             name = "Step",
             isActive = true,
-            activeMode = SessionMode.LEARNING,
+            mode = SessionMode.LEARNING,
             isExample = false,
             materialSelection = MaterialSelection(emptyList()),
             learningParameters = LearningParameters(),

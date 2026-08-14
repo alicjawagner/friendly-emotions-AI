@@ -18,13 +18,13 @@ class LearningStepActivationServiceTest {
     private fun step(
         id: String,
         isActive: Boolean = false,
-        activeMode: SessionMode? = null,
+        mode: SessionMode = SessionMode.LEARNING,
         isExample: Boolean = false,
     ) = LearningStep(
         id = LearningStepId(id),
         name = "Step $id",
         isActive = isActive,
-        activeMode = activeMode,
+        mode = mode,
         isExample = isExample,
         materialSelection = MaterialSelection(emptyList()),
         learningParameters = LearningParameters(),
@@ -33,16 +33,16 @@ class LearningStepActivationServiceTest {
     )
 
     @Test
-    fun `activate deactivates the previously active step and activates the target`() {
-        val previous = step("previous", isActive = true, activeMode = SessionMode.LEARNING)
-        val target = step("target")
+    fun `activate deactivates the previously active step and activates the target, mode untouched`() {
+        val previous = step("previous", isActive = true, mode = SessionMode.LEARNING)
+        val target = step("target", mode = SessionMode.TEST)
 
-        val result = service.activate(currentActive = previous, target = target, mode = SessionMode.TEST)
+        val result = service.activate(currentActive = previous, target = target)
 
         assertEquals(false, result.deactivatedStep?.isActive)
-        assertNull(result.deactivatedStep?.activeMode)
+        assertEquals(SessionMode.LEARNING, result.deactivatedStep?.mode)
         assertTrue(result.activatedStep.isActive)
-        assertEquals(SessionMode.TEST, result.activatedStep.activeMode)
+        assertEquals(SessionMode.TEST, result.activatedStep.mode)
         assertEquals(target.id, result.activatedStep.id)
     }
 
@@ -50,37 +50,46 @@ class LearningStepActivationServiceTest {
     fun `activate with no currently active step produces no deactivation`() {
         val target = step("target")
 
-        val result = service.activate(currentActive = null, target = target, mode = SessionMode.LEARNING)
+        val result = service.activate(currentActive = null, target = target)
 
         assertNull(result.deactivatedStep)
         assertTrue(result.activatedStep.isActive)
     }
 
     @Test
-    fun `setMode only changes the active step's mode, nothing else`() {
-        val active = step("active", isActive = true, activeMode = SessionMode.LEARNING)
+    fun `setMode changes mode on an active step, nothing else`() {
+        val active = step("active", isActive = true, mode = SessionMode.LEARNING)
 
         val result = service.setMode(active, SessionMode.TEST)
 
-        assertEquals(SessionMode.TEST, result.activeMode)
-        assertEquals(active.copy(activeMode = SessionMode.TEST), result)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun `setMode rejects a step that is not active`() {
-        service.setMode(step("inactive", isActive = false), SessionMode.TEST)
+        assertEquals(SessionMode.TEST, result.mode)
+        assertEquals(active.copy(mode = SessionMode.TEST), result)
     }
 
     @Test
-    fun `handleDeletion selects the first example step in LEARNING mode when the deleted step was active`() {
-        val deleted = step("deleted", isActive = true, activeMode = SessionMode.TEST)
-        val examples = listOf(step("example-1", isExample = true), step("example-2", isExample = true))
+    fun `setMode changes mode on an inactive step too`() {
+        val inactive = step("inactive", isActive = false, mode = SessionMode.LEARNING)
+
+        val result = service.setMode(inactive, SessionMode.TEST)
+
+        assertEquals(SessionMode.TEST, result.mode)
+        assertEquals(false, result.isActive)
+    }
+
+    @Test
+    fun `handleDeletion selects the first example step and forces LEARNING mode when the deleted step was active`() {
+        val deleted = step("deleted", isActive = true, mode = SessionMode.TEST)
+        val examples =
+            listOf(
+                step("example-1", isExample = true, mode = SessionMode.TEST),
+                step("example-2", isExample = true),
+            )
 
         val fallback = service.handleDeletion(deleted, examples)
 
         assertEquals(LearningStepId("example-1"), fallback?.id)
         assertTrue(fallback!!.isActive)
-        assertEquals(SessionMode.LEARNING, fallback.activeMode)
+        assertEquals(SessionMode.LEARNING, fallback.mode)
     }
 
     @Test
@@ -95,7 +104,7 @@ class LearningStepActivationServiceTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `handleDeletion throws when no example step is available for an active deleted step`() {
-        val deleted = step("deleted", isActive = true, activeMode = SessionMode.LEARNING)
+        val deleted = step("deleted", isActive = true, mode = SessionMode.LEARNING)
 
         service.handleDeletion(deleted, emptyList())
     }

@@ -6,21 +6,18 @@ package pg.autyzm.friendlyemotions.domain.model.session
  *
  * Name uniqueness is enforced by `ValidateLearningStepNameUseCase` (session 2.7), not by this class,
  * since it requires comparing against all other steps.
+ *
+ * [mode] is the mode this step runs in when activated. It is always present and persists
+ * independently of [isActive] — it survives across app restarts even while the step is inactive.
  */
 data class LearningStep(
     val id: LearningStepId,
     val name: String,
     val isActive: Boolean,
-    val activeMode: SessionMode?,
+    val mode: SessionMode,
     val isExample: Boolean,
     val materialSelection: MaterialSelection,
     val learningParameters: LearningParameters,
     val testParameters: TestParameters,
     val reinforcementSettings: ReinforcementSettings,
-) {
-    init {
-        require((activeMode == null) != isActive) {
-            "activeMode must be null iff isActive is false (isActive=$isActive, activeMode=$activeMode)"
-        }
-    }
-}
+)

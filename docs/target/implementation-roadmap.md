@@ -428,14 +428,14 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 
 ## Phase 12 — Therapist App: Learning Step List
 
-**Goal:** Implement the learning step list screen with activate, toggle mode, copy, and delete operations.
+**Goal:** Implement the learning step list screen with activate, toggle mode, copy, edit and delete operations.
 
 **Components:**
 - `LearningStepsListScreen` + `LearningStepsListViewModel` + `LearningStepsListUiState` (Figma names this frame "Tasks-list" internally — same screen/concept, "Learning Steps" is the correct product-facing name)
 - Display step list: name, active badge, mode badge (LEARNING/TEST), example badge
-- Activate step: mode picker dialog → `ActivateLearningStepUseCase` (atomic transaction)
-- Toggle active mode: `SetActiveModeUseCase` for already-active step
-- Copy step: `CopyLearningStepUseCase` (auto-generated name, always inactive)
+- Activate step: tapping the row or its checkbox (no dialog) → `ActivateLearningStepUseCase(stepId)` (atomic transaction; uses the step's already-stored mode)
+- Toggle mode: per-row inline toggle, valid for any step (active or not) → `SetLearningStepModeUseCase(stepId, mode)`; persists across app restarts even while inactive
+- Copy step: `CopyLearningStepUseCase` (auto-generated name of the form `"{original} ({n})"` with `n` the smallest available positive integer, always inactive, inherits the source step's mode)
 - Delete step: `YesNoConfirmationDialog` + `DeleteLearningStepUseCase` (fallback activation if active); block on example steps
 - Filter hide example steps toggle
 
@@ -448,7 +448,9 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - [ ] Active step highlighted with correct mode badge
 - [ ] Activating a different step deactivates the previous one atomically
 - [ ] Toggling mode on active step changes mode immediately
-- [ ] Copy of example step created with "(kopia)" suffix; marked inactive; not example
+- [ ] Copy of example step created with "(1)"-style suffix (smallest available number); marked inactive; not example
+- [ ] Toggling an inactive step's mode persists after restarting the app, without activating it
+- [ ] Toggling the active step's mode changes it immediately, with no separate activation step
 - [ ] Delete user step with confirmation
 - [ ] Delete active step: fallback example step becomes active automatically
 - [ ] Delete example step: blocked

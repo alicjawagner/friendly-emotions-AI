@@ -32,12 +32,12 @@ class InitializeSessionUseCaseTest {
     private val emotionFolderRepository = mockk<EmotionFolderRepository>()
     private val useCase = InitializeSessionUseCase(learningStepRepository, emotionFolderRepository)
 
-    private fun activeStep(mode: SessionMode?) =
+    private fun activeStep(mode: SessionMode) =
         LearningStep(
             id = LearningStepId("step-1"),
             name = "Podstawowy",
-            isActive = mode != null,
-            activeMode = mode,
+            isActive = true,
+            mode = mode,
             isExample = true,
             materialSelection = MaterialSelection(imageUsages = emptyList()),
             learningParameters = LearningParameters(displayedImageCount = 3, repetitionsPerEmotion = 2),

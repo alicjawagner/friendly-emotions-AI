@@ -104,7 +104,7 @@ class GameViewModel
                 congratsJob?.cancel()
                 _uiState.value = GameUiState.Loading
                 val learningStep = observeActiveLearningStepUseCase().first()
-                sessionMode = learningStep?.activeMode ?: SessionMode.LEARNING
+                sessionMode = learningStep?.mode ?: SessionMode.LEARNING
                 captionsEnabled =
                     when (sessionMode) {
                         SessionMode.LEARNING -> learningStep?.learningParameters?.captionsEnabled ?: true

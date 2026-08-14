@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +14,7 @@ class TherapistActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FriendlyEmotionsTheme {
-                TherapistNavGraph()
+                TherapistNavGraph(onPlayRequested = { startActivity(Intent(this, ChildActivity::class.java)) })
             }
         }
     }

@@ -33,13 +33,15 @@ interface LearningStepRepository {
     /** Transactional: if the deleted step was active, falls back to activating an example step (§10.2). */
     suspend fun deleteStep(stepId: LearningStepId)
 
-    /** Transactional: deactivates the current active step (if any), then activates [stepId] (§10.2). */
-    suspend fun activateStep(
-        stepId: LearningStepId,
-        mode: SessionMode,
-    )
+    /**
+     * Transactional: deactivates the current active step (if any), then activates [stepId]
+     * (§10.2). Does not change [stepId]'s stored mode — activation always uses whichever mode
+     * is already persisted for it.
+     */
+    suspend fun activateStep(stepId: LearningStepId)
 
-    suspend fun setActiveMode(
+    /** Sets [mode] on [stepId]. Valid for any step, active or not — it always persists. */
+    suspend fun setMode(
         stepId: LearningStepId,
         mode: SessionMode,
     )

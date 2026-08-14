@@ -1,0 +1,356 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "bf00a17f8018c6045bca7f0eb857859e",
+    "entities": [
+      {
+        "tableName": "emotion_folders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `emotionId` TEXT NOT NULL, `name` TEXT NOT NULL, `genderPolicy` TEXT NOT NULL, `isExample` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "emotionId",
+            "columnName": "emotionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genderPolicy",
+            "columnName": "genderPolicy",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExample",
+            "columnName": "isExample",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "emotion_images",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `folderId` TEXT NOT NULL, `filePath` TEXT NOT NULL, `gender` TEXT NOT NULL, `isExample` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`folderId`) REFERENCES `emotion_folders`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "folderId",
+            "columnName": "folderId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filePath",
+            "columnName": "filePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExample",
+            "columnName": "isExample",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_emotion_images_folderId",
+            "unique": false,
+            "columnNames": [
+              "folderId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_emotion_images_folderId` ON `${TABLE_NAME}` (`folderId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "emotion_folders",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "folderId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "learning_steps",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `isActive` INTEGER NOT NULL, `mode` TEXT NOT NULL, `isExample` INTEGER NOT NULL, `lp_displayedImageCount` INTEGER NOT NULL, `lp_repetitionsPerEmotion` INTEGER NOT NULL, `lp_promptTemplate` TEXT NOT NULL, `lp_ttsEnabled` INTEGER NOT NULL, `lp_captionsEnabled` INTEGER NOT NULL, `lp_hintDelaySeconds` INTEGER NOT NULL, `lp_activeHintTypes` TEXT NOT NULL, `lp_mixedGenderInAnswers` INTEGER NOT NULL, `tp_overridesLearning` INTEGER NOT NULL, `tp_displayedImageCount` INTEGER NOT NULL, `tp_repetitionsPerEmotion` INTEGER NOT NULL, `tp_promptTemplate` TEXT NOT NULL, `tp_ttsEnabled` INTEGER NOT NULL, `tp_captionsEnabled` INTEGER NOT NULL, `tp_mixedGenderInAnswers` INTEGER NOT NULL, `rs_enabledPraiseWords` TEXT NOT NULL, `rs_enabledAnimationThemes` TEXT NOT NULL DEFAULT 'flowers,butterflies,balloons,cars,balls', `rs_animationsEnabled` INTEGER NOT NULL, `rs_endSessionAnimationEnabled` INTEGER NOT NULL, `rs_endSessionFanfareEnabled` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mode",
+            "columnName": "mode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isExample",
+            "columnName": "isExample",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.displayedImageCount",
+            "columnName": "lp_displayedImageCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.repetitionsPerEmotion",
+            "columnName": "lp_repetitionsPerEmotion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.promptTemplate",
+            "columnName": "lp_promptTemplate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.ttsEnabled",
+            "columnName": "lp_ttsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.captionsEnabled",
+            "columnName": "lp_captionsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.hintDelaySeconds",
+            "columnName": "lp_hintDelaySeconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.activeHintTypes",
+            "columnName": "lp_activeHintTypes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "learningParameters.mixedGenderInAnswers",
+            "columnName": "lp_mixedGenderInAnswers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.overridesLearning",
+            "columnName": "tp_overridesLearning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.displayedImageCount",
+            "columnName": "tp_displayedImageCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.repetitionsPerEmotion",
+            "columnName": "tp_repetitionsPerEmotion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.promptTemplate",
+            "columnName": "tp_promptTemplate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.ttsEnabled",
+            "columnName": "tp_ttsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.captionsEnabled",
+            "columnName": "tp_captionsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testParameters.mixedGenderInAnswers",
+            "columnName": "tp_mixedGenderInAnswers",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reinforcementSettings.enabledPraiseWords",
+            "columnName": "rs_enabledPraiseWords",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reinforcementSettings.enabledAnimationThemes",
+            "columnName": "rs_enabledAnimationThemes",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'flowers,butterflies,balloons,cars,balls'"
+          },
+          {
+            "fieldPath": "reinforcementSettings.animationsEnabled",
+            "columnName": "rs_animationsEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reinforcementSettings.endSessionAnimationEnabled",
+            "columnName": "rs_endSessionAnimationEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reinforcementSettings.endSessionFanfareEnabled",
+            "columnName": "rs_endSessionFanfareEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "image_usages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`stepId` TEXT NOT NULL, `imageId` TEXT NOT NULL, `inLearning` INTEGER NOT NULL, `inTest` INTEGER NOT NULL, PRIMARY KEY(`stepId`, `imageId`), FOREIGN KEY(`stepId`) REFERENCES `learning_steps`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`imageId`) REFERENCES `emotion_images`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "stepId",
+            "columnName": "stepId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageId",
+            "columnName": "imageId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inLearning",
+            "columnName": "inLearning",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inTest",
+            "columnName": "inTest",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "stepId",
+            "imageId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_image_usages_imageId",
+            "unique": false,
+            "columnNames": [
+              "imageId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_image_usages_imageId` ON `${TABLE_NAME}` (`imageId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "learning_steps",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "stepId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "emotion_images",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "imageId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bf00a17f8018c6045bca7f0eb857859e')"
+    ]
+  }
+}

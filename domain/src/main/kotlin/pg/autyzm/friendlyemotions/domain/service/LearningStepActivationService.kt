@@ -11,33 +11,31 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
  */
 class LearningStepActivationService {
     /**
-     * Atomically deactivates [currentActive] (if any) and activates [target] in [mode]. Both
-     * resulting steps must be persisted together by the caller.
+     * Atomically deactivates [currentActive] (if any) and activates [target]. Neither step's
+     * stored [LearningStep.mode] is changed by activation — [target] activates using whichever
+     * mode it already has. Both resulting steps must be persisted together by the caller.
      */
     fun activate(
         currentActive: LearningStep?,
         target: LearningStep,
-        mode: SessionMode,
     ): ActivationResult =
         ActivationResult(
-            deactivatedStep = currentActive?.takeIf { it.id != target.id }?.copy(isActive = false, activeMode = null),
-            activatedStep = target.copy(isActive = true, activeMode = mode),
+            deactivatedStep = currentActive?.takeIf { it.id != target.id }?.copy(isActive = false),
+            activatedStep = target.copy(isActive = true),
         )
 
-    /** Changes [mode] of the already-active [activeStep], without deactivating it. */
+    /** Sets [mode] on [step]. Valid for any step, active or not — it always persists. */
     fun setMode(
-        activeStep: LearningStep,
+        step: LearningStep,
         mode: SessionMode,
-    ): LearningStep {
-        require(activeStep.isActive) { "setMode requires an already-active step, got ${activeStep.id}" }
-        return activeStep.copy(activeMode = mode)
-    }
+    ): LearningStep = step.copy(mode = mode)
 
     /**
-     * If [deletedStep] was active, returns the first of [exampleSteps] activated in `LEARNING` mode
-     * as fallback; returns `null` if [deletedStep] was not active (no fallback needed). [exampleSteps]
-     * must be non-empty when [deletedStep] was active — example steps are pre-seeded and
-     * non-deletable, so the system is never left without one (§8.11).
+     * If [deletedStep] was active, returns the first of [exampleSteps] activated with its mode
+     * forced to `LEARNING` (overriding whatever mode it had stored) as fallback; returns `null`
+     * if [deletedStep] was not active (no fallback needed). [exampleSteps] must be non-empty when
+     * [deletedStep] was active — example steps are pre-seeded and non-deletable, so the system is
+     * never left without one (§8.11).
      */
     fun handleDeletion(
         deletedStep: LearningStep,
@@ -47,7 +45,7 @@ class LearningStepActivationService {
 
         val fallback = exampleSteps.firstOrNull()
         requireNotNull(fallback) { "no example step available for fallback activation" }
-        return fallback.copy(isActive = true, activeMode = SessionMode.LEARNING)
+        return fallback.copy(isActive = true, mode = SessionMode.LEARNING)
     }
 }
 

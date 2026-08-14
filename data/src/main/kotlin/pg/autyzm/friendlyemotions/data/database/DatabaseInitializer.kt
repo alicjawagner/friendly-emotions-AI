@@ -113,7 +113,7 @@ class DatabaseInitializer
             seedStep(
                 id = LearningStepId(PODSTAWOWY_ID),
                 isActive = true,
-                activeMode = SessionMode.LEARNING,
+                mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
                         name = "Podstawowy",
@@ -145,7 +145,7 @@ class DatabaseInitializer
             seedStep(
                 id = LearningStepId(ZAAWANSOWANY_ID),
                 isActive = false,
-                activeMode = null,
+                mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
                         name = "Zaawansowany",
@@ -160,11 +160,11 @@ class DatabaseInitializer
         private suspend fun seedStep(
             id: LearningStepId,
             isActive: Boolean,
-            activeMode: SessionMode?,
+            mode: SessionMode,
             draft: LearningStepDraft,
         ) {
             learningStepDao.insert(
-                draft.toEntity(id = id, isActive = isActive, activeMode = activeMode, isExample = true),
+                draft.toEntity(id = id, isActive = isActive, mode = mode, isExample = true),
             )
             imageUsageDao.insertAll(draft.toImageUsageEntities(id))
         }

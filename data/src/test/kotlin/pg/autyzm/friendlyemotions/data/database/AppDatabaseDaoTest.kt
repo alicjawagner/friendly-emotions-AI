@@ -88,7 +88,7 @@ class AppDatabaseDaoTest {
             db.emotionFolderDao().insert(folder)
             val image = image(folder.id)
             db.emotionImageDao().insert(image)
-            val step = step(id = "step-1", name = "Podstawowy", isActive = false, activeMode = null, isExample = true)
+            val step = step(id = "step-1", name = "Podstawowy", isActive = false, isExample = true)
             db.learningStepDao().insert(step)
             val usage = ImageUsageEntity(stepId = step.id, imageId = image.id, inLearning = true, inTest = false)
             db.imageUsageDao().insertAll(listOf(usage))
@@ -113,7 +113,7 @@ class AppDatabaseDaoTest {
             val imageA = image(folder.id, id = "image-a")
             val imageB = image(folder.id, id = "image-b")
             db.emotionImageDao().insertAll(listOf(imageA, imageB))
-            val step = step(id = "step-1", name = "Podstawowy", isActive = false, activeMode = null, isExample = true)
+            val step = step(id = "step-1", name = "Podstawowy", isActive = false, isExample = true)
             db.learningStepDao().insert(step)
             db.imageUsageDao().insertAll(listOf(ImageUsageEntity(step.id, imageA.id, inLearning = true, inTest = true)))
 
@@ -134,22 +134,36 @@ class AppDatabaseDaoTest {
                     id = "step-a",
                     name = "A",
                     isActive = true,
-                    activeMode = SessionMode.LEARNING.name,
+                    mode = SessionMode.LEARNING.name,
                     isExample = true,
                 )
-            val stepB = step(id = "step-b", name = "B", isActive = false, activeMode = null, isExample = true)
+            val stepB =
+                step(id = "step-b", name = "B", isActive = false, mode = SessionMode.TEST.name, isExample = true)
             db.learningStepDao().insert(stepA)
             db.learningStepDao().insert(stepB)
 
-            db.learningStepDao().activateStep(stepB.id, SessionMode.TEST)
+            db.learningStepDao().activateStep(stepB.id)
 
             val updatedA = db.learningStepDao().getById(stepA.id)
             val updatedB = db.learningStepDao().getById(stepB.id)
             assertEquals(false, updatedA?.isActive)
-            assertNull(updatedA?.activeMode)
+            assertEquals(SessionMode.LEARNING.name, updatedA?.mode)
             assertEquals(true, updatedB?.isActive)
-            assertEquals(SessionMode.TEST.name, updatedB?.activeMode)
+            assertEquals(SessionMode.TEST.name, updatedB?.mode)
             assertEquals(stepB.id, db.learningStepDao().observeActive().first()?.id)
+        }
+
+    @Test
+    fun `updateMode persists a step's mode regardless of activation state`() =
+        runTest {
+            val inactive = step(id = "step-inactive", name = "Inactive", isActive = false, isExample = false)
+            db.learningStepDao().insert(inactive)
+
+            db.learningStepDao().updateMode(inactive.id, SessionMode.TEST.name)
+
+            val updated = db.learningStepDao().getById(inactive.id)
+            assertEquals(false, updated?.isActive)
+            assertEquals(SessionMode.TEST.name, updated?.mode)
         }
 
     @Test
@@ -160,13 +174,18 @@ class AppDatabaseDaoTest {
                     id = "step-active",
                     name = "Active",
                     isActive = true,
-                    activeMode = SessionMode.TEST.name,
+                    mode = SessionMode.TEST.name,
                     isExample = false,
                 )
             val exampleFirst =
-                step(id = "example-a", name = "Podstawowy", isActive = false, activeMode = null, isExample = true)
-            val exampleSecond =
-                step(id = "example-b", name = "Zaawansowany", isActive = false, activeMode = null, isExample = true)
+                step(
+                    id = "example-a",
+                    name = "Podstawowy",
+                    isActive = false,
+                    mode = SessionMode.TEST.name,
+                    isExample = true,
+                )
+            val exampleSecond = step(id = "example-b", name = "Zaawansowany", isActive = false, isExample = true)
             db.learningStepDao().insert(active)
             db.learningStepDao().insert(exampleFirst)
             db.learningStepDao().insert(exampleSecond)
@@ -176,7 +195,7 @@ class AppDatabaseDaoTest {
             assertNull(db.learningStepDao().getById(active.id))
             val fallback = db.learningStepDao().observeActive().first()
             assertEquals(exampleFirst.id, fallback?.id)
-            assertEquals(SessionMode.LEARNING.name, fallback?.activeMode)
+            assertEquals(SessionMode.LEARNING.name, fallback?.mode)
         }
 
     @Test
@@ -187,11 +206,9 @@ class AppDatabaseDaoTest {
                     id = "step-active",
                     name = "Active",
                     isActive = true,
-                    activeMode = SessionMode.LEARNING.name,
                     isExample = true,
                 )
-            val inactive =
-                step(id = "step-inactive", name = "Inactive", isActive = false, activeMode = null, isExample = false)
+            val inactive = step(id = "step-inactive", name = "Inactive", isActive = false, isExample = false)
             db.learningStepDao().insert(active)
             db.learningStepDao().insert(inactive)
 
@@ -225,13 +242,13 @@ class AppDatabaseDaoTest {
         id: String,
         name: String,
         isActive: Boolean,
-        activeMode: String?,
         isExample: Boolean,
+        mode: String = SessionMode.LEARNING.name,
     ) = LearningStepEntity(
         id = id,
         name = name,
         isActive = isActive,
-        activeMode = activeMode,
+        mode = mode,
         isExample = isExample,
         learningParameters =
             LearningParametersEmbedded(

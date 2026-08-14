@@ -51,35 +51,33 @@ abstract class LearningStepDao {
     @Query("SELECT isActive FROM learning_steps WHERE id = :stepId")
     abstract suspend fun isActive(stepId: String): Boolean?
 
-    @Query("UPDATE learning_steps SET isActive = 0, activeMode = NULL WHERE isActive = 1")
+    @Query("UPDATE learning_steps SET isActive = 0 WHERE isActive = 1")
     abstract suspend fun deactivateCurrentActive()
 
-    @Query("UPDATE learning_steps SET isActive = 1, activeMode = :mode WHERE id = :stepId")
-    abstract suspend fun setActive(
+    @Query("UPDATE learning_steps SET isActive = 1 WHERE id = :stepId")
+    abstract suspend fun setActive(stepId: String)
+
+    /** Sets [stepId]'s stored mode, overriding its current value regardless of [isActive]. */
+    @Query("UPDATE learning_steps SET mode = :mode WHERE id = :stepId")
+    abstract suspend fun updateMode(
         stepId: String,
         mode: String,
     )
 
-    @Query("UPDATE learning_steps SET activeMode = :mode WHERE id = :stepId")
-    abstract suspend fun updateActiveMode(
-        stepId: String,
-        mode: String,
-    )
-
-    /** Deactivates whichever step currently has `isActive = 1` (if any) and activates [stepId] in [mode]. */
+    /**
+     * Deactivates whichever step currently has `isActive = 1` (if any) and activates [stepId],
+     * leaving both steps' stored `mode` untouched.
+     */
     @Transaction
-    open suspend fun activateStep(
-        stepId: String,
-        mode: SessionMode,
-    ) {
+    open suspend fun activateStep(stepId: String) {
         deactivateCurrentActive()
-        setActive(stepId, mode.name)
+        setActive(stepId)
     }
 
     /**
      * Deletes [stepId]; if it was the active step, activates the first example step (see
-     * [getExampleSteps]) in `LEARNING` mode as fallback, so the app is never left without an active
-     * step (target-domain.md §8.11).
+     * [getExampleSteps]) as fallback, forcing its mode to `LEARNING` (overriding whatever mode
+     * it had stored), so the app is never left without an active step (target-domain.md §8.11).
      */
     @Transaction
     open suspend fun deleteStepWithFallback(stepId: String) {
@@ -87,7 +85,8 @@ abstract class LearningStepDao {
         deleteById(stepId)
         if (wasActive) {
             getExampleSteps().firstOrNull()?.let { fallback ->
-                setActive(fallback.id, SessionMode.LEARNING.name)
+                setActive(fallback.id)
+                updateMode(fallback.id, SessionMode.LEARNING.name)
             }
         }
     }

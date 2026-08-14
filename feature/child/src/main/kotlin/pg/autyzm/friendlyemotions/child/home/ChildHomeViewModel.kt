@@ -53,7 +53,7 @@ class ChildHomeViewModel
                         val eligibility = checkSessionEligibilityUseCase()
                         ChildHomeUiState(
                             activeStepName = step.name,
-                            activeMode = step.activeMode,
+                            activeMode = step.mode,
                             canPlay = eligibility is Result.Success,
                         )
                     }

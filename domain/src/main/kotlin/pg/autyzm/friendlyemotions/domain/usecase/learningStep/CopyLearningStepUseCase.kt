@@ -8,9 +8,10 @@ import javax.inject.Inject
 
 /**
  * Deep-copies a `LearningStep` (target-domain.md §8.4: the copy is always inactive, never marked
- * `isExample`, and receives an auto-generated unique name — `"{original} (kopia N)"`). Name
- * generation and the copy itself are owned by [LearningStepRepository.copyStep] since the repository
- * signature takes no name parameter; this use case is a thin pass-through.
+ * `isExample`, inherits the source's mode, and receives an auto-generated unique name —
+ * `"{original} (n)"` with the smallest available positive integer `n`). Name generation and the
+ * copy itself are owned by [LearningStepRepository.copyStep] since the repository signature
+ * takes no name parameter; this use case is a thin pass-through.
  */
 class CopyLearningStepUseCase
     @Inject

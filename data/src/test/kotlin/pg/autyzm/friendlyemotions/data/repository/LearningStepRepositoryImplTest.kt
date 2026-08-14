@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -81,7 +80,7 @@ class LearningStepRepositoryImplTest {
             val step = repository.getStepById(stepId)
             assertEquals("Podstawowy", step.name)
             assertEquals(false, step.isActive)
-            assertNull(step.activeMode)
+            assertEquals(SessionMode.LEARNING, step.mode)
             assertEquals(false, step.isExample)
             assertEquals(
                 listOf(ImageUsage(imageA, inLearning = true, inTest = false)),
@@ -97,7 +96,7 @@ class LearningStepRepositoryImplTest {
                 repository.saveStep(
                     draft(name = "Podstawowy", usages = listOf(ImageUsage(imageA, true, false))),
                 )
-            repository.activateStep(stepId, SessionMode.LEARNING)
+            repository.activateStep(stepId)
 
             repository.updateStep(
                 stepId,
@@ -107,7 +106,7 @@ class LearningStepRepositoryImplTest {
             val updated = repository.getStepById(stepId)
             assertEquals("Zaawansowany", updated.name)
             assertEquals(true, updated.isActive)
-            assertEquals(SessionMode.LEARNING, updated.activeMode)
+            assertEquals(SessionMode.LEARNING, updated.mode)
             assertEquals(
                 listOf(ImageUsage(imageB, inLearning = false, inTest = true)),
                 updated.materialSelection.imageUsages,
@@ -142,28 +141,42 @@ class LearningStepRepositoryImplTest {
             val stepA = repository.saveStep(draft(name = "A", usages = emptyList()))
             val stepB = repository.saveStep(draft(name = "B", usages = emptyList()))
 
-            repository.activateStep(stepA, SessionMode.LEARNING)
-            repository.activateStep(stepB, SessionMode.TEST)
-            repository.activateStep(stepB, SessionMode.LEARNING)
+            repository.activateStep(stepA)
+            repository.setMode(stepB, SessionMode.TEST)
+            repository.activateStep(stepB)
+            repository.setMode(stepB, SessionMode.LEARNING)
+            repository.activateStep(stepB)
 
             val allSteps = repository.observeAllSteps().first()
             assertEquals(1, allSteps.count { it.isActive })
             val active = repository.observeActiveStep().first()
             assertEquals(stepB, active?.id)
-            assertEquals(SessionMode.LEARNING, active?.activeMode)
+            assertEquals(SessionMode.LEARNING, active?.mode)
         }
 
     @Test
-    fun `setActiveMode changes mode of the active step without deactivating it`() =
+    fun `setMode changes mode of the active step without deactivating it`() =
         runTest {
             val stepId = repository.saveStep(draft(name = "Podstawowy", usages = emptyList()))
-            repository.activateStep(stepId, SessionMode.LEARNING)
+            repository.activateStep(stepId)
 
-            repository.setActiveMode(stepId, SessionMode.TEST)
+            repository.setMode(stepId, SessionMode.TEST)
 
             val step = repository.getStepById(stepId)
             assertEquals(true, step.isActive)
-            assertEquals(SessionMode.TEST, step.activeMode)
+            assertEquals(SessionMode.TEST, step.mode)
+        }
+
+    @Test
+    fun `setMode changes mode of an inactive step and persists without activating it`() =
+        runTest {
+            val stepId = repository.saveStep(draft(name = "Podstawowy", usages = emptyList()))
+
+            repository.setMode(stepId, SessionMode.TEST)
+
+            val step = repository.getStepById(stepId)
+            assertEquals(false, step.isActive)
+            assertEquals(SessionMode.TEST, step.mode)
         }
 
     @Test
@@ -174,21 +187,22 @@ class LearningStepRepositoryImplTest {
                 requireNotNull(db.learningStepDao().getById(exampleStep.value)).copy(isExample = true),
             )
             val activeStep = repository.saveStep(draft(name = "Custom", usages = emptyList()))
-            repository.activateStep(activeStep, SessionMode.TEST)
+            repository.setMode(activeStep, SessionMode.TEST)
+            repository.activateStep(activeStep)
 
             repository.deleteStep(activeStep)
 
             assertTrue(repository.observeAllSteps().first().none { it.id == activeStep })
             val fallback = repository.observeActiveStep().first()
             assertEquals(exampleStep, fallback?.id)
-            assertEquals(SessionMode.LEARNING, fallback?.activeMode)
+            assertEquals(SessionMode.LEARNING, fallback?.mode)
         }
 
     @Test
     fun `deleteStep on an inactive step does not change the currently active step`() =
         runTest {
             val activeStep = repository.saveStep(draft(name = "Active", usages = emptyList()))
-            repository.activateStep(activeStep, SessionMode.LEARNING)
+            repository.activateStep(activeStep)
             val inactiveStep = repository.saveStep(draft(name = "Inactive", usages = emptyList()))
 
             repository.deleteStep(inactiveStep)
@@ -197,20 +211,22 @@ class LearningStepRepositoryImplTest {
         }
 
     @Test
-    fun `copyStep generates first-unused kopia name and duplicates parameters and material selection`() =
+    fun `copyStep generates smallest-available numbered name and duplicates parameters, material selection and mode`() =
         runTest {
             val sourceId =
                 repository.saveStep(draft(name = "Podstawowy", usages = listOf(ImageUsage(imageA, true, true))))
+            repository.setMode(sourceId, SessionMode.TEST)
 
             val firstCopyId = repository.copyStep(sourceId)
             val secondCopyId = repository.copyStep(sourceId)
 
             val firstCopy = repository.getStepById(firstCopyId)
             val secondCopy = repository.getStepById(secondCopyId)
-            assertEquals("Podstawowy (kopia)", firstCopy.name)
-            assertEquals("Podstawowy (kopia 2)", secondCopy.name)
+            assertEquals("Podstawowy (1)", firstCopy.name)
+            assertEquals("Podstawowy (2)", secondCopy.name)
             assertEquals(false, firstCopy.isActive)
             assertEquals(false, firstCopy.isExample)
+            assertEquals(SessionMode.TEST, firstCopy.mode)
             assertEquals(listOf(ImageUsage(imageA, true, true)), firstCopy.materialSelection.imageUsages)
         }
 

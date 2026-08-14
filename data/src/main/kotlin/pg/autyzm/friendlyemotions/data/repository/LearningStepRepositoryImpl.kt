@@ -56,23 +56,24 @@ class LearningStepRepositoryImpl
 
         override suspend fun saveStep(draft: LearningStepDraft): LearningStepId {
             val stepId = LearningStepId(UUID.randomUUID().toString())
-            learningStepDao.insert(draft.toEntity(id = stepId, isActive = false, activeMode = null, isExample = false))
+            learningStepDao.insert(
+                draft.toEntity(id = stepId, isActive = false, mode = SessionMode.LEARNING, isExample = false),
+            )
             imageUsageDao.insertAll(draft.toImageUsageEntities(stepId))
             return stepId
         }
 
-        /** Preserves the existing row's `isActive`/`activeMode`/`isExample` — the draft never carries them (ADR-013). */
+        /** Preserves the existing row's `isActive`/`mode`/`isExample` — the draft never carries them (ADR-013). */
         override suspend fun updateStep(
             stepId: LearningStepId,
             draft: LearningStepDraft,
         ) {
             val existing = requireEntity(stepId)
-            val activeMode = existing.activeMode?.let(SessionMode::valueOf)
             val entity =
                 draft.toEntity(
                     id = stepId,
                     isActive = existing.isActive,
-                    activeMode = activeMode,
+                    mode = SessionMode.valueOf(existing.mode),
                     isExample = existing.isExample,
                 )
             learningStepDao.update(entity)
@@ -83,23 +84,21 @@ class LearningStepRepositoryImpl
             learningStepDao.deleteStepWithFallback(stepId.value)
         }
 
-        override suspend fun activateStep(
-            stepId: LearningStepId,
-            mode: SessionMode,
-        ) {
-            learningStepDao.activateStep(stepId.value, mode)
+        override suspend fun activateStep(stepId: LearningStepId) {
+            learningStepDao.activateStep(stepId.value)
         }
 
-        override suspend fun setActiveMode(
+        override suspend fun setMode(
             stepId: LearningStepId,
             mode: SessionMode,
         ) {
-            learningStepDao.updateActiveMode(stepId.value, mode.name)
+            learningStepDao.updateMode(stepId.value, mode.name)
         }
 
         /**
          * Duplicates [stepId]'s parameters and material selection into a new, inactive, non-example
-         * step, generating a `"{name} (kopia)"`/`"{name} (kopia N)"` name (first unused suffix).
+         * step (inheriting the source's [LearningStepEntity.mode]), generating a `"{name} (n)"` name
+         * (smallest available positive integer).
          *
          * Name generation living inside a repository is an intentional, documented exception to
          * ADR-007's "no business logic in repositories" rule: target-architecture.md §11.2 explicitly
@@ -113,7 +112,7 @@ class LearningStepRepositoryImpl
             val newName = generateCopyName(source.name)
 
             learningStepDao.insert(
-                source.copy(id = newId.value, name = newName, isActive = false, activeMode = null, isExample = false),
+                source.copy(id = newId.value, name = newName, isActive = false, isExample = false),
             )
             imageUsageDao.insertAll(sourceUsages.map { it.copy(stepId = newId.value) })
             return newId
@@ -127,17 +126,11 @@ class LearningStepRepositoryImpl
         private suspend fun LearningStepEntity.toDomainWithUsages(): LearningStep =
             toDomain(imageUsageDao.getForStep(id))
 
+        /** Smallest positive integer `n` for which `"$originalName ($n)"` is not already taken. */
         private suspend fun generateCopyName(originalName: String): String {
             val existingNames = learningStepDao.getAllNames().toSet()
-            val plainCopyName = "$originalName ($COPY_SUFFIX)"
-            if (plainCopyName !in existingNames) return plainCopyName
-
-            var counter = 2
-            while ("$originalName ($COPY_SUFFIX $counter)" in existingNames) counter++
-            return "$originalName ($COPY_SUFFIX $counter)"
-        }
-
-        private companion object {
-            const val COPY_SUFFIX = "kopia"
+            var n = 1
+            while ("$originalName ($n)" in existingNames) n++
+            return "$originalName ($n)"
         }
     }

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
+import pg.autyzm.friendlyemotions.therapist.learningStep.list.LearningStepsListScreen
 import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
 import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
 import pg.autyzm.friendlyemotions.therapist.materials.newFolder.MaterialsNewFolderScreen
@@ -23,9 +24,16 @@ import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
  * Root `NavHost` for the therapist app (target-architecture.md §13.3, ADR-012). Every route below
  * `Welcome`/`Home` is a [PlaceholderScreen] until its owning phase (10-13) replaces it with the
  * real screen.
+ *
+ * [onPlayRequested] launches the Child App's `ChildActivity` (the "URUCHOM" button on
+ * `LearningStepsListScreen`) — `:feature:therapist` cannot reference `ChildActivity` directly
+ * (forbidden module edge, target-architecture.md §18), so this is supplied by `TherapistActivity`.
  */
 @Composable
-fun TherapistNavGraph(navController: NavHostController = rememberNavController()) {
+fun TherapistNavGraph(
+    navController: NavHostController = rememberNavController(),
+    onPlayRequested: () -> Unit = {},
+) {
     val onHomeClick: () -> Unit = {
         navController.navigate(TherapistRoutes.Home) {
             popUpTo(TherapistRoutes.Home) { inclusive = true }
@@ -96,10 +104,14 @@ fun TherapistNavGraph(navController: NavHostController = rememberNavController()
             MaterialsNewMaterialScreen(onBackClick = onBackClick, onHomeClick = onHomeClick)
         }
         composable<TherapistRoutes.LearningStepsList> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_learning_steps_list),
+            LearningStepsListScreen(
                 onBackClick = onBackClick,
                 onHomeClick = onHomeClick,
+                onEditStepClick = { stepId ->
+                    navController.navigate(TherapistRoutes.WizardMaterial(stepId.value))
+                },
+                onCreateNewClick = { navController.navigate(TherapistRoutes.WizardMaterial()) },
+                onPlayClick = onPlayRequested,
             )
         }
         composable<TherapistRoutes.WizardMaterial> {

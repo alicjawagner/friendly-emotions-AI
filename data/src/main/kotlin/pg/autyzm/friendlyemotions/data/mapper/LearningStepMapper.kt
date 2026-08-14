@@ -29,7 +29,7 @@ fun LearningStepEntity.toDomain(usages: List<ImageUsageEntity>): LearningStep =
         id = LearningStepId(id),
         name = name,
         isActive = isActive,
-        activeMode = activeMode?.let(SessionMode::valueOf),
+        mode = SessionMode.valueOf(mode),
         isExample = isExample,
         materialSelection = MaterialSelection(usages.map { it.toDomain() }),
         learningParameters = learningParameters.toDomain(),
@@ -38,21 +38,21 @@ fun LearningStepEntity.toDomain(usages: List<ImageUsageEntity>): LearningStep =
     )
 
 /**
- * Builds the [LearningStepEntity] row for a draft. [id]/[isActive]/[activeMode]/[isExample] are
+ * Builds the [LearningStepEntity] row for a draft. [id]/[isActive]/[mode]/[isExample] are
  * supplied by the repository, not the draft (see [LearningStepDraft] KDoc) — `saveStep` fixes them
  * to their creation defaults, while `updateStep` carries over the existing step's current values.
  */
 fun LearningStepDraft.toEntity(
     id: LearningStepId,
     isActive: Boolean,
-    activeMode: SessionMode?,
+    mode: SessionMode,
     isExample: Boolean,
 ): LearningStepEntity =
     LearningStepEntity(
         id = id.value,
         name = name,
         isActive = isActive,
-        activeMode = activeMode?.name,
+        mode = mode.name,
         isExample = isExample,
         learningParameters = learningParameters.toEmbedded(),
         testParameters = testParameters.toEmbedded(),

@@ -145,7 +145,7 @@ A complete, named session plan. The primary aggregate of the configuration domai
 | `id` | `LearningStepId` | Unique identifier |
 | `name` | `String` | Unique (case-insensitive) across all LearningSteps |
 | `isActive` | `Boolean` | True for at most one LearningStep at a time |
-| `activeMode` | `SessionMode?` | `LEARNING` or `TEST`; null when and only when `isActive` is false |
+| `mode` | `SessionMode` | `LEARNING` or `TEST`; always present. The mode this step runs in when activated. Persists independently of `isActive` and survives across app restarts, including while the step is inactive. |
 | `isExample` | `Boolean` | Pre-seeded; not editable or deletable, but copyable |
 | `materialSelection` | `MaterialSelection` | Which images are included and in which modes |
 | `learningParameters` | `LearningParameters` | All learning-mode session parameters |
@@ -159,7 +159,9 @@ A complete, named session plan. The primary aggregate of the configuration domai
 
 **Invariants:**
 - `name` is unique (case-insensitive).
-- `activeMode` is null if and only if `isActive` is false.
+- `mode` is always present (non-null) regardless of `isActive`; activating or deactivating a
+  step never changes its stored `mode`, except the automatic example-step fallback on deletion,
+  which always forces the fallback's `mode` to `LEARNING` (§8.4, §9.1).
 - `TestParameters.overridesLearning = false` means test parameters mirror learning parameters.
 - Example steps cannot be edited or deleted; copies are always inactive and non-example.
 
@@ -511,11 +513,16 @@ Manages the repeat-stage mechanism. Active in `LEARNING` mode only. See §14 for
 ### 8.4 Learning Step Rules
 
 - At most one LearningStep is active at any time.
-- `activeMode` is non-null if and only if `isActive` is true.
+- `mode` is always present and is set independently of `isActive` — therapists may pick a
+  step's mode via its list-row toggle before ever activating it, and the value is retained
+  whether or not that step is currently active.
 - LearningStep names must be unique (case-insensitive).
 - Deleting the active LearningStep triggers automatic fallback: the first available example step is activated in `LEARNING` mode.
 - Example steps cannot be edited or deleted. They can be copied.
-- A copy receives an auto-generated unique name (`"{original} (kopia N)"`), is always inactive, and is never marked as example.
+- A copy receives an auto-generated unique name of the form `"{original} ({n})"`, where `n` is
+  the smallest positive integer for which that name does not already exist (e.g. "Podstawowy
+  (1)", then "Podstawowy (2)" if "(1)" is taken). The copy is always inactive, is never marked
+  as example, and inherits the source step's `mode`.
 
 ### 8.5 Hint Rules
 
@@ -596,11 +603,21 @@ Manages the repeat-stage mechanism. Active in `LEARNING` mode only. See §14 for
                      └──────────────────────┘
 ```
 
-**Activation** (`activate(step, mode)`): atomically deactivates any currently active step (→ INACTIVE) and activates the target step in the given mode. Both state changes happen together or not at all.
+**Activation** (`activate(step)`): atomically deactivates any currently active step (→
+INACTIVE, `mode` left unchanged) and activates the target step (→ ACTIVE, using whichever
+`mode` is already stored on it — activation never changes `mode`). Both state changes happen
+together or not at all.
 
-**Mode toggle** (`setMode(mode)`): switches the active step between `ACTIVE_LEARNING` and `ACTIVE_TEST` without deactivating it first. Only valid for the currently active step.
+**Mode toggle** (`setMode(step, mode)`): sets a step's stored `mode`. Unlike earlier revisions
+of this document, this is valid for *any* step, not only the currently active one — an inactive
+step's mode can be pre-selected via its list-row toggle and takes effect the next time that step
+is activated. When applied to the currently active step it switches it between
+`ACTIVE_LEARNING` and `ACTIVE_TEST` without deactivating it first.
 
-**Deletion**: when an active step is deleted, it does not transition to `INACTIVE` — it is removed entirely. `LearningStepActivationService` immediately activates the first available example step in `LEARNING` mode as a fallback, ensuring the system is never left without an active step.
+**Deletion**: when an active step is deleted, it does not transition to `INACTIVE` — it is
+removed entirely. `LearningStepActivationService` immediately activates the first available
+example step, explicitly forcing its `mode` to `LEARNING` as fallback (overriding whatever
+`mode` that example step had stored), ensuring the system is never left without an active step.
 
 ### 9.2 Session
 

@@ -97,7 +97,7 @@ class GameViewModelTest {
         id = LearningStepId("step-1"),
         name = "Step",
         isActive = true,
-        activeMode = mode,
+        mode = mode,
         isExample = false,
         materialSelection = MaterialSelection(emptyList()),
         learningParameters = learningParameters,

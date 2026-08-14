@@ -8,11 +8,12 @@ import pg.autyzm.friendlyemotions.domain.repository.LearningStepRepository
 import javax.inject.Inject
 
 /**
- * Toggles the mode of the already-active `LearningStep` without deactivating it
- * (target-domain.md §7.3, §9.1) — e.g. switching between `LEARNING` and `TEST` for the step
- * currently in use.
+ * Sets the mode of any `LearningStep`, active or not (target-domain.md §7.3, §9.1). The value
+ * always persists — e.g. pre-selecting `TEST` for a currently inactive step via its list-row
+ * toggle, so that mode is what it activates with once the step is later selected, and it
+ * survives across app restarts.
  */
-class SetActiveModeUseCase
+class SetLearningStepModeUseCase
     @Inject
     constructor(
         private val learningStepRepository: LearningStepRepository,
@@ -21,7 +22,7 @@ class SetActiveModeUseCase
             stepId: LearningStepId,
             mode: SessionMode,
         ): Result<Unit, DomainError> {
-            learningStepRepository.setActiveMode(stepId, mode)
+            learningStepRepository.setMode(stepId, mode)
             return Result.Success(Unit)
         }
     }
