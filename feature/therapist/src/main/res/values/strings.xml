@@ -35,6 +35,10 @@
     <string name="therapist_materials_delete_folder_message">Ten folder i znajdujące się w nim zdjęcia zostaną trwale usunięte.</string>
     <string name="therapist_materials_delete_image_title">Usunąć zdjęcie?</string>
     <string name="therapist_materials_delete_image_message">To zdjęcie zostanie trwale usunięte.</string>
+    <string name="therapist_materials_exit_confirm_title">Odrzucić zmiany?</string>
+    <string name="therapist_materials_exit_confirm_message">Wprowadzone zmiany nie zostaną zapisane, jeśli teraz wyjdziesz.</string>
+    <string name="therapist_materials_exit_confirm_confirm">WYJDŹ</string>
+    <string name="therapist_materials_exit_confirm_cancel">ANULUJ</string>
 
     <string name="therapist_materials_new_folder_name_label">Wpisz nazwę nowego folderu:</string>
     <string name="therapist_materials_new_folder_gender_label">Wybierz rodzaj dla zdjęć w folderze:</string>

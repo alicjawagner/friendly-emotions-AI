@@ -35,6 +35,10 @@
     <string name="therapist_materials_delete_folder_message">This folder and the photos inside it will be permanently deleted.</string>
     <string name="therapist_materials_delete_image_title">Delete photo?</string>
     <string name="therapist_materials_delete_image_message">This photo will be permanently deleted.</string>
+    <string name="therapist_materials_exit_confirm_title">Discard changes?</string>
+    <string name="therapist_materials_exit_confirm_message">Your changes will not be saved if you leave now.</string>
+    <string name="therapist_materials_exit_confirm_confirm">LEAVE</string>
+    <string name="therapist_materials_exit_confirm_cancel">CANCEL</string>
 
     <string name="therapist_materials_new_folder_name_label">Enter the new folder\'s name:</string>
     <string name="therapist_materials_new_folder_gender_label">Choose the gender for photos in this folder:</string>

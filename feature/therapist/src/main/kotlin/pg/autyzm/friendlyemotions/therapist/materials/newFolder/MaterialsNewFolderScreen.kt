@@ -35,6 +35,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
+import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
@@ -54,9 +55,11 @@ fun MaterialsNewFolderScreen(
     viewModel: MaterialsNewFolderViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showExitConfirmation by remember { mutableStateOf(false) }
+    val hasUnsavedChanges = uiState.name.isNotBlank() || uiState.genderPolicy != FolderGenderPolicy.FEMININE
     TherapistScaffold(
         title = stringResource(R.string.therapist_route_title_materials_new_folder),
-        onBackClick = onBackClick,
+        onBackClick = { if (hasUnsavedChanges) showExitConfirmation = true else onBackClick() },
         onHomeClick = onHomeClick,
         modifier = modifier,
     ) { innerPadding ->
@@ -69,6 +72,16 @@ fun MaterialsNewFolderScreen(
                 onErrorDismissed = viewModel::onErrorDismissed,
             )
         }
+    }
+    if (showExitConfirmation) {
+        YesNoConfirmationDialog(
+            title = stringResource(R.string.therapist_materials_exit_confirm_title),
+            message = stringResource(R.string.therapist_materials_exit_confirm_message),
+            confirmLabel = stringResource(R.string.therapist_materials_exit_confirm_confirm),
+            dismissLabel = stringResource(R.string.therapist_materials_exit_confirm_cancel),
+            onConfirm = onBackClick,
+            onDismiss = { showExitConfirmation = false },
+        )
     }
 }
 

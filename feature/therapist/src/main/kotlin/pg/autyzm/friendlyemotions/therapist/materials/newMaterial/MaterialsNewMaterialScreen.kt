@@ -63,6 +63,7 @@ import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
+import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -86,9 +87,12 @@ fun MaterialsNewMaterialScreen(
     viewModel: MaterialsNewMaterialViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showExitConfirmation by remember { mutableStateOf(false) }
+    val hasUnsavedChanges =
+        (uiState as? MaterialsNewMaterialUiState.Content)?.pendingImages?.isNotEmpty() ?: false
     TherapistScaffold(
         title = stringResource(R.string.therapist_route_title_materials_new_material),
-        onBackClick = onBackClick,
+        onBackClick = { if (hasUnsavedChanges) showExitConfirmation = true else onBackClick() },
         onHomeClick = onHomeClick,
         modifier = modifier,
     ) { innerPadding ->
@@ -109,6 +113,16 @@ fun MaterialsNewMaterialScreen(
                     )
             }
         }
+    }
+    if (showExitConfirmation) {
+        YesNoConfirmationDialog(
+            title = stringResource(R.string.therapist_materials_exit_confirm_title),
+            message = stringResource(R.string.therapist_materials_exit_confirm_message),
+            confirmLabel = stringResource(R.string.therapist_materials_exit_confirm_confirm),
+            dismissLabel = stringResource(R.string.therapist_materials_exit_confirm_cancel),
+            onConfirm = onBackClick,
+            onDismiss = { showExitConfirmation = false },
+        )
     }
 }
 
