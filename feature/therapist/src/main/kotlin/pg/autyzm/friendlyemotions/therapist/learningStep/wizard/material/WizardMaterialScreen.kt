@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,7 +59,6 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.compone
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.components.WizardFolderTile
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.components.WizardImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
-import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
@@ -67,11 +67,23 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
-private val LEFT_PANE_WIDTH = 580.dp
 private val CONTENT_PADDING = 20.dp
 private val HEADER_BACK_ICON_SIZE = 48.dp
 private val HEADER_FOLDER_ICON_SIZE = 56.dp
-private val NAME_COLUMN_WIDTH = 130.dp
+private val NAME_COLUMN_WIDTH = 180.dp
+private val HEADER_COLUMN_WIDTH = 130.dp
+private val DELETE_COLUMN_WIDTH = 64.dp
+private val TABLE_HORIZONTAL_PADDING = 18.dp
+
+/**
+ * Width of the folder/image gallery pane. Matches the darker right-hand panel painted by
+ * [pg.autyzm.friendlyemotions.therapist.backgrounds.SplitBackground] /
+ * [pg.autyzm.friendlyemotions.therapist.backgrounds.SplitMascotHelpBackground] (548.dp, flush with
+ * the screen's true right edge), so the gallery pane lines up exactly with the panel behind it.
+ * [CONTENT_PADDING] is then applied inside this pane (both sides) to inset the grid from the
+ * panel's edges, mirroring the padding applied to the left pane.
+ */
+private val SIDE_PANEL_WIDTH = 548.dp
 
 /**
  * Material tab of the Learning Step wizard (Figma `screens/settings/material` sub-states, ADR-013,
@@ -238,33 +250,47 @@ private fun WizardMaterialContent(
     onNextClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
-            Column(modifier = Modifier.width(LEFT_PANE_WIDTH).fillMaxHeight()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxSize().padding(vertical = CONTENT_PADDING)) {
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(horizontal = CONTENT_PADDING),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     TherapistButton(
                         text = stringResource(R.string.therapist_wizard_material_add_emotion),
                         icon = Icons.Filled.Add,
                         onClick = onAddEmotionClick,
                         modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
                     )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Checkbox(
-                        checked = state.hideExampleMaterials,
-                        onCheckedChange = onHideExampleMaterialsToggled,
-                        colors =
-                            CheckboxDefaults.colors(
-                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            ),
-                    )
-                    Text(
-                        text = stringResource(R.string.therapist_wizard_material_hide_examples),
-                        style = FriendlyEmotionsTextStyles.bodyRegular,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = state.hideExampleMaterials,
+                            onCheckedChange = onHideExampleMaterialsToggled,
+                            colors =
+                                CheckboxDefaults.colors(
+                                    checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                    uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                ),
+                        )
+                        Text(
+                            text = stringResource(R.string.therapist_wizard_material_hide_examples),
+                            style = FriendlyEmotionsTextStyles.bodyRegular,
+                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(18.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = TABLE_HORIZONTAL_PADDING),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
                     Text(
                         text = stringResource(R.string.therapist_wizard_material_header_emotion),
                         style = FriendlyEmotionsTextStyles.captionC1,
@@ -275,12 +301,22 @@ private fun WizardMaterialContent(
                         text = stringResource(R.string.therapist_wizard_material_header_learning),
                         style = FriendlyEmotionsTextStyles.captionC1,
                         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(HEADER_COLUMN_WIDTH),
                     )
-                    Spacer(modifier = Modifier.width(24.dp))
                     Text(
                         text = stringResource(R.string.therapist_wizard_material_header_test),
                         style = FriendlyEmotionsTextStyles.captionC1,
                         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(HEADER_COLUMN_WIDTH),
+                    )
+                    Text(
+                        text = stringResource(R.string.therapist_wizard_material_header_delete),
+                        style = FriendlyEmotionsTextStyles.captionC1,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(DELETE_COLUMN_WIDTH),
                     )
                 }
                 Spacer(modifier = Modifier.height(11.dp))
@@ -301,7 +337,13 @@ private fun WizardMaterialContent(
                     }
                 }
             }
-            Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            Column(
+                modifier =
+                    Modifier
+                        .width(SIDE_PANEL_WIDTH)
+                        .fillMaxHeight()
+                        .padding(horizontal = CONTENT_PADDING),
+            ) {
                 val focusedFolder = state.focusedFolder
                 if (focusedFolder != null) {
                     Row(
@@ -336,7 +378,7 @@ private fun WizardMaterialContent(
                     gridState.ScrollToNewlyAdded(state.images, key = { it.id.value })
                     LazyVerticalGrid(
                         state = gridState,
-                        columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
+                        columns = GridCells.Fixed(2),
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         modifier = Modifier.weight(1f).fillMaxHeight(),
@@ -358,7 +400,7 @@ private fun WizardMaterialContent(
                     gridState.ScrollToNewlyAdded(state.folders, key = { it.id.value })
                     LazyVerticalGrid(
                         state = gridState,
-                        columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
+                        columns = GridCells.Fixed(2),
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         modifier = Modifier.weight(1f).fillMaxHeight(),

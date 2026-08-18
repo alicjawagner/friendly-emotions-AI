@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.compon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val ROW_CORNER_RADIUS = 10.dp
-private val NAME_COLUMN_WIDTH = 130.dp
+private val NAME_COLUMN_WIDTH = 180.dp
 
 /**
  * One row of the wizard Material tab's persistent "Materials list" table (Figma
@@ -58,6 +59,7 @@ fun EmotionTableRow(
                     shape = RoundedCornerShape(ROW_CORNER_RADIUS),
                 ).clickable(onClick = onRowClick)
                 .padding(horizontal = 18.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -99,7 +101,7 @@ fun EmotionTableRow(
 private fun EmotionTableRowPreview() {
     FriendlyEmotionsTheme {
         EmotionTableRow(
-            label = "Wesoły",
+            label = "Przestraszony",
             inLearningChecked = true,
             inTestChecked = false,
             isFocused = true,

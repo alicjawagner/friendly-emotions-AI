@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 private val TAB_ICON_SIZE = 24.dp
 private val TAB_VERTICAL_PADDING = 8.dp
 private val TAB_UNDERLINE_HEIGHT = 3.dp
+private val NAVBAR_SHADOW_ELEVATION = 4.dp
 
 /** The 5 wizard tabs (Figma `subnavbar-settings`), in fixed left-to-right order. */
 enum class WizardTab {
@@ -55,7 +57,13 @@ fun WizardSubNavBar(
     onTabClick: (WizardTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier.fillMaxWidth().background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900)) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .shadow(elevation = NAVBAR_SHADOW_ELEVATION)
+                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900),
+    ) {
         WizardTab.entries.forEach { tab ->
             val isSelected = tab == selectedTab
             Column(
@@ -69,7 +77,7 @@ fun WizardSubNavBar(
                             } else {
                                 FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800
                             },
-                        ).padding(vertical = TAB_VERTICAL_PADDING),
+                        ).padding(top = TAB_VERTICAL_PADDING),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {

@@ -1,7 +1,10 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.runtime.Composable
@@ -15,6 +18,8 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.MaterialTileCon
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
+private val CHECKBOX_BACKGROUND_SIZE = 16.dp
+
 /**
  * An image in the wizard Material tab's image gallery (Figma `screens/settings/material/
  * Selected-folders-inside`): built on the same [MaterialTileContainer] shell as
@@ -22,7 +27,10 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
  * checkbox overlay (top-left) instead of a gender badge — this screen never shows grammatical
  * gender. [selected] is checked whenever `inLearning || inTest`; toggling it sets/clears both
  * flags together (the leaf-level convenience toggle). Below the card, [UsageCheckboxRow] shows
- * the true independent `ImageUsage.inLearning`/`inTest` values.
+ * the true independent `ImageUsage.inLearning`/`inTest` values. When [selected], a small white
+ * square renders behind the checkbox glyph (Figma `check-box` > `background`) so the checkmark
+ * stays legible against photo content — the unchecked outline glyph already draws its own box, so
+ * no backing square is shown then.
  */
 @Composable
 fun WizardImageTile(
@@ -43,16 +51,28 @@ fun WizardImageTile(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize(),
             )
-            Checkbox(
-                checked = selected,
-                onCheckedChange = onSelectToggle,
-                colors =
-                    CheckboxDefaults.colors(
-                        checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                    ),
+            Box(
                 modifier = Modifier.align(Alignment.TopStart),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                if (selected) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(CHECKBOX_BACKGROUND_SIZE)
+                                .background(color = FriendlyEmotionsColors.Shades.White),
+                    )
+                }
+                Checkbox(
+                    checked = selected,
+                    onCheckedChange = onSelectToggle,
+                    colors =
+                        CheckboxDefaults.colors(
+                            checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                            uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                        ),
+                )
+            }
         }
         UsageCheckboxRow(
             inLearningChecked = inLearningChecked,
