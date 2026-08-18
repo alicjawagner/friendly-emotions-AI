@@ -76,7 +76,7 @@
     <string name="therapist_learning_steps_header_mode">Mode</string>
     <string name="therapist_learning_steps_header_actions">Actions</string>
     <string name="therapist_learning_steps_mode_learning">Learning</string>
-    <string name="therapist_learning_steps_mode_test">Test for the child</string>
+    <string name="therapist_learning_steps_mode_test">Test</string>
     <string name="therapist_learning_steps_edit_description">Edit</string>
     <string name="therapist_learning_steps_copy_description">Copy</string>
     <string name="therapist_learning_steps_delete_description">Delete</string>

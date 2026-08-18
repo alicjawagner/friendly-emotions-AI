@@ -43,7 +43,7 @@ fun LowMascotWideHelpBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 333.dp).size(461.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 370.dp).size(461.dp),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.mascot),
@@ -51,15 +51,15 @@ fun LowMascotWideHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-70).dp, y = (-90).dp)
-                    .size(width = 229.dp, height = 199.dp),
+                    .offset(x = (-83).dp, y = (-58).dp)
+                    .size(width = 200.dp, height = 180.dp),
         )
         HelpTextBubble(
             text = helpText,
             modifier =
                 Modifier
                     .align(Alignment.BottomStart)
-                    .padding(start = 533.dp, bottom = 170.dp)
+                    .padding(start = 550.dp, bottom = 130.dp)
                     .width(432.dp),
         )
         content()

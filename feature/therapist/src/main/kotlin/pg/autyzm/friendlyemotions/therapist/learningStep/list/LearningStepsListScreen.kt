@@ -6,18 +6,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.PlayCircleFilled
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +39,7 @@ import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepRow
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepSearchBox
+import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -42,6 +51,13 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val CONTENT_PADDING = 20.dp
+private val HEADER_ICON_SIZE = 18.dp
+
+/**
+ * Manually tuned so "Tryb"/"Mode" sits roughly above [LearningStepRow]'s toggle — the header and
+ * row don't share a layout-computed width, so this may need another visual nudge.
+ */
+private val MODE_HEADER_END_PADDING = 200.dp
 
 /**
  * Figma `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`), roadmap
@@ -120,7 +136,7 @@ private fun LearningStepsListContent(
     onErrorDismissed: () -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(29.dp),
+        verticalArrangement = Arrangement.spacedBy(22.dp),
         modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -156,25 +172,28 @@ private fun LearningStepsListContent(
         }
         Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth().weight(1f)) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
+                HeaderLabel(
+                    icon = Icons.Filled.Inventory,
                     text = stringResource(R.string.therapist_learning_steps_header_label),
-                    style = FriendlyEmotionsTextStyles.captionC1,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                     modifier = Modifier.weight(1f),
                 )
-                Text(
+                HeaderLabel(
+                    icon = Icons.Filled.Settings,
                     text = stringResource(R.string.therapist_learning_steps_header_mode),
-                    style = FriendlyEmotionsTextStyles.captionC1,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                    modifier = Modifier.padding(end = 96.dp),
+                    modifier = Modifier.padding(end = MODE_HEADER_END_PADDING),
                 )
-                Text(
+                HeaderLabel(
+                    icon = Icons.Filled.Build,
                     text = stringResource(R.string.therapist_learning_steps_header_actions),
-                    style = FriendlyEmotionsTextStyles.captionC1,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
             }
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
+            val listState = rememberLazyListState()
+            listState.ScrollToNewlyAdded(state.rows, key = { it.id.value })
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f),
+            ) {
                 items(state.rows, key = { it.id.value }) { row ->
                     LearningStepRow(
                         step = row,
@@ -203,6 +222,28 @@ private fun LearningStepsListContent(
             title = stringResource(R.string.therapist_learning_steps_error_dialog_title),
             message = stringResource(state.error.toMessageRes()),
             onDismiss = onErrorDismissed,
+        )
+    }
+}
+
+@Composable
+private fun HeaderLabel(
+    icon: ImageVector,
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            modifier = Modifier.size(HEADER_ICON_SIZE),
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = text,
+            style = FriendlyEmotionsTextStyles.captionC1,
+            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
         )
     }
 }

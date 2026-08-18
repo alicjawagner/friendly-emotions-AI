@@ -67,7 +67,7 @@
     <string name="therapist_materials_error_example_not_deletable">Przykładowych materiałów nie można usuwać.</string>
     <string name="therapist_materials_error_generic">Wystąpił błąd. Spróbuj ponownie.</string>
 
-    <string name="therapist_learning_steps_help_text">Tutaj znajdziesz wszystkie kroki uczenia. Sprawdź krok przykładowy kopiując go lub utwórz nowy!</string>
+    <string name="therapist_learning_steps_help_text">Tutaj znajdziesz wszystkie kroki uczenia. Sprawdź krok przykładowy, kopiując go, lub utwórz nowy!</string>
     <string name="therapist_learning_steps_create_new">UTWÓRZ NOWY</string>
     <string name="therapist_learning_steps_play">URUCHOM</string>
     <string name="therapist_learning_steps_search_placeholder">Szukaj</string>
@@ -76,7 +76,7 @@
     <string name="therapist_learning_steps_header_mode">Tryb</string>
     <string name="therapist_learning_steps_header_actions">Akcje</string>
     <string name="therapist_learning_steps_mode_learning">Uczenie</string>
-    <string name="therapist_learning_steps_mode_test">Test dla ucznia</string>
+    <string name="therapist_learning_steps_mode_test">Test</string>
     <string name="therapist_learning_steps_edit_description">Edytuj</string>
     <string name="therapist_learning_steps_copy_description">Kopiuj</string>
     <string name="therapist_learning_steps_delete_description">Usuń</string>

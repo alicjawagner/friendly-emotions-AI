@@ -35,6 +35,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val ROW_ACTION_ICON_SIZE = 24.dp
 private val ROW_ICON_BUTTON_TOUCH_SIZE = 48.dp
+private val ROW_ACTION_ICON_SPACING = 8.dp
 
 /**
  * One row of the learning step list (Figma `Task-item`, `896:17504`/`896:24139`). Tapping
@@ -82,7 +83,11 @@ fun LearningStepRow(
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             modifier = Modifier.weight(1f),
         )
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.padding(horizontal = 36.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
                 text = stringResource(R.string.therapist_learning_steps_mode_learning),
                 style = FriendlyEmotionsTextStyles.bodyRegular,
@@ -95,7 +100,7 @@ fun LearningStepRow(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(25.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(ROW_ACTION_ICON_SPACING)) {
             if (!step.isExample) {
                 IconButton(onClick = { onEditClick(step.id) }) {
                     Icon(

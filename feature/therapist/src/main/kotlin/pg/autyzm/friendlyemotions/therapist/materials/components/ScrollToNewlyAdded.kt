@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions.therapist.materials.components
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,24 @@ import androidx.compose.runtime.setValue
  */
 @Composable
 fun <T> LazyGridState.ScrollToNewlyAdded(
+    items: List<T>,
+    key: (T) -> String,
+    indexOffset: Int = 0,
+) {
+    val keys = items.map(key)
+    var previousKeys by rememberSaveable(
+        stateSaver = listSaver(save = { it }, restore = { it }),
+    ) { mutableStateOf(keys) }
+    LaunchedEffect(keys) {
+        val newIndex = keys.indexOfFirst { it !in previousKeys }
+        if (newIndex >= 0) animateScrollToItem(newIndex + indexOffset)
+        previousKeys = keys
+    }
+}
+
+/** [LazyListState] counterpart of the [LazyGridState] overload above — same behavior, for a plain list. */
+@Composable
+fun <T> LazyListState.ScrollToNewlyAdded(
     items: List<T>,
     key: (T) -> String,
     indexOffset: Int = 0,
