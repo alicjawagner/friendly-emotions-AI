@@ -53,9 +53,15 @@ fun SplitMascotHelpBackground(
                     .clipToBounds(),
         ) {
             Canvas(
-                modifier = Modifier.offset(x = 76.dp, y = 713.dp).size(width = 446.dp, height = 579.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(x = 76.dp, y = 492.dp)
+                        .size(width = 446.dp, height = 579.dp),
             ) {
-                drawOval(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P50)
+                drawOval(
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P50,
+                )
             }
             HelpTextBubble(
                 text = helpText,
@@ -71,7 +77,8 @@ fun SplitMascotHelpBackground(
                 contentDescription = null,
                 modifier =
                     Modifier
-                        .offset(x = 197.dp, y = 544.dp)
+                        .align(Alignment.BottomStart)
+                        .padding(start = 197.dp, bottom = 57.dp)
                         .size(width = 229.dp, height = 199.dp),
             )
         }
