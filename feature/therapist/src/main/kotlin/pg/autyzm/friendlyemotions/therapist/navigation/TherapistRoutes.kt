@@ -39,6 +39,15 @@ sealed class TherapistRoutes {
     @Serializable
     data object LearningStepsList : TherapistRoutes()
 
+    /**
+     * Nested-graph marker route wrapping the 5 wizard tab destinations (ADR-013) — never
+     * navigated to directly. Navigating to any `WizardXxx` destination implicitly creates this
+     * graph's own back-stack entry, which is what `WizardContainerViewModel` is scoped to so it
+     * survives jumping between tabs via `WizardSubNavBar`.
+     */
+    @Serializable
+    data object Wizard : TherapistRoutes()
+
     @Serializable
     data class WizardMaterial(val stepId: String? = null) : TherapistRoutes()
 

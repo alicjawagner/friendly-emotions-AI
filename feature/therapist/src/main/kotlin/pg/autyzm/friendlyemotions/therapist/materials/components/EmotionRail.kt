@@ -21,7 +21,6 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
-import java.util.Locale
 
 private val ROW_CORNER_RADIUS = 10.dp
 private val ROW_DIVIDER_HEIGHT = 2.dp
@@ -90,14 +89,6 @@ fun EmotionRail(
         }
     }
 }
-
-/** Mirrors [pg.autyzm.friendlyemotions.child.game.TtsController]'s locale-code detection. */
-private fun currentLocaleCode(): String =
-    if (Locale.getDefault().language == Locale(EmotionCatalog.LOCALE_POLISH).language) {
-        EmotionCatalog.LOCALE_POLISH
-    } else {
-        EmotionCatalog.LOCALE_ENGLISH
-    }
 
 @Preview(showBackground = true, widthDp = 402)
 @Composable

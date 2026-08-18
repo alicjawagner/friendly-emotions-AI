@@ -1,15 +1,22 @@
 package pg.autyzm.friendlyemotions.therapist.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.LearningStepsListScreen
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.WizardMaterialScreen
 import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
 import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
 import pg.autyzm.friendlyemotions.therapist.materials.newFolder.MaterialsNewFolderScreen
@@ -114,40 +121,59 @@ fun TherapistNavGraph(
                 onPlayClick = onPlayRequested,
             )
         }
-        composable<TherapistRoutes.WizardMaterial> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_wizard_material),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
-        }
-        composable<TherapistRoutes.WizardLearning> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_wizard_learning),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
-        }
-        composable<TherapistRoutes.WizardReinforcements> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_wizard_reinforcements),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
-        }
-        composable<TherapistRoutes.WizardTest> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_wizard_test),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
-        }
-        composable<TherapistRoutes.WizardSummary> {
-            PlaceholderScreen(
-                title = stringResource(R.string.therapist_route_title_wizard_summary),
-                onBackClick = onBackClick,
-                onHomeClick = onHomeClick,
-            )
+        navigation<TherapistRoutes.Wizard>(startDestination = TherapistRoutes.WizardMaterial()) {
+            composable<TherapistRoutes.WizardMaterial> { backStackEntry ->
+                val wizardEntry = remember(backStackEntry) { navController.getBackStackEntry(TherapistRoutes.Wizard) }
+                val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
+                val route = backStackEntry.toRoute<TherapistRoutes.WizardMaterial>()
+                val stepId = route.stepId?.let(::LearningStepId)
+                WizardMaterialScreen(
+                    stepId = stepId,
+                    containerViewModel = containerViewModel,
+                    onBackClick = onBackClick,
+                    onHomeClick = onHomeClick,
+                    onNextClick = { navController.navigate(TherapistRoutes.WizardLearning(route.stepId)) },
+                    onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
+                )
+            }
+            composable<TherapistRoutes.WizardLearning> {
+                PlaceholderScreen(
+                    title = stringResource(R.string.therapist_route_title_wizard_learning),
+                    onBackClick = onBackClick,
+                    onHomeClick = onHomeClick,
+                )
+            }
+            composable<TherapistRoutes.WizardReinforcements> {
+                PlaceholderScreen(
+                    title = stringResource(R.string.therapist_route_title_wizard_reinforcements),
+                    onBackClick = onBackClick,
+                    onHomeClick = onHomeClick,
+                )
+            }
+            composable<TherapistRoutes.WizardTest> {
+                PlaceholderScreen(
+                    title = stringResource(R.string.therapist_route_title_wizard_test),
+                    onBackClick = onBackClick,
+                    onHomeClick = onHomeClick,
+                )
+            }
+            composable<TherapistRoutes.WizardSummary> {
+                PlaceholderScreen(
+                    title = stringResource(R.string.therapist_route_title_wizard_summary),
+                    onBackClick = onBackClick,
+                    onHomeClick = onHomeClick,
+                )
+            }
         }
     }
 }
+
+/** Maps a [WizardTab] to its route, carrying the current [stepId] along (`null` for create-new). */
+private fun WizardTab.toRoute(stepId: String?): TherapistRoutes =
+    when (this) {
+        WizardTab.MATERIAL -> TherapistRoutes.WizardMaterial(stepId)
+        WizardTab.LEARNING -> TherapistRoutes.WizardLearning(stepId)
+        WizardTab.REINFORCEMENTS -> TherapistRoutes.WizardReinforcements(stepId)
+        WizardTab.TEST -> TherapistRoutes.WizardTest(stepId)
+        WizardTab.SUMMARY -> TherapistRoutes.WizardSummary(stepId)
+    }

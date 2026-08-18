@@ -83,4 +83,30 @@
     <string name="therapist_learning_steps_delete_title">Usunąć krok uczenia?</string>
     <string name="therapist_learning_steps_delete_message">Ten krok uczenia zostanie trwale usunięty.</string>
     <string name="therapist_learning_steps_error_dialog_title">Info</string>
+
+    <string name="therapist_wizard_title_create">Nowy krok uczenia:</string>
+    <string name="therapist_wizard_title_edit">Edytuj krok uczenia:</string>
+    <string name="therapist_wizard_subnav_material">MATERIAŁ</string>
+    <string name="therapist_wizard_subnav_learning">UCZENIE</string>
+    <string name="therapist_wizard_subnav_reinforcements">WZMOCNIENIA</string>
+    <string name="therapist_wizard_subnav_test">TEST DLA UCZNIA</string>
+    <string name="therapist_wizard_subnav_summary">PODSUMOWANIE</string>
+    <string name="therapist_wizard_material_help_text">Do kroku uczenia nie dodano jeszcze żadnych materiałów. Aby to zrobić, kliknij przycisk „DODAJ”.</string>
+    <string name="therapist_wizard_material_add_emotion">DODAJ</string>
+    <string name="therapist_wizard_material_hide_examples">Ukryj przykładowe materiały</string>
+    <string name="therapist_wizard_material_header_emotion">Emocja</string>
+    <string name="therapist_wizard_material_header_learning">W uczeniu</string>
+    <string name="therapist_wizard_material_header_test">W teście</string>
+    <string name="therapist_wizard_material_header_delete">Usuń</string>
+    <string name="therapist_wizard_material_learning_label">Uczenie</string>
+    <string name="therapist_wizard_material_test_label">Test</string>
+    <string name="therapist_wizard_material_add_emotion_dialog_title">Wybierz emocję, którą chcesz dodać</string>
+    <string name="therapist_wizard_material_add_emotion_confirm">DODAJ</string>
+    <string name="therapist_wizard_material_add_emotion_cancel">ANULUJ</string>
+    <string name="therapist_wizard_material_all_emotions_added_title">Info</string>
+    <string name="therapist_wizard_material_all_emotions_added_message">Wszystkie emocje zostały już dodane do tego kroku uczenia.</string>
+    <string name="therapist_wizard_material_delete_emotion_title">Usunąć tę emocję?</string>
+    <string name="therapist_wizard_material_delete_emotion_message">Ta emocja i wszystkie jej zaznaczenia folderów/obrazków zostaną usunięte z tego kroku.</string>
+    <string name="therapist_wizard_material_folder_back_description">Wróć do galerii folderów</string>
+    <string name="therapist_wizard_material_next">DALEJ</string>
 </resources>

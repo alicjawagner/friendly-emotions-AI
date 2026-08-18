@@ -83,4 +83,30 @@
     <string name="therapist_learning_steps_delete_title">Delete learning step?</string>
     <string name="therapist_learning_steps_delete_message">This learning step will be permanently deleted.</string>
     <string name="therapist_learning_steps_error_dialog_title">Info</string>
+
+    <string name="therapist_wizard_title_create">New learning step:</string>
+    <string name="therapist_wizard_title_edit">Edit learning step:</string>
+    <string name="therapist_wizard_subnav_material">MATERIAL</string>
+    <string name="therapist_wizard_subnav_learning">LEARNING</string>
+    <string name="therapist_wizard_subnav_reinforcements">REINFORCEMENTS</string>
+    <string name="therapist_wizard_subnav_test">TEST</string>
+    <string name="therapist_wizard_subnav_summary">SUMMARY</string>
+    <string name="therapist_wizard_material_help_text">No materials have been added to this learning step yet. To do so, tap the \'ADD\' button.</string>
+    <string name="therapist_wizard_material_add_emotion">ADD</string>
+    <string name="therapist_wizard_material_hide_examples">Hide example materials</string>
+    <string name="therapist_wizard_material_header_emotion">Emotion</string>
+    <string name="therapist_wizard_material_header_learning">In learning</string>
+    <string name="therapist_wizard_material_header_test">In test</string>
+    <string name="therapist_wizard_material_header_delete">Delete</string>
+    <string name="therapist_wizard_material_learning_label">Learning</string>
+    <string name="therapist_wizard_material_test_label">Test</string>
+    <string name="therapist_wizard_material_add_emotion_dialog_title">Choose the emotion you want to add</string>
+    <string name="therapist_wizard_material_add_emotion_confirm">ADD</string>
+    <string name="therapist_wizard_material_add_emotion_cancel">CANCEL</string>
+    <string name="therapist_wizard_material_all_emotions_added_title">Info</string>
+    <string name="therapist_wizard_material_all_emotions_added_message">All emotions have already been added to this learning step.</string>
+    <string name="therapist_wizard_material_delete_emotion_title">Delete this emotion?</string>
+    <string name="therapist_wizard_material_delete_emotion_message">This emotion and all its folder/image selections will be removed from this step.</string>
+    <string name="therapist_wizard_material_folder_back_description">Back to folder gallery</string>
+    <string name="therapist_wizard_material_next">NEXT</string>
 </resources>

@@ -21,16 +21,16 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.usecase.material.DeleteFolderUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveFoldersUseCase
-import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
 import javax.inject.Inject
 
 private const val UI_STATE_SUBSCRIPTION_TIMEOUT_MS = 5_000L
 
 /**
  * Drives [MaterialsFoldersUiState]: the persistent emotion rail (`selectedEmotionId`, in-screen
- * state per target-architecture.md §8.2) plus the folder gallery for that emotion, filtered by
- * the "hide example folders" preference. Only injects use cases, never repositories directly
- * (ADR-002, target-architecture.md §12).
+ * state per target-architecture.md §8.2) plus the folder gallery for that emotion. Folders are
+ * never hidden by the "hide example folders" preference — only images can be hidden
+ * (target-domain.md §6.4: example folders cannot be deleted, only their images may be hidden).
+ * Only injects use cases, never repositories directly (ADR-002, target-architecture.md §12).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -38,7 +38,6 @@ class MaterialsFoldersViewModel
     @Inject
     constructor(
         private val observeFoldersUseCase: ObserveFoldersUseCase,
-        private val observeHideExampleFoldersUseCase: ObserveHideExampleFoldersUseCase,
         private val deleteFolderUseCase: DeleteFolderUseCase,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
@@ -59,14 +58,12 @@ class MaterialsFoldersViewModel
                 .flatMapLatest { query ->
                     combine(
                         observeFoldersUseCase(query.emotionId),
-                        observeHideExampleFoldersUseCase(),
                         pendingDeleteFolderId,
                         error,
-                    ) { folders, hideExamples, pendingDelete, currentError ->
-                        val visibleFolders = folders.filter { !hideExamples || !it.isExample }
+                    ) { folders, pendingDelete, currentError ->
                         MaterialsFoldersUiState.Content(
                             selectedEmotionId = query.emotionId,
-                            folders = visibleFolders.map(EmotionFolder::toFolderUi),
+                            folders = folders.map(EmotionFolder::toFolderUi),
                             pendingDeleteFolderId = pendingDelete,
                             error = currentError,
                         ) as MaterialsFoldersUiState
