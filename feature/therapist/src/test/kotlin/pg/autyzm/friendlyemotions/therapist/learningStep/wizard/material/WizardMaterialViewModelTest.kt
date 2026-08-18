@@ -126,7 +126,7 @@ class WizardMaterialViewModelTest {
     }
 
     @Test
-    fun `emotion row rollup is checked only when every visible image shares the flag`() {
+    fun `emotion row rollup is checked when every visible image has the flag`() {
         val allSelected =
             listOf(
                 ImageUsage(imageA.id, inLearning = true, inTest = false),
@@ -146,7 +146,7 @@ class WizardMaterialViewModelTest {
     }
 
     @Test
-    fun `emotion row rollup is unchecked for a mixed selection`() {
+    fun `emotion row rollup is checked for a mixed selection too`() {
         val mixed = listOf(ImageUsage(imageA.id, inLearning = true, inTest = false))
 
         val state =
@@ -156,7 +156,7 @@ class WizardMaterialViewModelTest {
                 WizardMaterialLocalState(),
             ) as WizardMaterialUiState.Content
 
-        assertFalse(state.emotionRows.single().inLearningChecked)
+        assertTrue(state.emotionRows.single().inLearningChecked)
     }
 
     @Test
@@ -174,7 +174,7 @@ class WizardMaterialViewModelTest {
     }
 
     @Test
-    fun `folder select rollup is checked when any image is selected, unlike the per-mode rollups`() {
+    fun `folder select and per-mode rollups are all checked when any image is selected`() {
         val partiallySelected = listOf(ImageUsage(imageA.id, inLearning = true, inTest = false))
 
         val state =
@@ -186,7 +186,7 @@ class WizardMaterialViewModelTest {
 
         val folderUi = state.folders.single()
         assertTrue(folderUi.selected)
-        assertFalse(folderUi.inLearningChecked)
+        assertTrue(folderUi.inLearningChecked)
         assertFalse(folderUi.inTestChecked)
     }
 

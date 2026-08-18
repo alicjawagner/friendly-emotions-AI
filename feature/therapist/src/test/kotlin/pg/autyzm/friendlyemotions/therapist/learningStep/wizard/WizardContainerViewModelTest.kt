@@ -213,4 +213,63 @@ class WizardContainerViewModelTest {
 
         assertEquals(setOf(EmotionId.HAPPY), viewModel.state.value.materialBrowsing.addedEmotionIds)
     }
+
+    @Test
+    fun `hasUnsavedChanges is false immediately after initialize with null stepId`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        assertFalse(viewModel.hasUnsavedChanges())
+    }
+
+    @Test
+    fun `hasUnsavedChanges becomes true after a material change`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        viewModel.setUsageForImages(listOf(ImageId("img-1")), UsageMode.LEARNING, true)
+
+        assertTrue(viewModel.hasUnsavedChanges())
+    }
+
+    @Test
+    fun `hasUnsavedChanges becomes true after adding an emotion`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        viewModel.addEmotion(EmotionId.HAPPY)
+
+        assertTrue(viewModel.hasUnsavedChanges())
+    }
+
+    @Test
+    fun `hasUnsavedChanges is false right after loading and seeding an edit-mode step`() =
+        runTest {
+            val stepId = LearningStepId("step-1")
+            val step = existingStep(stepId)
+            coEvery { getLearningStepUseCase(stepId) } returns Result.Success(step)
+            val viewModel = viewModel()
+
+            viewModel.initialize(stepId)
+            testScheduler.advanceUntilIdle()
+            viewModel.seedAddedEmotions(setOf(EmotionId.HAPPY))
+
+            assertFalse(viewModel.hasUnsavedChanges())
+        }
+
+    @Test
+    fun `hasUnsavedChanges becomes true after changing an already-loaded edit-mode step`() =
+        runTest {
+            val stepId = LearningStepId("step-1")
+            val step = existingStep(stepId)
+            coEvery { getLearningStepUseCase(stepId) } returns Result.Success(step)
+            val viewModel = viewModel()
+            viewModel.initialize(stepId)
+            testScheduler.advanceUntilIdle()
+            viewModel.seedAddedEmotions(setOf(EmotionId.HAPPY))
+
+            viewModel.setUsageForImages(listOf(ImageId("img-2")), UsageMode.TEST, true)
+
+            assertTrue(viewModel.hasUnsavedChanges())
+        }
 }

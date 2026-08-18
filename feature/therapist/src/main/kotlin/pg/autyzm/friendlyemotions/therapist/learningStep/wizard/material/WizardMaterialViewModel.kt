@@ -149,8 +149,8 @@ class WizardMaterialViewModel
                     EmotionRowUi(
                         emotionId = emotionId,
                         label = EmotionCatalog.get(emotionId).labels[currentLocaleCode()]?.neutral.orEmpty(),
-                        inLearningChecked = imageIds.allChecked(usagesById) { it.inLearning },
-                        inTestChecked = imageIds.allChecked(usagesById) { it.inTest },
+                        inLearningChecked = imageIds.anyChecked(usagesById) { it.inLearning },
+                        inTestChecked = imageIds.anyChecked(usagesById) { it.inTest },
                         imageIds = imageIds,
                     )
                 }
@@ -170,8 +170,8 @@ class WizardMaterialViewModel
                             id = folder.id,
                             name = folder.name,
                             selected = imageIds.anyChecked(usagesById) { it.inLearning || it.inTest },
-                            inLearningChecked = imageIds.allChecked(usagesById) { it.inLearning },
-                            inTestChecked = imageIds.allChecked(usagesById) { it.inTest },
+                            inLearningChecked = imageIds.anyChecked(usagesById) { it.inLearning },
+                            inTestChecked = imageIds.anyChecked(usagesById) { it.inTest },
                             imageIds = imageIds,
                         )
                     }
@@ -227,14 +227,8 @@ class WizardMaterialViewModel
                 .filter { !world.hideExampleMaterials || !it.isExample }
                 .map { it.id }
 
-        /** Rollup semantics: checked only when this scope is non-empty and every image in it
-         * satisfies [selector] — a mixed selection renders unchecked. */
-        private fun List<ImageId>.allChecked(
-            usagesById: Map<ImageId, ImageUsage>,
-            selector: (ImageUsage) -> Boolean,
-        ): Boolean = isNotEmpty() && all { imageId -> usagesById[imageId]?.let(selector) == true }
-
-        /** Rollup semantics: checked when any image in this scope satisfies [selector]. */
+        /** Rollup semantics: checked when any image in this scope satisfies [selector] — a
+         * partial/mixed selection still renders checked, to show "something is set" at a glance. */
         private fun List<ImageId>.anyChecked(
             usagesById: Map<ImageId, ImageUsage>,
             selector: (ImageUsage) -> Boolean,

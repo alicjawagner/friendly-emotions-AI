@@ -32,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,7 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
 import pg.autyzm.friendlyemotions.therapist.R
-import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
+import pg.autyzm.friendlyemotions.therapist.backgrounds.SplitBackground
 import pg.autyzm.friendlyemotions.therapist.backgrounds.SplitMascotHelpBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.UsageMode
@@ -56,7 +59,6 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.compone
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.components.WizardImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
-import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
@@ -101,12 +103,24 @@ fun WizardMaterialScreen(
 
     val uiState = viewModel.buildUiState(containerState, world, localState)
 
+    var showExitConfirmation by remember { mutableStateOf(false) }
+    var pendingExitAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+
+    fun guardedExit(action: () -> Unit) {
+        if (containerViewModel.hasUnsavedChanges()) {
+            pendingExitAction = action
+            showExitConfirmation = true
+        } else {
+            action()
+        }
+    }
+
     val titleRes = if (stepId == null) R.string.therapist_wizard_title_create else R.string.therapist_wizard_title_edit
     Column(modifier = modifier.fillMaxSize()) {
         TherapistTopBar(
             title = stringResource(titleRes),
-            onBackClick = onBackClick,
-            onHomeClick = onHomeClick,
+            onBackClick = { guardedExit(onBackClick) },
+            onHomeClick = { guardedExit(onHomeClick) },
         )
         WizardSubNavBar(selectedTab = WizardTab.MATERIAL, onTabClick = onTabSelected)
         val isEmpty = uiState is WizardMaterialUiState.Content && uiState.emotionRows.isEmpty()
@@ -180,9 +194,22 @@ fun WizardMaterialScreen(
                     helpText = stringResource(R.string.therapist_wizard_material_help_text),
                 ) { body() }
             } else {
-                PlainBackground { body() }
+                SplitBackground { body() }
             }
         }
+    }
+    if (showExitConfirmation) {
+        YesNoConfirmationDialog(
+            title = stringResource(R.string.therapist_materials_exit_confirm_title),
+            message = stringResource(R.string.therapist_materials_exit_confirm_message),
+            confirmLabel = stringResource(R.string.therapist_materials_exit_confirm_confirm),
+            dismissLabel = stringResource(R.string.therapist_materials_exit_confirm_cancel),
+            onConfirm = {
+                showExitConfirmation = false
+                pendingExitAction?.invoke()
+            },
+            onDismiss = { showExitConfirmation = false },
+        )
     }
 }
 
@@ -274,7 +301,6 @@ private fun WizardMaterialContent(
                     }
                 }
             }
-            VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
                 val focusedFolder = state.focusedFolder
                 if (focusedFolder != null) {

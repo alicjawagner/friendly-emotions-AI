@@ -37,6 +37,12 @@ class WizardContainerViewModel
         private var initialized = false
         private var seededAddedEmotions = false
 
+        /** Snapshot of [WizardContainerState.draft]/[WizardMaterialBrowsingState.addedEmotionIds]
+         * as they were right after loading (or, for create-mode, their defaults) — the baseline
+         * [hasUnsavedChanges] compares the live state against. */
+        private var originalDraft = WizardStepDraft()
+        private var originalAddedEmotionIds: Set<EmotionId> = emptySet()
+
         /** Idempotent — loads the existing step exactly once per wizard session. [stepId] is
          * `null` for create-new, in which case the draft stays at its defaults. */
         fun initialize(stepId: LearningStepId?) {
@@ -49,24 +55,30 @@ class WizardContainerViewModel
                 when (val result = getLearningStepUseCase(stepId)) {
                     is Result.Success -> {
                         val step = result.value
-                        _state.update {
-                            it.copy(
-                                draft =
-                                    WizardStepDraft(
-                                        originalStepId = stepId,
-                                        name = step.name,
-                                        materialSelection = step.materialSelection,
-                                        learningParameters = step.learningParameters,
-                                        testParameters = step.testParameters,
-                                        reinforcementSettings = step.reinforcementSettings,
-                                    ),
-                                isLoadingStep = false,
+                        val loadedDraft =
+                            WizardStepDraft(
+                                originalStepId = stepId,
+                                name = step.name,
+                                materialSelection = step.materialSelection,
+                                learningParameters = step.learningParameters,
+                                testParameters = step.testParameters,
+                                reinforcementSettings = step.reinforcementSettings,
                             )
-                        }
+                        originalDraft = loadedDraft
+                        _state.update { it.copy(draft = loadedDraft, isLoadingStep = false) }
                     }
                     is Result.Failure -> _state.update { it.copy(isLoadingStep = false) }
                 }
             }
+        }
+
+        /** Whether the live draft or added-emotions set has diverged from the pristine baseline
+         * captured at load time — i.e. whether leaving the wizard now would lose something.
+         * Deliberately ignores [WizardMaterialBrowsingState.focusedEmotionId]/[WizardMaterialBrowsingState.focusedFolderId]:
+         * browsing position isn't a "change" worth warning about. */
+        fun hasUnsavedChanges(): Boolean {
+            val current = state.value
+            return current.draft != originalDraft || current.materialBrowsing.addedEmotionIds != originalAddedEmotionIds
         }
 
         /**
@@ -78,6 +90,7 @@ class WizardContainerViewModel
         fun seedAddedEmotions(ids: Set<EmotionId>) {
             if (seededAddedEmotions || ids.isEmpty()) return
             seededAddedEmotions = true
+            originalAddedEmotionIds = ids
             _state.update {
                 it.copy(
                     materialBrowsing =
