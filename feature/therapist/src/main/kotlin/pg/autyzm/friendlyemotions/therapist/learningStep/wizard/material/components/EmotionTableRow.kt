@@ -55,7 +55,12 @@ fun EmotionTableRow(
             modifier
                 .fillMaxWidth()
                 .background(
-                    color = if (isFocused) FriendlyEmotionsColors.Secondary.S300 else FriendlyEmotionsColors.Shades.White,
+                    color =
+                        if (isFocused) {
+                            FriendlyEmotionsColors.Secondary.S300
+                        } else {
+                            FriendlyEmotionsColors.Shades.White
+                        },
                     shape = RoundedCornerShape(ROW_CORNER_RADIUS),
                 ).clickable(onClick = onRowClick)
                 .padding(horizontal = 18.dp, vertical = 10.dp),

@@ -1,13 +1,14 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -18,7 +19,8 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.MaterialTileCon
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
-private val CHECKBOX_BACKGROUND_SIZE = 16.dp
+private val CHECKBOX_BACKGROUND_EXTRA_PADDING = 4.dp
+private val CHECKBOX_BACKGROUND_CORNER_RADIUS = 4.dp
 
 /**
  * An image in the wizard Material tab's image gallery (Figma `screens/settings/material/
@@ -27,10 +29,11 @@ private val CHECKBOX_BACKGROUND_SIZE = 16.dp
  * checkbox overlay (top-left) instead of a gender badge — this screen never shows grammatical
  * gender. [selected] is checked whenever `inLearning || inTest`; toggling it sets/clears both
  * flags together (the leaf-level convenience toggle). Below the card, [UsageCheckboxRow] shows
- * the true independent `ImageUsage.inLearning`/`inTest` values. When [selected], a small white
- * square renders behind the checkbox glyph (Figma `check-box` > `background`) so the checkmark
- * stays legible against photo content — the unchecked outline glyph already draws its own box, so
- * no backing square is shown then.
+ * the true independent `ImageUsage.inLearning`/`inTest` values. The checkbox gets a white,
+ * rounded-corner backing (Figma `check-box` > `background`, the same idea as the gallery's gender
+ * badge) sized to the glyph itself — plus a small extra margin — rather than [Checkbox]'s default
+ * 48dp touch target — that default target's padding is what previously pushed the glyph away from
+ * the tile's corner and left a transparent margin around it showing the photo through.
  */
 @Composable
 fun WizardImageTile(
@@ -51,18 +54,7 @@ fun WizardImageTile(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize(),
             )
-            Box(
-                modifier = Modifier.align(Alignment.TopStart),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (selected) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(CHECKBOX_BACKGROUND_SIZE)
-                                .background(color = FriendlyEmotionsColors.Shades.White),
-                    )
-                }
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
                 Checkbox(
                     checked = selected,
                     onCheckedChange = onSelectToggle,
@@ -71,6 +63,13 @@ fun WizardImageTile(
                             checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
                             uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
                         ),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopStart)
+                            .background(
+                                color = FriendlyEmotionsColors.Shades.White,
+                                shape = RoundedCornerShape(CHECKBOX_BACKGROUND_CORNER_RADIUS),
+                            ).padding(CHECKBOX_BACKGROUND_EXTRA_PADDING),
                 )
             }
         }
@@ -89,7 +88,9 @@ fun WizardImageTile(
 private fun WizardImageTilePreview() {
     FriendlyEmotionsTheme {
         WizardImageTile(
-            filePath = "",
+            filePath =
+                "C:\\Users\\User\\Documents\\projekty\\FriendlyEmotions\\app\\src\\main\\assets\\" +
+                    "example_images\\happy_kobiety_1.png",
             selected = true,
             inLearningChecked = true,
             inTestChecked = true,
