@@ -274,11 +274,11 @@ Controls all aspects of learning-mode trial generation and presentation.
 | Field | Type | Default | Range |
 |---|---|---|---|
 | `displayedImageCount` | `Int` | 3 | 1–6 |
-| `repetitionsPerEmotion` | `Int` | 2 | 1–3 |
+| `repetitionsPerEmotion` | `Int` | 2 | 1–10 |
 | `promptTemplate` | `PromptTemplate` | `EMOTION_ONLY` | — |
 | `ttsEnabled` | `Boolean` | `true` | — |
 | `captionsEnabled` | `Boolean` | `true` | — |
-| `hintDelaySeconds` | `Int` | 5 | 1–10 |
+| `hintDelaySeconds` | `Int` | 5 | 3–10 |
 | `activeHintTypes` | `Set<HintType>` | `{DIM_INCORRECT}` | ≥1 element |
 | `mixedGenderInAnswers` | `Boolean` | `true` | — |
 

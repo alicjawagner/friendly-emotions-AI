@@ -28,11 +28,13 @@ import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
+import pg.autyzm.friendlyemotions.domain.usecase.learningStep.DeriveTestParametersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.learningStep.GetLearningStepUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WizardContainerViewModelTest {
     private val getLearningStepUseCase = mockk<GetLearningStepUseCase>()
+    private val deriveTestParametersUseCase = DeriveTestParametersUseCase()
 
     @Before
     fun setUp() {
@@ -44,7 +46,7 @@ class WizardContainerViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = WizardContainerViewModel(getLearningStepUseCase)
+    private fun viewModel() = WizardContainerViewModel(getLearningStepUseCase, deriveTestParametersUseCase)
 
     private fun existingStep(stepId: LearningStepId) =
         LearningStep(
@@ -272,4 +274,73 @@ class WizardContainerViewModelTest {
 
             assertTrue(viewModel.hasUnsavedChanges())
         }
+
+    @Test
+    fun `updateLearningParameters changes the field and re-derives testParameters when not overriding`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        viewModel.updateLearningParameters { it.copy(displayedImageCount = 5) }
+
+        val draft = viewModel.state.value.draft
+        assertEquals(5, draft.learningParameters.displayedImageCount)
+        assertFalse(draft.testParameters.overridesLearning)
+        assertEquals(5, draft.testParameters.displayedImageCount)
+    }
+
+    @Test
+    fun `updateLearningParameters leaves testParameters untouched when overriding`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+        viewModel.setTestOverridesLearning(true)
+        viewModel.updateTestParameters { it.copy(displayedImageCount = 6) }
+
+        viewModel.updateLearningParameters { it.copy(displayedImageCount = 5) }
+
+        val draft = viewModel.state.value.draft
+        assertEquals(5, draft.learningParameters.displayedImageCount)
+        assertTrue(draft.testParameters.overridesLearning)
+        assertEquals(6, draft.testParameters.displayedImageCount)
+    }
+
+    @Test
+    fun `updateTestParameters only mutates testParameters`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+        viewModel.setTestOverridesLearning(true)
+
+        viewModel.updateTestParameters { it.copy(repetitionsPerEmotion = 7) }
+
+        val draft = viewModel.state.value.draft
+        assertEquals(7, draft.testParameters.repetitionsPerEmotion)
+        assertEquals(LearningParameters().repetitionsPerEmotion, draft.learningParameters.repetitionsPerEmotion)
+    }
+
+    @Test
+    fun `setTestOverridesLearning false re-derives testParameters from current learningParameters`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+        viewModel.updateLearningParameters { it.copy(displayedImageCount = 4) }
+        viewModel.setTestOverridesLearning(true)
+        viewModel.updateTestParameters { it.copy(displayedImageCount = 6) }
+
+        viewModel.setTestOverridesLearning(false)
+
+        val testParameters = viewModel.state.value.draft.testParameters
+        assertFalse(testParameters.overridesLearning)
+        assertEquals(4, testParameters.displayedImageCount)
+    }
+
+    @Test
+    fun `setTestOverridesLearning true only flips the flag, it does not reset fields to defaults`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+        viewModel.updateLearningParameters { it.copy(displayedImageCount = 5) }
+
+        viewModel.setTestOverridesLearning(true)
+
+        val testParameters = viewModel.state.value.draft.testParameters
+        assertTrue(testParameters.overridesLearning)
+        assertEquals(5, testParameters.displayedImageCount)
+    }
 }

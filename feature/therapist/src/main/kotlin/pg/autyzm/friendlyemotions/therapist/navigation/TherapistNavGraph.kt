@@ -16,7 +16,9 @@ import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.LearningStepsListScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.learning.WizardLearningScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.WizardMaterialScreen
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.test.WizardTestScreen
 import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
 import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
 import pg.autyzm.friendlyemotions.therapist.materials.newFolder.MaterialsNewFolderScreen
@@ -136,11 +138,18 @@ fun TherapistNavGraph(
                     onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
-            composable<TherapistRoutes.WizardLearning> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.therapist_route_title_wizard_learning),
+            composable<TherapistRoutes.WizardLearning> { backStackEntry ->
+                val wizardEntry = remember(backStackEntry) { navController.getBackStackEntry(TherapistRoutes.Wizard) }
+                val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
+                val route = backStackEntry.toRoute<TherapistRoutes.WizardLearning>()
+                val stepId = route.stepId?.let(::LearningStepId)
+                WizardLearningScreen(
+                    stepId = stepId,
+                    containerViewModel = containerViewModel,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
+                    onNextClick = { navController.navigate(TherapistRoutes.WizardReinforcements(route.stepId)) },
+                    onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
             composable<TherapistRoutes.WizardReinforcements> {
@@ -150,11 +159,18 @@ fun TherapistNavGraph(
                     onHomeClick = onHomeClick,
                 )
             }
-            composable<TherapistRoutes.WizardTest> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.therapist_route_title_wizard_test),
+            composable<TherapistRoutes.WizardTest> { backStackEntry ->
+                val wizardEntry = remember(backStackEntry) { navController.getBackStackEntry(TherapistRoutes.Wizard) }
+                val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
+                val route = backStackEntry.toRoute<TherapistRoutes.WizardTest>()
+                val stepId = route.stepId?.let(::LearningStepId)
+                WizardTestScreen(
+                    stepId = stepId,
+                    containerViewModel = containerViewModel,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
+                    onNextClick = { navController.navigate(TherapistRoutes.WizardSummary(route.stepId)) },
+                    onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
             composable<TherapistRoutes.WizardSummary> {

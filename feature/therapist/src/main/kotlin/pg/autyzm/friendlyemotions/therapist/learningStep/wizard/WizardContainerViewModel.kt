@@ -13,7 +13,10 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
+import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
+import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
+import pg.autyzm.friendlyemotions.domain.usecase.learningStep.DeriveTestParametersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.learningStep.GetLearningStepUseCase
 import javax.inject.Inject
 
@@ -30,6 +33,7 @@ class WizardContainerViewModel
     @Inject
     constructor(
         private val getLearningStepUseCase: GetLearningStepUseCase,
+        private val deriveTestParametersUseCase: DeriveTestParametersUseCase,
     ) : ViewModel() {
         private val _state = MutableStateFlow(WizardContainerState())
         val state: StateFlow<WizardContainerState> = _state.asStateFlow()
@@ -204,5 +208,45 @@ class WizardContainerViewModel
         /** Drills into [folderId]'s image grid, or back out to the folder gallery when `null`. */
         fun setFocusedFolder(folderId: FolderId?) {
             _state.update { it.copy(materialBrowsing = it.materialBrowsing.copy(focusedFolderId = folderId)) }
+        }
+
+        /** Applies [transform] to the draft's [LearningParameters], then re-derives
+         * [pg.autyzm.friendlyemotions.domain.model.session.TestParameters] via
+         * [deriveTestParametersUseCase] whenever `overridesLearning` is `false` — the single
+         * choke-point every Learning-tab field callback goes through, so the mirroring rule
+         * (target-domain.md §8.10) can never be forgotten by a caller. */
+        fun updateLearningParameters(transform: (LearningParameters) -> LearningParameters) {
+            _state.update { current ->
+                val nextLearning = transform(current.draft.learningParameters)
+                val nextTest =
+                    if (current.draft.testParameters.overridesLearning) {
+                        current.draft.testParameters
+                    } else {
+                        deriveTestParametersUseCase(nextLearning)
+                    }
+                current.copy(draft = current.draft.copy(learningParameters = nextLearning, testParameters = nextTest))
+            }
+        }
+
+        /** Applies [transform] to the draft's [TestParameters] directly. Only meaningful while
+         * `overridesLearning == true` — the Test tab disables its controls otherwise, so this is
+         * never called in that state. */
+        fun updateTestParameters(transform: (TestParameters) -> TestParameters) {
+            _state.update { it.copy(draft = it.draft.copy(testParameters = transform(it.draft.testParameters))) }
+        }
+
+        /** The "Zmień dla testu" checkbox. Turning it off immediately re-derives [TestParameters]
+         * from the current [LearningParameters] (target-domain.md §8.10 inheritance rule); turning
+         * it on just flips the flag, preserving whatever independent values were last set. */
+        fun setTestOverridesLearning(overridesLearning: Boolean) {
+            _state.update { current ->
+                val nextTest =
+                    if (overridesLearning) {
+                        current.draft.testParameters.copy(overridesLearning = true)
+                    } else {
+                        deriveTestParametersUseCase(current.draft.learningParameters)
+                    }
+                current.copy(draft = current.draft.copy(testParameters = nextTest))
+            }
         }
     }

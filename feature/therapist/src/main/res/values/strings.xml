@@ -109,4 +109,39 @@
     <string name="therapist_wizard_material_delete_emotion_message">Ta emocja i wszystkie jej zaznaczenia folderów/obrazków zostaną usunięte z tego kroku.</string>
     <string name="therapist_wizard_material_folder_back_description">Wróć do galerii folderów</string>
     <string name="therapist_wizard_material_next">DALEJ</string>
+
+    <string name="therapist_wizard_learning_trial_settings_header">Ustawienia próby</string>
+    <string name="therapist_wizard_learning_learning_settings_header">Ustawienia uczenia</string>
+    <string name="therapist_wizard_learning_prompt_label">Rodzaj polecenia:</string>
+    <string name="therapist_wizard_learning_prompt_emotion_only">{emocja}</string>
+    <string name="therapist_wizard_learning_prompt_where_is">Gdzie jest {emocja}?</string>
+    <string name="therapist_wizard_learning_prompt_show_me">Pokaż, gdzie jest {emocja}.</string>
+    <string name="therapist_wizard_learning_prompt_find">Znajdź, gdzie jest {emocja}.</string>
+    <string name="therapist_wizard_learning_prompt_touch">Dotknij, gdzie jest {emocja}.</string>
+    <string name="therapist_wizard_learning_prompt_point_to">Wskaż, gdzie jest {emocja}.</string>
+    <string name="therapist_wizard_learning_prompt_choose">Wybierz, gdzie jest {emocja}.</string>
+    <string name="therapist_wizard_learning_image_count_label">Liczba obrazków wyświetlanych na ekranie:</string>
+    <string name="therapist_wizard_learning_repetitions_label">Liczba powtórzeń dla każdej emocji:</string>
+    <string name="therapist_wizard_learning_hint_delay_label">Pokaż podpowiedź po (3–10 sekundach):</string>
+    <string name="therapist_wizard_learning_hint_types_label">Wybierz rodzaj podpowiedzi:</string>
+    <string name="therapist_wizard_learning_hint_outline">Obramuj poprawną</string>
+    <string name="therapist_wizard_learning_hint_animate">Porusz poprawną</string>
+    <string name="therapist_wizard_learning_hint_scale">Powiększ poprawną</string>
+    <string name="therapist_wizard_learning_hint_dim">Wyszarz niepoprawne</string>
+    <string name="therapist_wizard_learning_options_label">Opcje:</string>
+    <string name="therapist_wizard_learning_captions_label">Podpisy pod obrazkami</string>
+    <string name="therapist_wizard_learning_captions_info_title">Info</string>
+    <string name="therapist_wizard_learning_captions_info_message">Pod każdym obrazkiem zostanie wyświetlona nazwa przedstawionej na nim emocji.</string>
+    <string name="therapist_wizard_learning_tts_label">Głosowe odtwarzanie polecenia</string>
+    <string name="therapist_wizard_learning_tts_info_title">Info</string>
+    <string name="therapist_wizard_learning_tts_info_message">Polecenie zostanie odczytane na głos dziecku przy każdej próbie.</string>
+    <string name="therapist_wizard_learning_mixed_gender_label">Mieszany rodzaj w zestawie odpowiedzi</string>
+    <string name="therapist_wizard_learning_mixed_gender_info_title">Info</string>
+    <string name="therapist_wizard_learning_mixed_gender_info_message">Gdy wyłączone, obrazki do wyboru będą tego samego rodzaju gramatycznego co poprawna odpowiedź.</string>
+    <string name="therapist_wizard_learning_next">DALEJ</string>
+
+    <string name="therapist_wizard_test_override_label">Zmień dla testu</string>
+    <string name="therapist_wizard_test_hint_delay_banner">Jeśli dziecko nie wybierze odpowiedzi, ekran zmieni się automatycznie po czasie ustawionym w sekcji UCZENIE - Pokaż podpowiedź po (sekundach).</string>
+    <string name="therapist_wizard_test_no_hints_banner">W trybie testu nie używa się podpowiedzi i wzmocnień, a terapeuta nie pomaga i nie rozmawia z dzieckiem, aż do zakończenia testu.</string>
+    <string name="therapist_wizard_test_next">DALEJ</string>
 </resources>

@@ -470,7 +470,7 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - `WizardContainerViewModel` + `WizardStepDraft` — shared draft state, scoped to wizard back-stack entry via `hiltNavGraphViewModel()`
 - `WizardSubNavBar` — shared 5-tab sub-navigation bar (Figma component `subnavbar-settings`) rendered below the main `TherapistTopBar` on every wizard screen, for jumping directly between tabs
 - **Material Tab** — `WizardMaterialViewModel` + `WizardMaterialScreen`: per Figma (`screens/settings/material/*`, 5 sub-states), this is itself a multi-state flow: pick emotion → view folders → select/deselect folders (auto-selects all images for L+T) → expand folder to deselect individual images → per-image LEARNING/TEST checkboxes. Re-verify the exact sub-state flow against Figma before implementing (not fully inspected during Phase 9 planning — API rate limit)
-- **Learning Tab** — `WizardLearningViewModel` + `WizardLearningScreen`: `NumberSelector` for image count (1–6) and repetitions (1–3), prompt template picker, TTS toggle, captions toggle, hint delay slider, hint type checkboxes (≥1 required), mixed gender toggle
+- **Learning Tab** — `WizardLearningViewModel` + `WizardLearningScreen`: `NumberSelector` for image count (1–6) and repetitions (1–10), prompt template picker, TTS toggle, captions toggle, hint delay slider (3–10 seconds), hint type checkboxes (≥1 required), mixed gender toggle
 - **Reinforcements Tab** — `WizardReinforcementsViewModel` + `WizardReinforcementsScreen`: praise word checkboxes, animation toggle, end-of-session animation toggle, end-of-session fanfare toggle
 - **Test Tab** — `WizardTestViewModel` + `WizardTestScreen`: override toggle; when overriding: independent image count, repetitions, prompt, TTS, captions, mixed gender toggle; uses `DeriveTestParametersUseCase` when not overriding
 - **Summary Tab** — `WizardSummaryViewModel` + `WizardSummaryScreen`: a real, separate screen (Figma `screens/settings/summary`, not content merged into the tab above it) — name input with validation (blank / duplicate check via `ValidateLearningStepNameUseCase`), read-only summary table (learning vs. test parameters), Save button → `SaveLearningStepUseCase`. Not yet inspected field-by-field in Figma — re-verify before implementing
@@ -486,7 +486,8 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 - [ ] Select emotion → folders displayed → select folder → all images selected for L+T
 - [ ] Deselect individual image from folder expansion view
 - [ ] Image count `NumberSelector` respects 1–6 bounds
-- [ ] Repetitions `NumberSelector` respects 1–3 bounds
+- [ ] Repetitions `NumberSelector` respects 1–10 bounds
+- [ ] Hint delay slider respects 3–10 bounds
 - [ ] Hint type: cannot deselect last active hint type
 - [ ] Test tab: override off → mirrors learning params; override on → independent fields
 - [ ] Toggling override back to off reverts test params immediately

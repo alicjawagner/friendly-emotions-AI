@@ -316,7 +316,7 @@ Per-image mode assignment (Learning / Test checkboxes) works the same as in Frie
 
 ### 9.2 Learning Tab (Almost Unchanged)
 
-Identical to Friendly Words: image count per round (1–6, default 3), repetitions per emotion (1–3, default 2), command type, TTS toggle, captions toggle, hint timer, hint type checkboxes, **mixed gender in answers set** (disabled: if the question and the correct answer is e.g. feminine, all other images sholud also be feminine, e.g. correct answer: znudzona, available choices: znudzona, smutna, wesoła; enabled: only the correct answer and the question must be the same gender, the rest can be arbitrary, e.g. correct answer: znudzony, available choices: znudzony, smutna, zdziwiony).
+Identical to Friendly Words: image count per round (1–6, default 3), repetitions per emotion (1–10, default 2), command type, TTS toggle, captions toggle, hint timer (3–10 seconds, default 5), hint type checkboxes, **mixed gender in answers set** (disabled: if the question and the correct answer is e.g. feminine, all other images sholud also be feminine, e.g. correct answer: znudzona, available choices: znudzona, smutna, wesoła; enabled: only the correct answer and the question must be the same gender, the rest can be arbitrary, e.g. correct answer: znudzony, available choices: znudzony, smutna, zdziwiony).
 
 ### 9.3 Reinforcements Tab (Almost Unchanged)
 

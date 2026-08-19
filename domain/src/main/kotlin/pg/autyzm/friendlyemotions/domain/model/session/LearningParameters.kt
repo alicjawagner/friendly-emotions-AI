@@ -29,7 +29,7 @@ data class LearningParameters(
         const val DEFAULT_REPETITIONS_PER_EMOTION = 2
         const val DEFAULT_HINT_DELAY_SECONDS = 5
         val DISPLAYED_IMAGE_COUNT_RANGE = 1..6
-        val REPETITIONS_PER_EMOTION_RANGE = 1..3
-        val HINT_DELAY_SECONDS_RANGE = 1..10
+        val REPETITIONS_PER_EMOTION_RANGE = 1..10
+        val HINT_DELAY_SECONDS_RANGE = 3..10
     }
 }

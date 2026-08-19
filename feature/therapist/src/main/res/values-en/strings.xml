@@ -109,4 +109,39 @@
     <string name="therapist_wizard_material_delete_emotion_message">This emotion and all its folder/image selections will be removed from this step.</string>
     <string name="therapist_wizard_material_folder_back_description">Back to folder gallery</string>
     <string name="therapist_wizard_material_next">NEXT</string>
+
+    <string name="therapist_wizard_learning_trial_settings_header">Trial settings</string>
+    <string name="therapist_wizard_learning_learning_settings_header">Learning settings</string>
+    <string name="therapist_wizard_learning_prompt_label">Prompt type:</string>
+    <string name="therapist_wizard_learning_prompt_emotion_only">{emotion}</string>
+    <string name="therapist_wizard_learning_prompt_where_is">Where is {emotion}?</string>
+    <string name="therapist_wizard_learning_prompt_show_me">Show me {emotion}.</string>
+    <string name="therapist_wizard_learning_prompt_find">Find {emotion}.</string>
+    <string name="therapist_wizard_learning_prompt_touch">Touch {emotion}.</string>
+    <string name="therapist_wizard_learning_prompt_point_to">Point to {emotion}.</string>
+    <string name="therapist_wizard_learning_prompt_choose">Choose {emotion}.</string>
+    <string name="therapist_wizard_learning_image_count_label">Number of images displayed on screen:</string>
+    <string name="therapist_wizard_learning_repetitions_label">Number of repetitions per emotion:</string>
+    <string name="therapist_wizard_learning_hint_delay_label">Show hint after (3–10 seconds):</string>
+    <string name="therapist_wizard_learning_hint_types_label">Choose hint type:</string>
+    <string name="therapist_wizard_learning_hint_outline">Outline the correct one</string>
+    <string name="therapist_wizard_learning_hint_animate">Animate the correct one</string>
+    <string name="therapist_wizard_learning_hint_scale">Enlarge the correct one</string>
+    <string name="therapist_wizard_learning_hint_dim">Dim the incorrect ones</string>
+    <string name="therapist_wizard_learning_options_label">Options:</string>
+    <string name="therapist_wizard_learning_captions_label">Captions under images</string>
+    <string name="therapist_wizard_learning_captions_info_title">Info</string>
+    <string name="therapist_wizard_learning_captions_info_message">The name of the emotion shown will be displayed under each image.</string>
+    <string name="therapist_wizard_learning_tts_label">Voice playback of the prompt</string>
+    <string name="therapist_wizard_learning_tts_info_title">Info</string>
+    <string name="therapist_wizard_learning_tts_info_message">The prompt will be read aloud to the child on every trial.</string>
+    <string name="therapist_wizard_learning_mixed_gender_label">Mixed gender in answer set</string>
+    <string name="therapist_wizard_learning_mixed_gender_info_title">Info</string>
+    <string name="therapist_wizard_learning_mixed_gender_info_message">When disabled, the images to choose from will share the same grammatical gender as the correct answer.</string>
+    <string name="therapist_wizard_learning_next">NEXT</string>
+
+    <string name="therapist_wizard_test_override_label">Change for test</string>
+    <string name="therapist_wizard_test_hint_delay_banner">If the child does not choose an answer, the screen will change automatically after the time set in the LEARNING section - Show hint after (seconds).</string>
+    <string name="therapist_wizard_test_no_hints_banner">In test mode, hints and reinforcements are not used and the therapist does not help or talk to the child until the test is finished.</string>
+    <string name="therapist_wizard_test_next">NEXT</string>
 </resources>
