@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RecordVoiceOver
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.filled.Wc
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +35,7 @@ import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
+import pg.autyzm.friendlyemotions.therapist.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardSubNavBar
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
@@ -162,6 +164,8 @@ private fun WizardLearningContent(
                     text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
                 )
                 Text(
                     text = stringResource(R.string.therapist_wizard_learning_prompt_label),
@@ -197,7 +201,7 @@ private fun WizardLearningContent(
                     contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
                 )
             }
-            VerticalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
+            VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
             Column(
                 modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -206,6 +210,8 @@ private fun WizardLearningContent(
                     text = stringResource(R.string.therapist_wizard_learning_learning_settings_header),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
                 )
                 Text(
                     text = stringResource(R.string.therapist_wizard_learning_hint_delay_label),
@@ -310,7 +316,7 @@ private fun HintType.labelRes(): Int =
         HintType.DIM_INCORRECT -> R.string.therapist_wizard_learning_hint_dim
     }
 
-@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
+@Preview(showBackground = true, widthDp = 1280, heightDp = 655)
 @Composable
 private fun WizardLearningContentPreview() {
     FriendlyEmotionsTheme {

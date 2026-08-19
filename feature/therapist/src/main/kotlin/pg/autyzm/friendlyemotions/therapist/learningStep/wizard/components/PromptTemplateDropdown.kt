@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -37,7 +38,7 @@ fun PromptTemplateDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { if (enabled) onExpandedChange(it) },
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
     ) {
         OutlinedTextField(
             value = stringResource(selected.labelRes()),
@@ -52,7 +53,13 @@ fun PromptTemplateDropdown(
                     unfocusedTextColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                     disabledTextColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
                 ),
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(
+                        ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                        enabled,
+                    ),
         )
         ExposedDropdownMenu(
             expanded = expanded,

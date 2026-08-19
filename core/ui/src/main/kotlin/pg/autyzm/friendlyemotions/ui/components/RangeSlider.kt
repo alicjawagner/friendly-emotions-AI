@@ -1,10 +1,14 @@
 package pg.autyzm.friendlyemotions.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -12,10 +16,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,18 +51,13 @@ fun RangeSlider(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
-        IconButton(
+        RoundActionButton(
+            imageVector = Icons.Filled.Remove,
             onClick = { onValueChange((value - 1).coerceIn(range)) },
             enabled = enabled && value > range.first,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Remove,
-                contentDescription = null,
-                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-            )
-        }
+        )
 
         Column(
             modifier = Modifier.weight(1f),
@@ -68,17 +69,18 @@ fun RangeSlider(
                 valueRange = range.first.toFloat()..range.last.toFloat(),
                 steps = (range.last - range.first - 1).coerceAtLeast(0),
                 enabled = enabled,
-                colors = SliderDefaults.colors(
-                    thumbColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                    activeTrackColor =
-                        FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700.copy(
-                            alpha = SLIDER_TRACK_ALPHA,
-                        ),
-                    inactiveTrackColor =
-                        FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700.copy(
-                            alpha = SLIDER_TRACK_ALPHA,
-                        ),
-                ),
+                colors =
+                    SliderDefaults.colors(
+                        thumbColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                        activeTrackColor =
+                            FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800.copy(
+                                alpha = SLIDER_TRACK_ALPHA,
+                            ),
+                        inactiveTrackColor =
+                            FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800.copy(
+                                alpha = SLIDER_TRACK_ALPHA,
+                            ),
+                    ),
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -93,12 +95,13 @@ fun RangeSlider(
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 8.dp,
-                        end = if (range.last >= 10) 0.dp else 8.dp,
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 8.dp,
+                            end = if (range.last >= 10) 0.dp else 8.dp,
+                        ),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 range.forEach { tick ->
@@ -110,14 +113,38 @@ fun RangeSlider(
                 }
             }
         }
-        IconButton(
+        RoundActionButton(
+            imageVector = Icons.Filled.Add,
             onClick = { onValueChange((value + 1).coerceIn(range)) },
             enabled = enabled && value < range.last,
+        )
+    }
+}
+
+@Composable
+private fun RoundActionButton(
+    imageVector: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        shape = CircleShape,
+        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+        modifier =
+            modifier
+                .size(30.dp)
+                .offset(y = 8.dp),
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Filled.Add,
+                imageVector = imageVector,
                 contentDescription = null,
-                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+                tint = FriendlyEmotionsColors.Shades.White,
             )
         }
     }

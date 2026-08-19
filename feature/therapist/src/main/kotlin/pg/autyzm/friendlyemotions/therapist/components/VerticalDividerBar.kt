@@ -1,4 +1,4 @@
-package pg.autyzm.friendlyemotions.therapist.materials.components
+package pg.autyzm.friendlyemotions.therapist.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

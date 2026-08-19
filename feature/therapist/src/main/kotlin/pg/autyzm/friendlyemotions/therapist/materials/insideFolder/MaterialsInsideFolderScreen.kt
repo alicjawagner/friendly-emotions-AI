@@ -43,13 +43,13 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.RenameFolderDialog
+import pg.autyzm.friendlyemotions.therapist.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.AddNewTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.EmotionRail
 import pg.autyzm.friendlyemotions.therapist.materials.components.GenderLegend
 import pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
-import pg.autyzm.friendlyemotions.therapist.materials.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
