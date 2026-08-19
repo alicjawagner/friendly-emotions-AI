@@ -248,33 +248,36 @@ private fun WizardTestContent(
                             style = FriendlyEmotionsTextStyles.headingH5Regular,
                             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                         )
-                        ToggleInfoRow(
-                            icon = Icons.Filled.Subtitles,
-                            label = stringResource(R.string.therapist_wizard_learning_captions_label),
-                            checked = captionsEnabled,
-                            onCheckedChange = onCaptionsToggled,
-                            infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
-                            infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
-                            enabled = overridesLearning,
-                        )
-                        ToggleInfoRow(
-                            icon = Icons.Filled.RecordVoiceOver,
-                            label = stringResource(R.string.therapist_wizard_learning_tts_label),
-                            checked = ttsEnabled,
-                            onCheckedChange = onTtsToggled,
-                            infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
-                            infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
-                            enabled = overridesLearning,
-                        )
-                        ToggleInfoRow(
-                            icon = Icons.Filled.Wc,
-                            label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
-                            checked = mixedGenderInAnswers,
-                            onCheckedChange = onMixedGenderToggled,
-                            infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
-                            infoMessage = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
-                            enabled = overridesLearning,
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            ToggleInfoRow(
+                                icon = Icons.Filled.Subtitles,
+                                label = stringResource(R.string.therapist_wizard_learning_captions_label),
+                                checked = captionsEnabled,
+                                onCheckedChange = onCaptionsToggled,
+                                infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
+                                infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
+                                enabled = overridesLearning,
+                            )
+                            ToggleInfoRow(
+                                icon = Icons.Filled.RecordVoiceOver,
+                                label = stringResource(R.string.therapist_wizard_learning_tts_label),
+                                checked = ttsEnabled,
+                                onCheckedChange = onTtsToggled,
+                                infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
+                                infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
+                                enabled = overridesLearning,
+                            )
+                            ToggleInfoRow(
+                                icon = Icons.Filled.Wc,
+                                label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
+                                checked = mixedGenderInAnswers,
+                                onCheckedChange = onMixedGenderToggled,
+                                infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
+                                infoMessage =
+                                    stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
+                                enabled = overridesLearning,
+                            )
+                        }
                         StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_no_hints_banner))
                     }
                 }

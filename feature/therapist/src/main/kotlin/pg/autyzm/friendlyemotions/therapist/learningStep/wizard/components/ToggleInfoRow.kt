@@ -8,10 +8,12 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,43 +46,45 @@ fun ToggleInfoRow(
 ) {
     var showInfo by remember { mutableStateOf(false) }
 
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                modifier = Modifier.size(24.dp),
-            )
-            Text(
-                text = label,
-                style = FriendlyEmotionsTextStyles.bodyRegular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            )
-            IconButton(onClick = { showInfo = true }) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+        Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Icon(
-                    imageVector = Icons.Rounded.Info,
+                    imageVector = icon,
                     contentDescription = null,
                     tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                    modifier = Modifier.size(24.dp),
                 )
+                Text(
+                    text = label,
+                    style = FriendlyEmotionsTextStyles.bodyRegular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                )
+                IconButton(onClick = { showInfo = true }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Info,
+                        contentDescription = null,
+                        tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                    )
+                }
             }
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                enabled = enabled,
+                colors =
+                    SwitchDefaults.colors(
+                        checkedTrackColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300,
+                        checkedThumbColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+                        uncheckedTrackColor = FriendlyEmotionsColors.Neutral.N300,
+                        uncheckedThumbColor = FriendlyEmotionsColors.Shades.White,
+                    ),
+            )
         }
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-            colors =
-                SwitchDefaults.colors(
-                    checkedTrackColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300,
-                    checkedThumbColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                    uncheckedTrackColor = FriendlyEmotionsColors.Neutral.N300,
-                    uncheckedThumbColor = FriendlyEmotionsColors.Shades.White,
-                ),
-        )
     }
 
     if (showInfo) {

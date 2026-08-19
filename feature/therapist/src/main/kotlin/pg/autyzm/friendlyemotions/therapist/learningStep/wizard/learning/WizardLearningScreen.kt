@@ -14,8 +14,10 @@ import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Wc
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -238,30 +240,32 @@ private fun WizardLearningContent(
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
-                ToggleInfoRow(
-                    icon = Icons.Filled.Subtitles,
-                    label = stringResource(R.string.therapist_wizard_learning_captions_label),
-                    checked = learningParameters.captionsEnabled,
-                    onCheckedChange = onCaptionsToggled,
-                    infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
-                    infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
-                )
-                ToggleInfoRow(
-                    icon = Icons.Filled.RecordVoiceOver,
-                    label = stringResource(R.string.therapist_wizard_learning_tts_label),
-                    checked = learningParameters.ttsEnabled,
-                    onCheckedChange = onTtsToggled,
-                    infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
-                    infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
-                )
-                ToggleInfoRow(
-                    icon = Icons.Filled.Wc,
-                    label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
-                    checked = learningParameters.mixedGenderInAnswers,
-                    onCheckedChange = onMixedGenderToggled,
-                    infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
-                    infoMessage = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    ToggleInfoRow(
+                        icon = Icons.Filled.Subtitles,
+                        label = stringResource(R.string.therapist_wizard_learning_captions_label),
+                        checked = learningParameters.captionsEnabled,
+                        onCheckedChange = onCaptionsToggled,
+                        infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
+                    )
+                    ToggleInfoRow(
+                        icon = Icons.Filled.RecordVoiceOver,
+                        label = stringResource(R.string.therapist_wizard_learning_tts_label),
+                        checked = learningParameters.ttsEnabled,
+                        onCheckedChange = onTtsToggled,
+                        infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
+                    )
+                    ToggleInfoRow(
+                        icon = Icons.Filled.Wc,
+                        label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
+                        checked = learningParameters.mixedGenderInAnswers,
+                        onCheckedChange = onMixedGenderToggled,
+                        infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
+                    )
+                }
             }
         }
         TherapistButton(
@@ -282,27 +286,29 @@ private fun HintTypeCheckboxGroup(
     onHintTypesChanged: (Set<HintType>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        HintType.entries.forEach { hintType ->
-            val checked = hintType in activeHintTypes
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = { newChecked ->
-                        val next = if (newChecked) activeHintTypes + hintType else activeHintTypes - hintType
-                        if (next.isNotEmpty()) onHintTypesChanged(next)
-                    },
-                    colors =
-                        CheckboxDefaults.colors(
-                            checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        ),
-                )
-                Text(
-                    text = stringResource(hintType.labelRes()),
-                    style = FriendlyEmotionsTextStyles.bodyRegular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                )
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            HintType.entries.forEach { hintType ->
+                val checked = hintType in activeHintTypes
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = checked,
+                        onCheckedChange = { newChecked ->
+                            val next = if (newChecked) activeHintTypes + hintType else activeHintTypes - hintType
+                            if (next.isNotEmpty()) onHintTypesChanged(next)
+                        },
+                        colors =
+                            CheckboxDefaults.colors(
+                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                            ),
+                    )
+                    Text(
+                        text = stringResource(hintType.labelRes()),
+                        style = FriendlyEmotionsTextStyles.bodyRegular,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                    )
+                }
             }
         }
     }
