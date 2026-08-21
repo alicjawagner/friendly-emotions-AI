@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.test
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.Promp
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.StaticInfoBanner
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.ToggleInfoRow
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
+import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.RangeSlider
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -157,6 +159,7 @@ private fun WizardTestContent(
     modifier: Modifier = Modifier,
 ) {
     var promptDropdownExpanded by remember { mutableStateOf(false) }
+    var showOverrideHint by remember { mutableStateOf(false) }
 
     val promptTemplate =
         if (overridesLearning) testParameters.promptTemplate else displayedLearningParameters.promptTemplate
@@ -175,7 +178,10 @@ private fun WizardTestContent(
         if (overridesLearning) testParameters.mixedGenderInAnswers else displayedLearningParameters.mixedGenderInAnswers
 
     Box(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = overridesLearning,
@@ -193,7 +199,10 @@ private fun WizardTestContent(
                 )
             }
             Box(
-                modifier = Modifier.weight(1f).alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA),
+                modifier =
+                    Modifier.weight(1f)
+                        .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
+                        .clickable(enabled = !overridesLearning) { showOverrideHint = true },
             ) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -248,7 +257,7 @@ private fun WizardTestContent(
                             style = FriendlyEmotionsTextStyles.headingH5Regular,
                             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                         )
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                             ToggleInfoRow(
                                 icon = Icons.Filled.Subtitles,
                                 label = stringResource(R.string.therapist_wizard_learning_captions_label),
@@ -287,6 +296,14 @@ private fun WizardTestContent(
             text = stringResource(R.string.therapist_wizard_test_next),
             onClick = onNextClick,
             modifier = Modifier.align(Alignment.BottomEnd).padding(CONTENT_PADDING),
+        )
+    }
+
+    if (showOverrideHint) {
+        InfoDialog(
+            title = stringResource(R.string.therapist_wizard_test_override_hint_title),
+            message = stringResource(R.string.therapist_wizard_test_override_hint_message),
+            onDismiss = { showOverrideHint = false },
         )
     }
 }

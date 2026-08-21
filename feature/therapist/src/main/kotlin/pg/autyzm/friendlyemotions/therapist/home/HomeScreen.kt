@@ -25,9 +25,9 @@ import androidx.compose.material.icons.filled.Image as ImageIcon
  * The therapist app's real main menu (Figma `screens/Homepage`, `342:36081`) — two buttons
  * navigating to the Materials and Learning Steps flows, over a decorative background matching the
  * Figma layer stack (background ellipses, leaves, mascot). Stateless: two static navigation
- * actions plus static decoration, no observable state, so no ViewModel. The topbar's back arrow is
- * hidden here (`showBackButton = false`) since the Figma instance has that slot hidden on the root
- * screen (see [pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar]).
+ * actions plus static decoration, no observable state, so no ViewModel. The topbar's home icon is
+ * hidden here (`showHomeButton = false`) since navigating "home" while already on the home screen
+ * is a no-op (see [pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar]).
  */
 @Composable
 fun HomeScreen(
@@ -41,6 +41,7 @@ fun HomeScreen(
         title = stringResource(R.string.therapist_home_title),
         onBackClick = onBackClick,
         onHomeClick = onHomeClick,
+        showHomeButton = false,
         modifier = modifier,
     ) { innerPadding ->
         HomeBackground {

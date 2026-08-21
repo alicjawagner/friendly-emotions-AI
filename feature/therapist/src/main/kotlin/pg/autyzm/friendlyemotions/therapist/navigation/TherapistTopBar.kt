@@ -27,10 +27,10 @@ private val NAVBAR_SHADOW_ELEVATION = 4.dp
 
 /**
  * Shared topbar for every therapist screen, modeled on the Figma `TopBar` component (`30:1361`).
- * Always shows both the back arrow and the home icon — the "Default" Figma variant renders both
- * unconditionally, including on [pg.autyzm.friendlyemotions.therapist.home.HomeScreen] itself
- * (ADR-012, target-architecture.md §13.3). The Figma "System bar" row is a mockup of the real OS
- * status bar and is intentionally not reproduced here.
+ * Shows the back arrow and, unless [showHomeButton] is `false`, the home icon — the latter is
+ * hidden on [pg.autyzm.friendlyemotions.therapist.home.HomeScreen] itself since navigating "home"
+ * while already home is a no-op. The Figma "System bar" row is a mockup of the real OS status bar
+ * and is intentionally not reproduced here.
  */
 @Composable
 fun TherapistTopBar(
@@ -38,6 +38,7 @@ fun TherapistTopBar(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showHomeButton: Boolean = true,
 ) {
     Row(
         modifier =
@@ -62,13 +63,15 @@ fun TherapistTopBar(
             color = FriendlyEmotionsColors.Shades.White,
             modifier = Modifier.weight(1f).padding(start = 16.dp),
         )
-        IconButton(onClick = onHomeClick) {
-            Icon(
-                imageVector = Icons.Filled.Home,
-                contentDescription = stringResource(R.string.therapist_topbar_home_description),
-                tint = FriendlyEmotionsColors.Shades.White,
-                modifier = Modifier.size(36.dp),
-            )
+        if (showHomeButton) {
+            IconButton(onClick = onHomeClick) {
+                Icon(
+                    imageVector = Icons.Filled.Home,
+                    contentDescription = stringResource(R.string.therapist_topbar_home_description),
+                    tint = FriendlyEmotionsColors.Shades.White,
+                    modifier = Modifier.size(36.dp),
+                )
+            }
         }
     }
 }

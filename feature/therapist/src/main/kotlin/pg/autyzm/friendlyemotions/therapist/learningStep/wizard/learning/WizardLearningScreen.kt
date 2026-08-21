@@ -240,7 +240,7 @@ private fun WizardLearningContent(
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                     ToggleInfoRow(
                         icon = Icons.Filled.Subtitles,
                         label = stringResource(R.string.therapist_wizard_learning_captions_label),

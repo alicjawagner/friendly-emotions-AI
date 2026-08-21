@@ -15,11 +15,19 @@ fun TherapistScaffold(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showHomeButton: Boolean = true,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = { TherapistTopBar(title = title, onBackClick = onBackClick, onHomeClick = onHomeClick) },
+        topBar = {
+            TherapistTopBar(
+                title = title,
+                onBackClick = onBackClick,
+                onHomeClick = onHomeClick,
+                showHomeButton = showHomeButton,
+            )
+        },
         content = content,
     )
 }

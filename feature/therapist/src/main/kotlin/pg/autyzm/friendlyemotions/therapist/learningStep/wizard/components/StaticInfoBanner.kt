@@ -34,7 +34,7 @@ fun StaticInfoBanner(
             modifier
                 .fillMaxWidth()
                 .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, BANNER_SHAPE)
-                .padding(horizontal = 7.dp, vertical = 5.dp),
+                .padding(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Icon(

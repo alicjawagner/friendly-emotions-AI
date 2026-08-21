@@ -5,7 +5,7 @@
     <string name="therapist_placeholder_coming_soon">Coming soon</string>
 
     <string name="therapist_welcome_title">Friendly Emotions Settings</string>
-    <string name="therapist_home_title">Friendly Emotions Settings</string>
+    <string name="therapist_home_title">Home page</string>
     <string name="therapist_home_materials_button">MATERIALS</string>
     <string name="therapist_home_learning_steps_button">LEARNING STEPS</string>
     <string name="therapist_route_title_materials_folders">Materials</string>
@@ -141,6 +141,8 @@
     <string name="therapist_wizard_learning_next">NEXT</string>
 
     <string name="therapist_wizard_test_override_label">Change for test</string>
+    <string name="therapist_wizard_test_override_hint_title">Info</string>
+    <string name="therapist_wizard_test_override_hint_message">To change these settings, check the checkbox at the top of the screen. Otherwise, the test will use the same settings as learning.</string>
     <string name="therapist_wizard_test_hint_delay_banner">If the child does not choose an answer, the screen will change automatically after the time set in the LEARNING section - Show hint after (seconds).</string>
     <string name="therapist_wizard_test_no_hints_banner">In test mode, hints and reinforcements are not used and the therapist does not help or talk to the child until the test is finished.</string>
     <string name="therapist_wizard_test_next">NEXT</string>

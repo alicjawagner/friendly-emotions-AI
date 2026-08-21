@@ -5,7 +5,7 @@
     <string name="therapist_placeholder_coming_soon">Wkrótce dostępne</string>
 
     <string name="therapist_welcome_title">Przyjazne Emocje Ustawienia</string>
-    <string name="therapist_home_title">Przyjazne Emocje Ustawienia</string>
+    <string name="therapist_home_title">Strona główna</string>
     <string name="therapist_home_materials_button">GALERIA OBRAZÓW</string>
     <string name="therapist_home_learning_steps_button">KROKI UCZENIA</string>
     <string name="therapist_route_title_materials_folders">Galeria obrazów</string>
@@ -141,6 +141,8 @@
     <string name="therapist_wizard_learning_next">DALEJ</string>
 
     <string name="therapist_wizard_test_override_label">Zmień dla testu</string>
+    <string name="therapist_wizard_test_override_hint_title">Info</string>
+    <string name="therapist_wizard_test_override_hint_message">Aby zmienić te ustawienia, zaznacz pole wyboru na górze ekranu. W przeciwnym razie w teście będą obowiązywać te same ustawienia co w uczeniu.</string>
     <string name="therapist_wizard_test_hint_delay_banner">Jeśli dziecko nie wybierze odpowiedzi, ekran zmieni się automatycznie po czasie ustawionym w sekcji UCZENIE - Pokaż podpowiedź po (sekundach).</string>
     <string name="therapist_wizard_test_no_hints_banner">W trybie testu nie używa się podpowiedzi i wzmocnień, a terapeuta nie pomaga i nie rozmawia z dzieckiem, aż do zakończenia testu.</string>
     <string name="therapist_wizard_test_next">DALEJ</string>

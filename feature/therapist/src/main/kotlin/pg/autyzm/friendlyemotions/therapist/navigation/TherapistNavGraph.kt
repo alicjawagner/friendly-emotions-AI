@@ -43,15 +43,21 @@ fun TherapistNavGraph(
     navController: NavHostController = rememberNavController(),
     onPlayRequested: () -> Unit = {},
 ) {
+    // Plain push (no popUpTo) so the screen the therapist came from stays on the back stack —
+    // the topbar back arrow from Home must return to wherever "Home" was clicked from (e.g. a
+    // wizard tab), not discard that history. `launchSingleTop` only guards against stacking a
+    // redundant duplicate when already on Home.
     val onHomeClick: () -> Unit = {
         navController.navigate(TherapistRoutes.Home) {
-            popUpTo(TherapistRoutes.Home) { inclusive = true }
+            launchSingleTop = true
         }
     }
-    // `Home` is the graph's effective root (Welcome pops itself off via popUpTo/inclusive on
-    // arrival), so there's no previous entry to pop from there. Rather than falling back to
-    // activity.finish() — which made the topbar back arrow silently exit the app from Home — a
-    // missing previous entry is treated as a no-op, same as a root screen ignoring back elsewhere.
+    // Welcome is kept on the back stack (not inclusive-popped) when navigating to Home, so Home
+    // always has a previous entry to return to — Welcome itself, or whatever screen was visited
+    // before Home when this back stack entry was reached by other means (e.g. system/topbar back
+    // popping through intermediate screens). A missing previous entry (there is always one here,
+    // since Welcome is the graph's start destination) is treated as a no-op, same as a root screen
+    // ignoring back elsewhere.
     val onBackClick: () -> Unit = {
         if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
@@ -62,9 +68,7 @@ fun TherapistNavGraph(
         composable<TherapistRoutes.Welcome> {
             val viewModel: TherapistWelcomeViewModel = hiltViewModel()
             viewModel.navigateToHome.collectAsEffect {
-                navController.navigate(TherapistRoutes.Home) {
-                    popUpTo(TherapistRoutes.Welcome) { inclusive = true }
-                }
+                navController.navigate(TherapistRoutes.Home)
             }
             TherapistWelcomeScreen(onContinue = viewModel::onContinueClicked)
         }
