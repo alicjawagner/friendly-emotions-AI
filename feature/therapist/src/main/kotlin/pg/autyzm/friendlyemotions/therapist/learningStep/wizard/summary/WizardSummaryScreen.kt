@@ -18,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,7 +33,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
-import pg.autyzm.friendlyemotions.therapist.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardSubNavBar
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
@@ -181,12 +182,14 @@ private fun WizardSummaryContent(
                     text = stringResource(R.string.therapist_wizard_summary_header_learning),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = stringResource(R.string.therapist_wizard_summary_header_test),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -196,9 +199,12 @@ private fun WizardSummaryContent(
                 }
             }
         }
-        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
         Column(
-            modifier = Modifier.width(SAVE_PANEL_WIDTH).padding(start = CONTENT_PADDING),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterVertically)
+                    .width(SAVE_PANEL_WIDTH)
+                    .padding(start = CONTENT_PADDING),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             OutlinedTextField(

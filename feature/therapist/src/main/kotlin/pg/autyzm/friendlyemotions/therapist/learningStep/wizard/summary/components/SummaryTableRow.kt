@@ -8,6 +8,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
@@ -36,15 +38,27 @@ fun SummaryTableRow(
                 text = learningValue,
                 style = FriendlyEmotionsTextStyles.captionC1,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
             )
             Text(
                 text = testValue,
                 style = FriendlyEmotionsTextStyles.captionC1,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
             )
         }
         HorizontalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SummaryTableRowPreview() {
+    SummaryTableRow(
+        label = "Liczba uczonych emocji",
+        learningValue = "3",
+        testValue = "3"
+    )
 }

@@ -45,17 +45,17 @@ fun LowMascotNarrowHelpBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 333.dp).size(461.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 353.dp).size(461.dp),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = 269.dp, y = (-156).dp).size(461.dp),
+            modifier = Modifier.align(Alignment.TopEnd).offset(x = 269.dp, y = (-266).dp).size(461.dp),
         )
         Image(
             painter = painterResource(R.drawable.ellipse_orange),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 123.dp).size(78.dp),
+            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 13.dp).size(78.dp),
         )
         Image(
             painter = painterResource(R.drawable.leaf_purple),
@@ -63,7 +63,7 @@ fun LowMascotNarrowHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = (-51).dp, y = 142.dp)
+                    .offset(x = (-51).dp, y = 32.dp)
                     .size(width = 86.dp, height = 143.dp)
                     .rotate(16f),
         )
@@ -73,7 +73,7 @@ fun LowMascotNarrowHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-76).dp, y = (-90).dp)
+                    .offset(x = (-76).dp, y = (-70).dp)
                     .size(width = 229.dp, height = 199.dp),
         )
         HelpTextBubble(
@@ -81,7 +81,7 @@ fun LowMascotNarrowHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomStart)
-                    .padding(start = 983.dp, bottom = 306.dp)
+                    .padding(start = 983.dp, bottom = 286.dp)
                     .width(206.dp),
         )
         content()

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,7 +41,14 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
-private val CONTENT_PADDING = 20.dp
+private val CONTENT_PADDING = 30.dp
+private val COLUMN_GAP = 30.dp
+private val ROW_GAP = 7.dp
+private val SECTION_SPACING = 20.dp
+
+/** Leaves the right third of the screen clear for [LowMascotNarrowHelpBackground]'s mascot/bubble. */
+private const val CONTENT_WIDTH_FRACTION = 0.72f
+private const val CHECKBOX_SECTION_WIDTH_FRACTION = 0.5f
 
 /**
  * Reinforcements tab of the Learning Step wizard (Figma `screens/settings/reinforcements`, node
@@ -111,7 +119,7 @@ fun WizardReinforcementsScreen(
                     containerViewModel.updateReinforcementSettings { it.copy(endSessionFanfareEnabled = on) }
                 },
                 onNextClick = onNextClick,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(CONTENT_WIDTH_FRACTION).fillMaxHeight(),
             )
         }
     }
@@ -143,49 +151,63 @@ private fun WizardReinforcementsContent(
     Box(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp),
         ) {
-            Text(
-                text = stringResource(R.string.therapist_wizard_reinforcements_praise_header),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            )
-            OptionCheckboxGroup(
-                options = ReinforcementSettings.PRAISE_WORDS,
-                checked = reinforcementSettings.enabledPraiseWords,
-                allowEmpty = false,
-                label = { key -> PraiseCatalog.resolve(key, currentLocaleCode()).replaceFirstChar { it.uppercase() } },
-                onCheckedChanged = onPraiseWordsChanged,
-            )
-            Text(
-                text = stringResource(R.string.therapist_wizard_reinforcements_animation_header),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            )
-            OptionCheckboxGroup(
-                options = ReinforcementSettings.ANIMATION_THEMES,
-                checked = reinforcementSettings.enabledAnimationThemes,
-                allowEmpty = true,
-                label = { key -> stringResource(key.animationThemeLabelRes()) },
-                onCheckedChanged = onAnimationThemesChanged,
-            )
-            Text(
-                text = stringResource(R.string.therapist_wizard_reinforcements_end_session_header),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            )
-            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CheckboxRow(
-                        checked = reinforcementSettings.endSessionAnimationEnabled,
-                        label = stringResource(R.string.therapist_wizard_reinforcements_end_animation_label),
-                        onCheckedChange = onEndSessionAnimationToggled,
-                    )
-                    CheckboxRow(
-                        checked = reinforcementSettings.endSessionFanfareEnabled,
-                        label = stringResource(R.string.therapist_wizard_reinforcements_end_fanfare_label),
-                        onCheckedChange = onEndSessionFanfareToggled,
-                    )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+            ) {
+                Text(
+                    text = stringResource(R.string.therapist_wizard_reinforcements_praise_header),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                )
+                OptionCheckboxGroup(
+                    options = ReinforcementSettings.PRAISE_WORDS,
+                    checked = reinforcementSettings.enabledPraiseWords,
+                    allowEmpty = false,
+                    label = { key ->
+                        PraiseCatalog.resolve(key, currentLocaleCode()).replaceFirstChar { it.uppercase() }
+                    },
+                    onCheckedChanged = onPraiseWordsChanged,
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+            ) {
+                Text(
+                    text = stringResource(R.string.therapist_wizard_reinforcements_animation_header),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                )
+                OptionCheckboxGroup(
+                    options = ReinforcementSettings.ANIMATION_THEMES,
+                    checked = reinforcementSettings.enabledAnimationThemes,
+                    allowEmpty = true,
+                    label = { key -> stringResource(key.animationThemeLabelRes()) },
+                    onCheckedChanged = onAnimationThemesChanged,
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+            ) {
+                Text(
+                    text = stringResource(R.string.therapist_wizard_reinforcements_end_session_header),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                )
+                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CheckboxRow(
+                            checked = reinforcementSettings.endSessionAnimationEnabled,
+                            label = stringResource(R.string.therapist_wizard_reinforcements_end_animation_label),
+                            onCheckedChange = onEndSessionAnimationToggled,
+                        )
+                        CheckboxRow(
+                            checked = reinforcementSettings.endSessionFanfareEnabled,
+                            label = stringResource(R.string.therapist_wizard_reinforcements_end_fanfare_label),
+                            onCheckedChange = onEndSessionFanfareToggled,
+                        )
+                    }
                 }
             }
         }
@@ -199,9 +221,11 @@ private fun WizardReinforcementsContent(
 
 /**
  * A fixed set of `Checkbox` rows over [options] (a `Set<String>` domain key set, not an enum —
- * [ReinforcementSettings.enabledPraiseWords]/[ReinforcementSettings.enabledAnimationThemes]).
- * When [allowEmpty] is `false`, unchecking the last checked option is a silent no-op (mirrors
- * `HintTypeCheckboxGroup`'s guard on [pg.autyzm.friendlyemotions.domain.model.session.LearningParameters.activeHintTypes]).
+ * [ReinforcementSettings.enabledPraiseWords]/[ReinforcementSettings.enabledAnimationThemes]),
+ * split into two columns (Figma `checkboxes 2-column`, node `984:4922`) — the first
+ * `ceil(options.size / 2)` options on the left, the rest on the right. When [allowEmpty] is
+ * `false`, unchecking the last checked option is a silent no-op (mirrors `HintTypeCheckboxGroup`'s
+ * guard on [pg.autyzm.friendlyemotions.domain.model.session.LearningParameters.activeHintTypes]).
  */
 @Composable
 private fun OptionCheckboxGroup(
@@ -212,17 +236,28 @@ private fun OptionCheckboxGroup(
     onCheckedChanged: (Set<String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val optionList = options.toList()
+    val leftColumnSize = (optionList.size + 1) / 2
+    val columns = listOf(optionList.take(leftColumnSize), optionList.drop(leftColumnSize))
+
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            options.forEach { option ->
-                CheckboxRow(
-                    checked = option in checked,
-                    label = label(option),
-                    onCheckedChange = { newChecked ->
-                        val next = if (newChecked) checked + option else checked - option
-                        if (allowEmpty || next.isNotEmpty()) onCheckedChanged(next)
-                    },
-                )
+        Row(
+            modifier = modifier.fillMaxWidth(CHECKBOX_SECTION_WIDTH_FRACTION),
+            horizontalArrangement = Arrangement.spacedBy(COLUMN_GAP),
+        ) {
+            columns.forEach { column ->
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(ROW_GAP)) {
+                    column.forEach { option ->
+                        CheckboxRow(
+                            checked = option in checked,
+                            label = label(option),
+                            onCheckedChange = { newChecked ->
+                                val next = if (newChecked) checked + option else checked - option
+                                if (allowEmpty || next.isNotEmpty()) onCheckedChanged(next)
+                            },
+                        )
+                    }
+                }
             }
         }
     }
