@@ -33,12 +33,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import pg.autyzm.friendlyemotions.child.R
 import pg.autyzm.friendlyemotions.child.backgrounds.GameEmptyBackground
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
@@ -142,7 +144,7 @@ fun GameScreen(
         is GameUiState.Error ->
             GameEmptyBackground(modifier = modifier) {
                 ErrorScreen(
-                    message = uiState.message,
+                    message = stringResource(uiState.messageRes),
                     onRetry = onRetry,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -620,7 +622,7 @@ private fun GameScreenLoadingPreview() {
 private fun GameScreenErrorPreview() {
     FriendlyEmotionsTheme {
         GameScreen(
-            uiState = GameUiState.Error(message = "Not enough images configured for this learning step."),
+            uiState = GameUiState.Error(messageRes = R.string.child_game_error_insufficient_material),
             onEvent = {},
         )
     }

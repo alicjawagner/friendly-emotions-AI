@@ -1,5 +1,6 @@
 package pg.autyzm.friendlyemotions.child.game
 
+import androidx.annotation.StringRes
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.HintType
@@ -49,7 +50,7 @@ sealed class GameUiState {
         val captionsEnabled: Boolean = true,
     ) : GameUiState()
 
-    data class Error(val message: String) : GameUiState()
+    data class Error(@param:StringRes val messageRes: Int) : GameUiState()
 }
 
 /**

@@ -4,6 +4,7 @@ import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.repository.EmotionFolderRepository
+import pg.autyzm.friendlyemotions.domain.usecase.session.CleanOrphanImagesUseCase
 import javax.inject.Inject
 
 /**
@@ -14,6 +15,7 @@ class DeleteFolderUseCase
     @Inject
     constructor(
         private val emotionFolderRepository: EmotionFolderRepository,
+        private val cleanOrphanImagesUseCase: CleanOrphanImagesUseCase,
     ) {
         suspend operator fun invoke(folderId: FolderId): Result<Unit, DomainError> {
             val folder = emotionFolderRepository.getFolderById(folderId)
@@ -22,6 +24,7 @@ class DeleteFolderUseCase
             }
 
             emotionFolderRepository.deleteFolder(folderId)
+            cleanOrphanImagesUseCase()
             return Result.Success(Unit)
         }
     }

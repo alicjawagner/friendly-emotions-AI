@@ -57,6 +57,7 @@ import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.components.VerticalDividerBar
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
+import pg.autyzm.friendlyemotions.therapist.materials.components.currentLocaleCode
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
@@ -67,7 +68,6 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
-import java.util.Locale
 
 private val RAIL_WIDTH = 402.dp
 private val CONTENT_PADDING = 20.dp
@@ -373,16 +373,7 @@ private fun InfoBox(
     }
 }
 
-/** Mirrors [pg.autyzm.friendlyemotions.therapist.materials.components.EmotionRail]'s locale-code detection. */
-private fun EmotionId.label(): String {
-    val localeCode =
-        if (Locale.getDefault().language == Locale(EmotionCatalog.LOCALE_POLISH).language) {
-            EmotionCatalog.LOCALE_POLISH
-        } else {
-            EmotionCatalog.LOCALE_ENGLISH
-        }
-    return EmotionCatalog.get(this).labels[localeCode]?.neutral.orEmpty()
-}
+private fun EmotionId.label(): String = EmotionCatalog.get(this).labels[currentLocaleCode()]?.neutral.orEmpty()
 
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
 @Composable

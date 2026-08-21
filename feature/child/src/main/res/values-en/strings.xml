@@ -7,6 +7,9 @@
     <string name="child_home_mode_test">test</string>
     <string name="child_home_no_active_step">no active step</string>
     <string name="child_home_no_materials_message">No materials configured for this step</string>
+    <string name="child_game_speaker_content_description">Speaker</string>
+    <string name="child_game_error_insufficient_material">Not enough images configured for this learning step.</string>
+    <string name="child_game_error_generic">Something went wrong. Please try again.</string>
     <string name="session_end_title">Game over!</string>
     <string name="session_end_correct_label">Correct answers:</string>
     <string name="session_end_incorrect_label">Incorrect answers:</string>

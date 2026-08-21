@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import pg.autyzm.friendlyemotions.domain.catalog.PraiseCatalog
-import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.runtime.TrialOption
@@ -136,7 +135,7 @@ class GameViewModel
 
                     is Result.Failure -> {
                         orchestrator = null
-                        _uiState.value = GameUiState.Error(result.error.toMessage())
+                        _uiState.value = GameUiState.Error(result.error.toMessageRes())
                     }
                 }
             }
@@ -364,9 +363,4 @@ class GameViewModel
                 .render(PromptTemplate.EMOTION_ONLY, option.emotionId, option.gender, ttsController.localeCode)
                 .displayText
 
-        private fun DomainError.toMessage(): String =
-            when (this) {
-                DomainError.InsufficientMaterialForSession -> "Not enough images configured for this learning step."
-                else -> "Something went wrong. Please try again."
-            }
     }

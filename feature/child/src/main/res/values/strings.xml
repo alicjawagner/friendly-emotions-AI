@@ -7,6 +7,9 @@
     <string name="child_home_mode_test">test</string>
     <string name="child_home_no_active_step">brak aktywnego kroku</string>
     <string name="child_home_no_materials_message">Brak materiałów skonfigurowanych dla tego kroku</string>
+    <string name="child_game_speaker_content_description">Głośnik</string>
+    <string name="child_game_error_insufficient_material">Za mało obrazków skonfigurowanych dla tego kroku uczenia.</string>
+    <string name="child_game_error_generic">Coś poszło nie tak. Spróbuj ponownie.</string>
     <string name="session_end_title">Koniec gry!</string>
     <string name="session_end_correct_label">Poprawne odpowiedzi:</string>
     <string name="session_end_incorrect_label">Niepoprawne odpowiedzi:</string>

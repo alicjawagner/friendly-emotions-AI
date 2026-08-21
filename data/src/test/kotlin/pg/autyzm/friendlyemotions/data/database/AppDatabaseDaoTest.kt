@@ -106,6 +106,47 @@ class AppDatabaseDaoTest {
         }
 
     @Test
+    fun `deleting a folder cascades to remove its images' usage from learning steps`() =
+        runTest {
+            val folder = folder()
+            db.emotionFolderDao().insert(folder)
+            val image = image(folder.id)
+            db.emotionImageDao().insert(image)
+            val step = step(id = "step-1", name = "Podstawowy", isActive = false, isExample = true)
+            db.learningStepDao().insert(step)
+            val usage = ImageUsageEntity(stepId = step.id, imageId = image.id, inLearning = true, inTest = false)
+            db.imageUsageDao().insertAll(listOf(usage))
+
+            db.emotionFolderDao().deleteById(folder.id)
+
+            assertNull(db.emotionImageDao().getById(image.id))
+            assertTrue(db.imageUsageDao().getForStep(step.id).isEmpty())
+            assertTrue(
+                db.imageUsageDao().getEligibleImageIdsForStepAndMode(step.id, SessionMode.LEARNING).isEmpty(),
+            )
+        }
+
+    @Test
+    fun `deleting an image cascades to remove its usage from learning steps`() =
+        runTest {
+            val folder = folder()
+            db.emotionFolderDao().insert(folder)
+            val image = image(folder.id)
+            db.emotionImageDao().insert(image)
+            val step = step(id = "step-1", name = "Podstawowy", isActive = false, isExample = true)
+            db.learningStepDao().insert(step)
+            val usage = ImageUsageEntity(stepId = step.id, imageId = image.id, inLearning = true, inTest = false)
+            db.imageUsageDao().insertAll(listOf(usage))
+
+            db.emotionImageDao().deleteById(image.id)
+
+            assertTrue(db.imageUsageDao().getForStep(step.id).isEmpty())
+            assertTrue(
+                db.imageUsageDao().getEligibleImageIdsForStepAndMode(step.id, SessionMode.LEARNING).isEmpty(),
+            )
+        }
+
+    @Test
     fun `replaceForStep swaps usages atomically`() =
         runTest {
             val folder = folder()
