@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.therapist.materials.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,12 +21,17 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
+/** Icon size as a fraction of the tile's width, leaving room below for the folder name. */
+private const val ICON_SIZE_FRACTION = 0.7f
+
 /**
  * A folder in the materials gallery (Figma `Material` node, e.g. `910:16572`): a folder icon,
  * the folder's name, and a [GenderBadge] showing its gender policy — with a delete action only
  * when [isExample] is false. Uses the built-in [Icons.Filled.Folder] rather than the user-supplied
  * `folder.png` drawable, whose quality didn't hold up at this size. Reusable wherever a folder
- * gallery is needed (e.g. the Phase 13 Wizard material tab).
+ * gallery is needed (e.g. the Phase 13 Wizard material tab). The icon is sized relative to the
+ * tile's actual (grid-computed) width rather than fixed, so the name always has room to render
+ * regardless of screen size.
  */
 @Composable
 fun FolderTile(
@@ -37,24 +43,27 @@ fun FolderTile(
     modifier: Modifier = Modifier,
 ) {
     MaterialTileContainer(modifier = modifier.clickable(onClick = onClick)) {
-        Column(
-            modifier = Modifier.matchParentSize().padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Folder,
-                contentDescription = null,
-                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                modifier = Modifier.size(186.dp),
-            )
-            Text(
-                text = name,
-                style = FriendlyEmotionsTextStyles.bodyRegular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-            )
+        BoxWithConstraints(modifier = Modifier.matchParentSize()) {
+            val iconSize = maxWidth * ICON_SIZE_FRACTION
+            Column(
+                modifier = Modifier.matchParentSize().padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Folder,
+                    contentDescription = null,
+                    tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+                    modifier = Modifier.size(iconSize),
+                )
+                Text(
+                    text = name,
+                    style = FriendlyEmotionsTextStyles.bodyRegular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                )
+            }
         }
         GenderBadge(
             iconRes = genderPolicy.badgeIconRes(),

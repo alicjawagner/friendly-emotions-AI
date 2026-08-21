@@ -119,7 +119,7 @@ private fun MaterialsFoldersContent(
                     icon = rememberVectorPainter(Icons.Filled.CreateNewFolder),
                     label = stringResource(R.string.therapist_materials_add_folder),
                     onClick = onAddFolderClick,
-                    iconSize = 186.dp,
+                    iconSize = null,
                 )
             }
             items(state.folders, key = { it.id.value }) { folder ->

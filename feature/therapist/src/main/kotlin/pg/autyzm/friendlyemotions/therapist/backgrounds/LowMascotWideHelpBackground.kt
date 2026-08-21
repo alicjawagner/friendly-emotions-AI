@@ -58,8 +58,8 @@ fun LowMascotWideHelpBackground(
             text = helpText,
             modifier =
                 Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 550.dp, bottom = 130.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 300.dp, bottom = 120.dp)
                     .width(432.dp),
         )
         content()
