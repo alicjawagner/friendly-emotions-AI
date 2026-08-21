@@ -70,6 +70,7 @@ private val NOT_OVERRIDING_ALPHA = 0.5f
 fun WizardTestScreen(
     stepId: LearningStepId?,
     containerViewModel: WizardContainerViewModel,
+    backLeavesWizard: Boolean,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -97,7 +98,7 @@ fun WizardTestScreen(
     Column(modifier = modifier.fillMaxSize()) {
         TherapistTopBar(
             title = stringResource(titleRes),
-            onBackClick = { guardedExit(onBackClick) },
+            onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
         )
         WizardSubNavBar(selectedTab = WizardTab.TEST, onTabClick = onTabSelected)

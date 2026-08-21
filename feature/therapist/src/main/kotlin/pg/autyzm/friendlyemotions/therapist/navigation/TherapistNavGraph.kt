@@ -133,9 +133,14 @@ fun TherapistNavGraph(
                 val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
                 val route = backStackEntry.toRoute<TherapistRoutes.WizardMaterial>()
                 val stepId = route.stepId?.let(::LearningStepId)
+                val backLeavesWizard =
+                    remember(backStackEntry) {
+                        navController.previousBackStackEntry?.destination?.parent != wizardEntry.destination
+                    }
                 WizardMaterialScreen(
                     stepId = stepId,
                     containerViewModel = containerViewModel,
+                    backLeavesWizard = backLeavesWizard,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
                     onNextClick = { navController.navigate(TherapistRoutes.WizardLearning(route.stepId)) },
@@ -147,9 +152,14 @@ fun TherapistNavGraph(
                 val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
                 val route = backStackEntry.toRoute<TherapistRoutes.WizardLearning>()
                 val stepId = route.stepId?.let(::LearningStepId)
+                val backLeavesWizard =
+                    remember(backStackEntry) {
+                        navController.previousBackStackEntry?.destination?.parent != wizardEntry.destination
+                    }
                 WizardLearningScreen(
                     stepId = stepId,
                     containerViewModel = containerViewModel,
+                    backLeavesWizard = backLeavesWizard,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
                     onNextClick = { navController.navigate(TherapistRoutes.WizardReinforcements(route.stepId)) },
@@ -168,9 +178,14 @@ fun TherapistNavGraph(
                 val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
                 val route = backStackEntry.toRoute<TherapistRoutes.WizardTest>()
                 val stepId = route.stepId?.let(::LearningStepId)
+                val backLeavesWizard =
+                    remember(backStackEntry) {
+                        navController.previousBackStackEntry?.destination?.parent != wizardEntry.destination
+                    }
                 WizardTestScreen(
                     stepId = stepId,
                     containerViewModel = containerViewModel,
+                    backLeavesWizard = backLeavesWizard,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
                     onNextClick = { navController.navigate(TherapistRoutes.WizardSummary(route.stepId)) },

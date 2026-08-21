@@ -64,6 +64,7 @@ private val CONTENT_PADDING = 20.dp
 fun WizardLearningScreen(
     stepId: LearningStepId?,
     containerViewModel: WizardContainerViewModel,
+    backLeavesWizard: Boolean,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -91,7 +92,7 @@ fun WizardLearningScreen(
     Column(modifier = modifier.fillMaxSize()) {
         TherapistTopBar(
             title = stringResource(titleRes),
-            onBackClick = { guardedExit(onBackClick) },
+            onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
         )
         WizardSubNavBar(selectedTab = WizardTab.LEARNING, onTabClick = onTabSelected)
