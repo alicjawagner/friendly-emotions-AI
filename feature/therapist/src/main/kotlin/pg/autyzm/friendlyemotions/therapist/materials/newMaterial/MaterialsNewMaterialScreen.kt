@@ -9,19 +9,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
@@ -186,58 +189,66 @@ private fun MaterialsNewMaterialContent(
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(
             modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight(),
-            verticalArrangement = Arrangement.spacedBy(FORM_ITEM_SPACING),
         ) {
-            ReadOnlyField(
-                label = stringResource(R.string.therapist_materials_new_material_emotion_label),
-                value = state.emotionId.label(),
-            )
-            ReadOnlyField(
-                label = stringResource(R.string.therapist_materials_new_material_folder_label),
-                value = "${state.folderName} (${stringResource(state.folderGenderPolicy.descriptionRes())})",
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = stringResource(R.string.therapist_materials_new_material_add_prompt),
-                    style = FriendlyEmotionsTextStyles.captionC1,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(FORM_ITEM_SPACING),
+            ) {
+                ReadOnlyField(
+                    label = stringResource(R.string.therapist_materials_new_material_emotion_label),
+                    value = state.emotionId.label(),
                 )
-                TherapistButton(
-                    text = stringResource(R.string.therapist_materials_new_material_take_photo),
-                    icon = Icons.Filled.CameraAlt,
-                    onClick = {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                            PackageManager.PERMISSION_GRANTED
-                        ) {
-                            launchCamera()
+                ReadOnlyField(
+                    label = stringResource(R.string.therapist_materials_new_material_folder_label),
+                    value = "${state.folderName} (${stringResource(state.folderGenderPolicy.descriptionRes())})",
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = stringResource(R.string.therapist_materials_new_material_add_prompt),
+                        style = FriendlyEmotionsTextStyles.captionC1,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    )
+                    TherapistButton(
+                        text = stringResource(R.string.therapist_materials_new_material_take_photo),
+                        icon = Icons.Filled.CameraAlt,
+                        onClick = {
+                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                                PackageManager.PERMISSION_GRANTED
+                            ) {
+                                launchCamera()
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    TherapistButton(
+                        text = stringResource(R.string.therapist_materials_new_material_from_gallery),
+                        icon = Icons.Filled.Photo,
+                        onClick = {
+                            galleryLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                InfoBox(
+                    message =
+                        if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
+                            stringResource(R.string.therapist_materials_new_material_mixed_info)
                         } else {
-                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                TherapistButton(
-                    text = stringResource(R.string.therapist_materials_new_material_from_gallery),
-                    icon = Icons.Filled.Photo,
-                    onClick = {
-                        galleryLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
+                            stringResource(
+                                R.string.therapist_materials_new_material_fixed_info,
+                                stringResource(state.folderGenderPolicy.descriptionRes()),
+                            )
+                        },
                 )
             }
-            InfoBox(
-                message =
-                    if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
-                        stringResource(R.string.therapist_materials_new_material_mixed_info)
-                    } else {
-                        stringResource(
-                            R.string.therapist_materials_new_material_fixed_info,
-                            stringResource(state.folderGenderPolicy.descriptionRes()),
-                        )
-                    },
-            )
+            Spacer((Modifier.height(FORM_ITEM_SPACING)))
             TherapistButton(
                 text = stringResource(R.string.therapist_materials_new_material_save),
                 onClick = onSaveClicked,
@@ -313,25 +324,13 @@ private fun ReadOnlyField(
             text = label,
             style = FriendlyEmotionsTextStyles.captionC1,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            modifier = Modifier.padding(bottom = 4.dp),
         )
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .border(
-                        FIELD_BORDER_WIDTH,
-                        FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                        RoundedCornerShape(4.dp),
-                    )
-                    .padding(horizontal = 13.dp, vertical = 16.dp),
-        ) {
-            Text(
-                text = value,
-                style = FriendlyEmotionsTextStyles.bodyRegular,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            )
-        }
+        Text(
+            text = value,
+            style = FriendlyEmotionsTextStyles.bodyRegular,
+            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 

@@ -59,6 +59,6 @@ private fun SummaryTableRowPreview() {
     SummaryTableRow(
         label = "Liczba uczonych emocji",
         learningValue = "3",
-        testValue = "3"
+        testValue = "3",
     )
 }
