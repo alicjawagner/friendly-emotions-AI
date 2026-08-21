@@ -35,6 +35,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.FolderTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.GenderLegend
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
+import pg.autyzm.friendlyemotions.therapist.materials.components.rememberNewlyAddedPulse
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -107,6 +108,7 @@ private fun MaterialsFoldersContent(
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
         val gridState = rememberLazyGridState()
         gridState.ScrollToNewlyAdded(state.folders, key = { it.id.value }, indexOffset = 1)
+        val newlyAddedFolders = rememberNewlyAddedPulse(state.folders, key = { it.id.value })
         LazyVerticalGrid(
             state = gridState,
             columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
@@ -129,6 +131,7 @@ private fun MaterialsFoldersContent(
                     isExample = folder.isExample,
                     onClick = { onFolderClick(folder.id) },
                     onDeleteClick = { onDeleteFolderRequested(folder.id) },
+                    newlyAddedScale = newlyAddedFolders.scaleFor(folder.id.value),
                 )
             }
         }

@@ -41,8 +41,9 @@ fun FolderTile(
     onClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    newlyAddedScale: Float = 1f,
 ) {
-    MaterialTileContainer(modifier = modifier.clickable(onClick = onClick)) {
+    MaterialTileContainer(modifier = modifier.clickable(onClick = onClick), newlyAddedScale = newlyAddedScale) {
         BoxWithConstraints(modifier = Modifier.matchParentSize()) {
             val iconSize = maxWidth * ICON_SIZE_FRACTION
             Column(

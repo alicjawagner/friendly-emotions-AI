@@ -25,8 +25,9 @@ fun ImageTile(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     onGenderClick: (() -> Unit)? = null,
+    newlyAddedScale: Float = 1f,
 ) {
-    MaterialTileContainer(modifier = modifier) {
+    MaterialTileContainer(modifier = modifier, newlyAddedScale = newlyAddedScale) {
         AsyncImage(
             model = filePath,
             contentDescription = null,

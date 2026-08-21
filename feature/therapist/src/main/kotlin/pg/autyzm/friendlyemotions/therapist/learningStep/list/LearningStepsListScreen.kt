@@ -40,6 +40,7 @@ import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepRow
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepSearchBox
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
+import pg.autyzm.friendlyemotions.therapist.materials.components.rememberNewlyAddedPulse
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -189,6 +190,7 @@ private fun LearningStepsListContent(
             }
             val listState = rememberLazyListState()
             listState.ScrollToNewlyAdded(state.rows, key = { it.id.value })
+            val newlyAddedSteps = rememberNewlyAddedPulse(state.rows, key = { it.id.value })
             LazyColumn(
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -202,6 +204,7 @@ private fun LearningStepsListContent(
                         onEditClick = onEditStepClick,
                         onCopyClick = onCopyRequested,
                         onDeleteClick = onDeleteRequested,
+                        newlyAddedScale = newlyAddedSteps.scaleFor(row.id.value),
                     )
                 }
             }

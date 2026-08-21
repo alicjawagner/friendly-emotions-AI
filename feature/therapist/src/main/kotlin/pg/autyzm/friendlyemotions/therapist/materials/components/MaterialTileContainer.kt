@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -26,15 +27,19 @@ private val TILE_PADDING = 10.dp
  * `aspectRatio(1f)` — rather than a fixed [TILE_CONTENT_SIZE] box — so a slot wider than the grid's
  * adaptive minimum (e.g. when fewer columns fit) doesn't leave blank space beside the tile.
  * [content] is a [BoxScope] slot so callers can overlay a [GenderBadge] via `Alignment.TopEnd`.
+ * [newlyAddedScale], from [NewlyAddedPulse.scaleFor], pops the tile in to draw the therapist's eye
+ * to a folder/image they just added.
  */
 @Composable
 internal fun MaterialTileContainer(
     modifier: Modifier = Modifier,
+    newlyAddedScale: Float = 1f,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Box(
         modifier =
             modifier
+                .scale(newlyAddedScale)
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .shadow(elevation = 2.dp, shape = FriendlyEmotionsModalShape)

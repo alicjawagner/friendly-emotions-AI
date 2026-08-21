@@ -51,6 +51,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.descriptionRes
+import pg.autyzm.friendlyemotions.therapist.materials.components.rememberNewlyAddedPulse
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
@@ -194,6 +195,7 @@ private fun MaterialsInsideFolderContent(
             }
             val gridState = rememberLazyGridState()
             gridState.ScrollToNewlyAdded(state.images, key = { it.id.value }, indexOffset = 1)
+            val newlyAddedImages = rememberNewlyAddedPulse(state.images, key = { it.id.value })
             LazyVerticalGrid(
                 state = gridState,
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
@@ -217,6 +219,7 @@ private fun MaterialsInsideFolderContent(
                         onGenderClick =
                             { onImageGenderClicked(image.id, image.gender) }
                                 .takeIf { state.folderGenderPolicy == FolderGenderPolicy.MIXED },
+                        newlyAddedScale = newlyAddedImages.scaleFor(image.id.value),
                     )
                 }
             }

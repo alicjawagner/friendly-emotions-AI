@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +54,7 @@ fun LearningStepRow(
     onCopyClick: (LearningStepId) -> Unit,
     onDeleteClick: (LearningStepId) -> Unit,
     modifier: Modifier = Modifier,
+    newlyAddedScale: Float = 1f,
 ) {
     val backgroundColor =
         if (step.isActive) FriendlyEmotionsColors.Secondary.S300 else FriendlyEmotionsColors.Shades.White
@@ -62,6 +64,7 @@ fun LearningStepRow(
         horizontalArrangement = Arrangement.spacedBy(18.dp),
         modifier =
             modifier
+                .scale(newlyAddedScale)
                 .fillMaxWidth()
                 .shadow(elevation = 1.dp, shape = FriendlyEmotionsModalShape)
                 .background(color = backgroundColor, shape = FriendlyEmotionsModalShape)
