@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,15 +36,12 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
-private val titleTopPadding = 52.dp
+private val contentPadding = 35.dp
 private val playButtonSize = 150.dp
 private val playButtonIconSize = 22.dp
-private val playButtonBottomPadding = 40.dp
-private val smileyCenterOffsetY = (-30).dp
 private val smileyShadowElevation = 24.dp
 private val smileySizeWithScorePanel = 290.dp
 private val smileySizeStandalone = 380.dp
-private val scorePanelTopSpacing = 32.dp
 private val scorePanelWidth = 600.dp
 private val scoreValueColumnWidth = 90.dp
 private val scoreValuesGap = 49.dp
@@ -64,23 +60,17 @@ fun SessionEndScreen(
     modifier: Modifier = Modifier,
 ) {
     GameFloorBackground(modifier = modifier, showMascot = true) {
-        Text(
-            text = stringResource(R.string.session_end_title),
-            style = FriendlyEmotionsTextStyles.displayD2,
-            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            modifier =
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = titleTopPadding),
-        )
-
         Column(
-            modifier =
-                Modifier
-                    .align(Alignment.Center)
-                    .offset(y = smileyCenterOffsetY),
+            modifier = Modifier.fillMaxSize().padding(contentPadding),
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                text = stringResource(R.string.session_end_title),
+                style = FriendlyEmotionsTextStyles.displayD2,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+            )
+
             val smileySize =
                 if (uiState.mode == SessionMode.TEST) smileySizeWithScorePanel else smileySizeStandalone
             Image(
@@ -95,24 +85,20 @@ fun SessionEndScreen(
                             clip = false,
                         ),
             )
+
             if (uiState.mode == SessionMode.TEST) {
                 ScorePanel(
                     uiState = uiState,
-                    modifier = Modifier.padding(top = scorePanelTopSpacing),
                 )
             }
-        }
 
-        PlayButtonCircle(
-            onClick = onPlayAgainClick,
-            size = playButtonSize,
-            iconSize = playButtonIconSize,
-            contentDescription = stringResource(R.string.session_end_play_again_description),
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = playButtonBottomPadding),
-        )
+            PlayButtonCircle(
+                onClick = onPlayAgainClick,
+                size = playButtonSize,
+                iconSize = playButtonIconSize,
+                contentDescription = stringResource(R.string.session_end_play_again_description),
+            )
+        }
 
         if (uiState.showConfetti) {
             ConfettiOverlay(modifier = Modifier.fillMaxSize())

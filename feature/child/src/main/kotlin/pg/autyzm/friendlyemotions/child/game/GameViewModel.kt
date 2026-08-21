@@ -362,5 +362,4 @@ class GameViewModel
             promptRenderer
                 .render(PromptTemplate.EMOTION_ONLY, option.emotionId, option.gender, ttsController.localeCode)
                 .displayText
-
     }

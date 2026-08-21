@@ -425,7 +425,7 @@ private fun WizardMaterialContent(
         TherapistButton(
             text = stringResource(R.string.therapist_wizard_material_next),
             onClick = onNextClick,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp, end = 20.dp),
         )
     }
     if (state.addEmotionDialogOpen) {

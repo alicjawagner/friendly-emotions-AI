@@ -50,7 +50,9 @@ sealed class GameUiState {
         val captionsEnabled: Boolean = true,
     ) : GameUiState()
 
-    data class Error(@param:StringRes val messageRes: Int) : GameUiState()
+    data class Error(
+        @param:StringRes val messageRes: Int,
+    ) : GameUiState()
 }
 
 /**

@@ -63,7 +63,7 @@ fun EmotionTableRow(
                         },
                     shape = RoundedCornerShape(ROW_CORNER_RADIUS),
                 ).clickable(onClick = onRowClick)
-                .padding(horizontal = 18.dp, vertical = 10.dp),
+                .padding(horizontal = 18.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
