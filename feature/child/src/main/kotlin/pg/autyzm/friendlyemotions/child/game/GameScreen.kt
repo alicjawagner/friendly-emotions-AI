@@ -10,7 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,8 +58,17 @@ private const val SINGLE_ROW_OPTION_COUNT = 4
 private const val WRAP_GRID_MAX_ITEMS_PER_ROW = 3
 
 private val emotionNameTopPadding = 65.dp
-private val optionGap = 20.dp
-private val optionRowHorizontalPadding = 48.dp
+
+// minCardGap is a floor, not a fixed value: computeCardSizing() maximizes photoSize subject to
+// this gap never shrinking, so cards end up exactly this far apart with no leftover slack.
+private val minCardGap = 20.dp
+private val screenHorizontalPadding = 48.dp
+private val screenBottomPadding = 28.dp
+private val minTitleToGridGap = 24.dp
+private val cardPadding = 16.dp
+private val cardContentGap = 14.dp
+private const val CAPTION_LINE_HEIGHT_MULTIPLIER = 1.5f
+private const val WRAP_GRID_ROWS = 2
 private val cardCornerRadius = 13.64.dp
 private val photoCornerRadius = 5.46.dp
 private val cardShadowElevation = 6.5.dp
@@ -75,10 +86,20 @@ private val hintBounceAmplitude = 6.dp
 private const val HINT_BOUNCE_DURATION_MILLIS = 600
 
 /**
- * Per-card sizing: the fixed three-slot layout (1–3 options, matching Figma's `screens/game`
- * reference exactly), the single full-width row (exactly 4 options), and the wrapping grid (5–6
- * options) each use different card/photo/text sizes to fit their available space. Neither the
- * 4-option nor 5–6-option cases have a Figma reference — their sizing is a tuned estimate.
+ * How much extra space a hinted [OptionCard] needs on each side beyond its own [cardWidth] —
+ * [HintType.SCALE_CORRECT] grows it by [HINT_SCALE_FACTOR] (about its center, so half the growth
+ * extends past each edge) and [HintType.ANIMATE_CORRECT] bounces it by up to [hintBounceAmplitude].
+ * Callers reserve this much margin around the card grid so a scaled/animated card never has to
+ * render past a clipping ancestor (e.g. [WrappingOptionsGrid]'s `verticalScroll`).
+ */
+private fun hintOverflowMargin(cardWidth: Dp): Dp =
+    (cardWidth * (HINT_SCALE_FACTOR - 1) / 2 + hintBounceAmplitude).coerceAtLeast(0.dp)
+
+/**
+ * Per-card sizing, computed per-frame by [computeCardSizing] from each layout's actual available
+ * space — the fixed three-slot layout (1–3 options), the single full-width row (exactly 4
+ * options), and the wrapping grid (5–6 options) each pass their own column/row shape so cards are
+ * always as large as the screen allows.
  */
 private data class CardSizing(
     val photoSize: Dp,
@@ -89,34 +110,47 @@ private data class CardSizing(
     val cardWidth: Dp get() = photoSize + padding * 2
 }
 
-// Matches Figma node `324:11623`'s "Material/book" component exactly (photo 329.834px, padding
-// 17.733px), for the 1–3 option fixed-slot layout.
-private val baselineCardSizing =
-    CardSizing(
-        photoSize = 329.83.dp,
-        padding = 17.73.dp,
-        contentGap = 17.73.dp,
-        labelStyle = FriendlyEmotionsTextStyles.headingH2,
-    )
+/**
+ * Computes the largest [CardSizing.photoSize] that fits [columns] cards per row and [rows] rows
+ * inside [availableWidth] x [availableHeight], with [minCardGap] as a floor (never shrunk) on
+ * both the horizontal inter-card gap and the vertical inter-row gap. [cardPadding]/
+ * [cardContentGap] stay fixed — only the photo needs to flex significantly across screen sizes.
+ * When [captionsEnabled], a single-line caption height (estimated from [labelStyle]'s font size
+ * at the theme's 1.5x line-height convention) is reserved per row; this is a plain-arithmetic
+ * approximation, not a real text-measurement pass.
+ */
+private fun computeCardSizing(
+    availableWidth: Dp,
+    availableHeight: Dp,
+    columns: Int,
+    rows: Int,
+    captionsEnabled: Boolean,
+    labelStyle: TextStyle,
+): CardSizing {
+    val totalHorizontalGap = minCardGap * (columns - 1)
+    val maxPhotoFromWidth = (availableWidth - totalHorizontalGap) / columns - cardPadding * 2
 
-// No Figma reference exists for exactly 4 options — sized so 4 cards + 3 gaps fit one full-width
-// row (estimate, tune visually like compactCardSizing below).
-private val fourOptionCardSizing =
-    CardSizing(
-        photoSize = 250.dp,
-        padding = 14.dp,
-        contentGap = 14.dp,
-        labelStyle = FriendlyEmotionsTextStyles.headingH3Regular,
-    )
+    val captionAllowance =
+        if (captionsEnabled) {
+            cardContentGap + labelStyle.fontSize.value.dp * CAPTION_LINE_HEIGHT_MULTIPLIER
+        } else {
+            0.dp
+        }
+    val totalVerticalGap = minCardGap * (rows - 1)
+    val maxPhotoFromHeight = (availableHeight - totalVerticalGap) / rows - cardPadding * 2 - captionAllowance
 
-// No Figma reference exists for 5–6 options — shrunk so up to 2 rows of 3.
-private val compactCardSizing =
-    CardSizing(
-        photoSize = 220.dp,
-        padding = 12.dp,
-        contentGap = 12.dp,
-        labelStyle = FriendlyEmotionsTextStyles.headingH4Regular,
+    // No lower-bound floor here on purpose: clamping photoSize *up* on a constrained screen would
+    // make it taller than what actually fits, pushing whole rows past the visible area (they don't
+    // scroll into view, they're just gone) rather than shrinking cards to stay fully visible.
+    val photoSize = minOf(maxPhotoFromWidth, maxPhotoFromHeight).coerceAtLeast(0.dp)
+
+    return CardSizing(
+        photoSize = photoSize,
+        padding = cardPadding,
+        contentGap = cardContentGap,
+        labelStyle = labelStyle,
     )
+}
 
 /**
  * Stateless renderer (ADR-002) for `ChildScreen.Game`, driven entirely by [uiState] from
@@ -179,43 +213,98 @@ private fun GameContent(
             style = FriendlyEmotionsTextStyles.displayD2,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
         )
-        Box(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
+        Spacer(modifier = Modifier.height(minTitleToGridGap))
+        BoxWithConstraints(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(
+                        start = screenHorizontalPadding,
+                        end = screenHorizontalPadding,
+                        bottom = screenBottomPadding,
+                    ),
             contentAlignment = Alignment.Center,
         ) {
             when {
-                uiState.options.size <= MAX_FIXED_SLOTS ->
+                uiState.options.size <= MAX_FIXED_SLOTS -> {
+                    val sizing =
+                        computeCardSizing(
+                            availableWidth = maxWidth,
+                            availableHeight = maxHeight,
+                            columns = MAX_FIXED_SLOTS,
+                            rows = 1,
+                            captionsEnabled = uiState.captionsEnabled,
+                            labelStyle = FriendlyEmotionsTextStyles.headingH2,
+                        )
                     FixedSlotRow(
                         options = uiState.options,
                         captionsEnabled = uiState.captionsEnabled,
+                        sizing = sizing,
                         correctImageId = uiState.correctImageId,
                         hintsVisible = uiState.hintsVisible,
                         activeHintTypes = uiState.activeHintTypes,
                         onOptionTapped = onOptionTapped,
-                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
                     )
+                }
 
-                uiState.options.size == SINGLE_ROW_OPTION_COUNT ->
+                uiState.options.size == SINGLE_ROW_OPTION_COUNT -> {
+                    val sizing =
+                        computeCardSizing(
+                            availableWidth = maxWidth,
+                            availableHeight = maxHeight,
+                            columns = SINGLE_ROW_OPTION_COUNT,
+                            rows = 1,
+                            captionsEnabled = uiState.captionsEnabled,
+                            labelStyle = FriendlyEmotionsTextStyles.headingH5Regular,
+                        )
                     SingleRowGrid(
                         options = uiState.options,
                         captionsEnabled = uiState.captionsEnabled,
+                        sizing = sizing,
                         correctImageId = uiState.correctImageId,
                         hintsVisible = uiState.hintsVisible,
                         activeHintTypes = uiState.activeHintTypes,
                         onOptionTapped = onOptionTapped,
-                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
                     )
+                }
 
-                else ->
+                else -> {
+                    // computeCardSizing alone would size cards to fill 100% of the scrollable
+                    // viewport, leaving zero room for a hinted card's scale-up/bounce to render
+                    // before hitting verticalScroll's clip edge (see WrappingOptionsGrid). A first
+                    // pass gets the "natural" card size, then hintOverflowMargin (derived from it)
+                    // is reserved on both axes for a corrected second pass.
+                    val provisionalSizing =
+                        computeCardSizing(
+                            availableWidth = maxWidth,
+                            availableHeight = maxHeight,
+                            columns = WRAP_GRID_MAX_ITEMS_PER_ROW,
+                            rows = WRAP_GRID_ROWS,
+                            captionsEnabled = uiState.captionsEnabled,
+                            labelStyle = FriendlyEmotionsTextStyles.bodyRegular,
+                        )
+                    val hintMargin = hintOverflowMargin(provisionalSizing.cardWidth)
+                    val sizing =
+                        computeCardSizing(
+                            availableWidth = maxWidth - hintMargin * 2,
+                            availableHeight = maxHeight - hintMargin * 2,
+                            columns = WRAP_GRID_MAX_ITEMS_PER_ROW,
+                            rows = WRAP_GRID_ROWS,
+                            captionsEnabled = uiState.captionsEnabled,
+                            labelStyle = FriendlyEmotionsTextStyles.bodyRegular,
+                        )
                     WrappingOptionsGrid(
                         options = uiState.options,
                         captionsEnabled = uiState.captionsEnabled,
+                        sizing = sizing,
+                        hintOverflowMargin = hintMargin,
                         correctImageId = uiState.correctImageId,
                         hintsVisible = uiState.hintsVisible,
                         activeHintTypes = uiState.activeHintTypes,
                         onOptionTapped = onOptionTapped,
-                        modifier = Modifier.padding(horizontal = optionRowHorizontalPadding),
                     )
+                }
             }
         }
     }
@@ -231,6 +320,7 @@ private fun GameContent(
 private fun FixedSlotRow(
     options: List<GameOptionUi?>,
     captionsEnabled: Boolean,
+    sizing: CardSizing,
     correctImageId: ImageId,
     hintsVisible: Boolean,
     activeHintTypes: Set<HintType>,
@@ -239,21 +329,21 @@ private fun FixedSlotRow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(optionGap, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
     ) {
         options.forEach { option ->
             if (option == null) {
                 Spacer(
                     modifier =
                         Modifier
-                            .width(baselineCardSizing.cardWidth)
-                            .height(baselineCardSizing.photoSize + baselineCardSizing.padding * 2),
+                            .width(sizing.cardWidth)
+                            .height(sizing.photoSize + sizing.padding * 2),
                 )
             } else {
                 OptionCard(
                     option = option,
                     captionsEnabled = captionsEnabled,
-                    sizing = baselineCardSizing,
+                    sizing = sizing,
                     isCorrectOption = option.imageId == correctImageId,
                     hintsVisible = hintsVisible,
                     activeHintTypes = activeHintTypes,
@@ -274,6 +364,7 @@ private fun FixedSlotRow(
 private fun SingleRowGrid(
     options: List<GameOptionUi?>,
     captionsEnabled: Boolean,
+    sizing: CardSizing,
     correctImageId: ImageId,
     hintsVisible: Boolean,
     activeHintTypes: Set<HintType>,
@@ -282,13 +373,13 @@ private fun SingleRowGrid(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(optionGap, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
     ) {
         options.filterNotNull().forEach { option ->
             OptionCard(
                 option = option,
                 captionsEnabled = captionsEnabled,
-                sizing = fourOptionCardSizing,
+                sizing = sizing,
                 isCorrectOption = option.imageId == correctImageId,
                 hintsVisible = hintsVisible,
                 activeHintTypes = activeHintTypes,
@@ -301,11 +392,20 @@ private fun SingleRowGrid(
 /**
  * Wraps 5–6 displayed images into up to 2 centered rows (max 3 per row) — no Figma reference for
  * this case. Never contains `null`s, unlike [FixedSlotRow].
+ *
+ * [sizing] is computed to make both rows fit the measured available height exactly, but that
+ * budget relies on an estimated (not measured) caption height, so it can be slightly optimistic.
+ * `FlowRow`'s default overflow behavior (`FlowRowOverflow.Clip`) doesn't clip pixels when content
+ * is a bit taller than expected — it drops the whole row that doesn't fit, silently. `verticalScroll`
+ * is a safety net against that: it never affects anything when the estimate is right (nothing to
+ * scroll), and turns a would-be-invisible row into a reachable one when it's slightly off.
  */
 @Composable
 private fun WrappingOptionsGrid(
     options: List<GameOptionUi?>,
     captionsEnabled: Boolean,
+    sizing: CardSizing,
+    hintOverflowMargin: Dp,
     correctImageId: ImageId,
     hintsVisible: Boolean,
     activeHintTypes: Set<HintType>,
@@ -313,16 +413,20 @@ private fun WrappingOptionsGrid(
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(optionGap, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(optionGap),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(hintOverflowMargin),
+        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(minCardGap),
         maxItemsInEachRow = WRAP_GRID_MAX_ITEMS_PER_ROW,
     ) {
         options.filterNotNull().forEach { option ->
             OptionCard(
                 option = option,
                 captionsEnabled = captionsEnabled,
-                sizing = compactCardSizing,
+                sizing = sizing,
                 isCorrectOption = option.imageId == correctImageId,
                 hintsVisible = hintsVisible,
                 activeHintTypes = activeHintTypes,
@@ -548,6 +652,7 @@ private fun GameScreenFiveOptionsPreview() {
                         ),
                     promptText = "przestraszony",
                     correctImageId = ImageId("3"),
+                    captionsEnabled = false,
                 ),
             onEvent = {},
         )
@@ -573,6 +678,14 @@ private fun GameScreenSixOptionsPreview() {
                         ),
                     promptText = "przestraszony",
                     correctImageId = ImageId("3"),
+                    hintsVisible = true,
+                    activeHintTypes =
+                        setOf(
+                            HintType.OUTLINE_CORRECT,
+                            HintType.SCALE_CORRECT,
+                            HintType.ANIMATE_CORRECT,
+                            HintType.DIM_INCORRECT,
+                        ),
                 ),
             onEvent = {},
         )
