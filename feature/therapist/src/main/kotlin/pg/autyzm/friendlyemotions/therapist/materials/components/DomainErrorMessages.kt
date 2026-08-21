@@ -15,5 +15,8 @@ fun DomainError.toMessageRes(): Int =
     when (this) {
         is DomainError.ExampleContentNotDeletable -> R.string.therapist_materials_error_example_not_deletable
         is DomainError.ExampleContentNotEditable -> R.string.therapist_materials_error_example_not_editable
+        is DomainError.StepNameBlank -> R.string.therapist_wizard_summary_error_name_blank
+        is DomainError.DuplicateStepName -> R.string.therapist_wizard_summary_error_name_duplicate
+        is DomainError.NoMaterialSelected -> R.string.therapist_wizard_summary_error_no_material
         else -> R.string.therapist_materials_error_generic
     }

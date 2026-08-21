@@ -146,4 +146,43 @@
     <string name="therapist_wizard_test_hint_delay_banner">Jeśli dziecko nie wybierze odpowiedzi, ekran zmieni się automatycznie po czasie ustawionym w sekcji UCZENIE - Pokaż podpowiedź po (sekundach).</string>
     <string name="therapist_wizard_test_no_hints_banner">W trybie testu nie używa się podpowiedzi i wzmocnień, a terapeuta nie pomaga i nie rozmawia z dzieckiem, aż do zakończenia testu.</string>
     <string name="therapist_wizard_test_next">DALEJ</string>
+
+    <string name="therapist_wizard_reinforcements_help_text">Zaznacz wybrane wzmocnienia, które pomogą dziecku utrwalić wiedzę.</string>
+    <string name="therapist_wizard_reinforcements_praise_header">Wybierz wzmocnienia słowne:</string>
+    <string name="therapist_wizard_reinforcements_animation_header">Wybierz wzmocnienia wizualne:</string>
+    <string name="therapist_wizard_reinforcements_theme_flowers">Kwiatki</string>
+    <string name="therapist_wizard_reinforcements_theme_butterflies">Motylki</string>
+    <string name="therapist_wizard_reinforcements_theme_balloons">Balony</string>
+    <string name="therapist_wizard_reinforcements_theme_cars">Samochodziki</string>
+    <string name="therapist_wizard_reinforcements_theme_balls">Piłeczki</string>
+    <string name="therapist_wizard_reinforcements_end_session_header">Wybierz wzmocnienia końcowe:</string>
+    <string name="therapist_wizard_reinforcements_end_animation_label">Dodatkowa animacja na koniec uczenia</string>
+    <string name="therapist_wizard_reinforcements_end_fanfare_label">Dźwięk fanfarów na koniec uczenia</string>
+    <string name="therapist_wizard_reinforcements_next">DALEJ</string>
+
+    <string name="therapist_wizard_summary_name_label">Wpisz nazwę kroku:</string>
+    <string name="therapist_wizard_summary_save">ZAPISZ</string>
+    <string name="therapist_wizard_summary_header_info">INFORMACJE O KROKU</string>
+    <string name="therapist_wizard_summary_header_learning">TRYB UCZENIA</string>
+    <string name="therapist_wizard_summary_header_test">TRYB TESTU</string>
+    <string name="therapist_wizard_summary_row_emotion_count">Liczba uczonych emocji</string>
+    <string name="therapist_wizard_summary_row_emotions">Uczone emocje</string>
+    <string name="therapist_wizard_summary_row_image_count">Liczba wyświetlanych zdjęć</string>
+    <string name="therapist_wizard_summary_row_repetitions">Liczba powtórzeń dla każdej emocji</string>
+    <string name="therapist_wizard_summary_row_prompt">Rodzaj polecenia</string>
+    <string name="therapist_wizard_summary_row_captions">Podpisy pod obrazkami</string>
+    <string name="therapist_wizard_summary_row_tts">Czytanie polecenia</string>
+    <string name="therapist_wizard_summary_row_hint_delay">Pokaż podpowiedź po</string>
+    <string name="therapist_wizard_summary_row_hints">Podpowiedzi</string>
+    <string name="therapist_wizard_summary_row_praise">Pochwały słowne</string>
+    <string name="therapist_wizard_summary_row_animations">Animacje</string>
+    <string name="therapist_wizard_summary_row_mixed_gender">Mieszany rodzaj w zestawie odpowiedzi</string>
+    <string name="therapist_wizard_summary_value_yes">Tak</string>
+    <string name="therapist_wizard_summary_value_no">Nie</string>
+    <string name="therapist_wizard_summary_value_not_applicable">X</string>
+    <string name="therapist_wizard_summary_value_seconds_suffix">%1$d s</string>
+    <string name="therapist_wizard_summary_error_dialog_title">Info</string>
+    <string name="therapist_wizard_summary_error_name_blank">Nazwa kroku nie może być pusta.</string>
+    <string name="therapist_wizard_summary_error_name_duplicate">Krok o takiej nazwie już istnieje.</string>
+    <string name="therapist_wizard_summary_error_no_material">Wybierz co najmniej jedną emocję i materiał przed zapisaniem.</string>
 </resources>

@@ -83,7 +83,7 @@ fun PromptTemplateDropdown(
     }
 }
 
-private fun PromptTemplate.labelRes(): Int =
+internal fun PromptTemplate.labelRes(): Int =
     when (this) {
         PromptTemplate.EMOTION_ONLY -> R.string.therapist_wizard_learning_prompt_emotion_only
         PromptTemplate.WHERE_IS -> R.string.therapist_wizard_learning_prompt_where_is

@@ -343,4 +343,26 @@ class WizardContainerViewModelTest {
         assertTrue(testParameters.overridesLearning)
         assertEquals(5, testParameters.displayedImageCount)
     }
+
+    @Test
+    fun `updateName changes the draft's name`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        viewModel.updateName("Morning Session")
+
+        assertEquals("Morning Session", viewModel.state.value.draft.name)
+    }
+
+    @Test
+    fun `updateReinforcementSettings applies the transform`() {
+        val viewModel = viewModel()
+        viewModel.initialize(null)
+
+        viewModel.updateReinforcementSettings { it.copy(endSessionFanfareEnabled = false) }
+
+        val settings = viewModel.state.value.draft.reinforcementSettings
+        assertFalse(settings.endSessionFanfareEnabled)
+        assertEquals(ReinforcementSettings().enabledPraiseWords, settings.enabledPraiseWords)
+    }
 }

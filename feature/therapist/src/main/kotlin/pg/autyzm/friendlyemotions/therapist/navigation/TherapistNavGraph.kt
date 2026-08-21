@@ -2,7 +2,6 @@ package pg.autyzm.friendlyemotions.therapist.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,13 +10,14 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
-import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.home.HomeScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.LearningStepsListScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.learning.WizardLearningScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.WizardMaterialScreen
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.reinforcements.WizardReinforcementsScreen
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.summary.WizardSummaryScreen
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.test.WizardTestScreen
 import pg.autyzm.friendlyemotions.therapist.materials.folders.MaterialsFoldersScreen
 import pg.autyzm.friendlyemotions.therapist.materials.insideFolder.MaterialsInsideFolderScreen
@@ -30,9 +30,7 @@ import pg.autyzm.friendlyemotions.therapist.welcome.TherapistWelcomeViewModel
 import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
 
 /**
- * Root `NavHost` for the therapist app (target-architecture.md §13.3, ADR-012). Every route below
- * `Welcome`/`Home` is a [PlaceholderScreen] until its owning phase (10-13) replaces it with the
- * real screen.
+ * Root `NavHost` for the therapist app (target-architecture.md §13.3, ADR-012).
  *
  * [onPlayRequested] launches the Child App's `ChildActivity` (the "URUCHOM" button on
  * `LearningStepsListScreen`) — `:feature:therapist` cannot reference `ChildActivity` directly
@@ -166,11 +164,23 @@ fun TherapistNavGraph(
                     onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
-            composable<TherapistRoutes.WizardReinforcements> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.therapist_route_title_wizard_reinforcements),
+            composable<TherapistRoutes.WizardReinforcements> { backStackEntry ->
+                val wizardEntry = remember(backStackEntry) { navController.getBackStackEntry(TherapistRoutes.Wizard) }
+                val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
+                val route = backStackEntry.toRoute<TherapistRoutes.WizardReinforcements>()
+                val stepId = route.stepId?.let(::LearningStepId)
+                val backLeavesWizard =
+                    remember(backStackEntry) {
+                        navController.previousBackStackEntry?.destination?.parent != wizardEntry.destination
+                    }
+                WizardReinforcementsScreen(
+                    stepId = stepId,
+                    containerViewModel = containerViewModel,
+                    backLeavesWizard = backLeavesWizard,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
+                    onNextClick = { navController.navigate(TherapistRoutes.WizardTest(route.stepId)) },
+                    onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
             composable<TherapistRoutes.WizardTest> { backStackEntry ->
@@ -192,11 +202,25 @@ fun TherapistNavGraph(
                     onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
-            composable<TherapistRoutes.WizardSummary> {
-                PlaceholderScreen(
-                    title = stringResource(R.string.therapist_route_title_wizard_summary),
+            composable<TherapistRoutes.WizardSummary> { backStackEntry ->
+                val wizardEntry = remember(backStackEntry) { navController.getBackStackEntry(TherapistRoutes.Wizard) }
+                val containerViewModel: WizardContainerViewModel = hiltViewModel(wizardEntry)
+                val route = backStackEntry.toRoute<TherapistRoutes.WizardSummary>()
+                val stepId = route.stepId?.let(::LearningStepId)
+                val backLeavesWizard =
+                    remember(backStackEntry) {
+                        navController.previousBackStackEntry?.destination?.parent != wizardEntry.destination
+                    }
+                WizardSummaryScreen(
+                    stepId = stepId,
+                    containerViewModel = containerViewModel,
+                    backLeavesWizard = backLeavesWizard,
                     onBackClick = onBackClick,
                     onHomeClick = onHomeClick,
+                    onSaved = {
+                        navController.popBackStack(TherapistRoutes.LearningStepsList, inclusive = false)
+                    },
+                    onTabSelected = { tab -> navController.navigate(tab.toRoute(route.stepId)) },
                 )
             }
         }

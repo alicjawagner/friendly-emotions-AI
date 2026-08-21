@@ -23,6 +23,9 @@ class SaveLearningStepUseCase
             if (validation is Result.Failure) {
                 return validation
             }
+            if (draft.materialSelection.imageUsages.isEmpty()) {
+                return Result.Failure(DomainError.NoMaterialSelected)
+            }
 
             return Result.Success(learningStepRepository.saveStep(draft))
         }

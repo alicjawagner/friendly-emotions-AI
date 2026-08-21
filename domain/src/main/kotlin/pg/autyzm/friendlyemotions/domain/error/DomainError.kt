@@ -10,6 +10,8 @@ sealed class DomainError {
 
     object StepNameBlank : DomainError()
 
+    object NoMaterialSelected : DomainError()
+
     object NoExampleStepAvailable : DomainError()
 
     data class GenderNotAssigned(val imageIds: List<ImageId>) : DomainError()

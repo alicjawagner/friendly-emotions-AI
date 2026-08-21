@@ -4,22 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
-import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionFolder
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
-import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
@@ -52,30 +46,15 @@ class WizardMaterialViewModel
         private val observeHideExampleFoldersUseCase: ObserveHideExampleFoldersUseCase,
         private val setHideExampleFoldersUseCase: SetHideExampleFoldersUseCase,
     ) : ViewModel() {
-        private val emotionFolders: Flow<Map<EmotionId, List<EmotionFolder>>> =
-            combine(
-                EmotionCatalog.all.map { emotion -> observeFoldersUseCase(emotion.id).map { emotion.id to it } },
-            ) { pairs -> pairs.toMap() }
-
-        private val folderImages: Flow<Map<FolderId, List<EmotionImage>>> =
-            emotionFolders.flatMapLatest { byEmotion ->
-                val folders = byEmotion.values.flatten()
-                if (folders.isEmpty()) {
-                    flowOf(emptyMap())
-                } else {
-                    combine(
-                        folders.map { folder -> observeImagesForFolderUseCase(folder.id).map { folder.id to it } },
-                    ) { pairs -> pairs.toMap() }
-                }
-            }
+        private val materialCatalog = observeMaterialCatalog(observeFoldersUseCase, observeImagesForFolderUseCase)
 
         val materialWorld: StateFlow<MaterialWorldUiState> =
-            combine(emotionFolders, folderImages, observeHideExampleFoldersUseCase()) { folders, images, hide ->
+            combine(materialCatalog, observeHideExampleFoldersUseCase()) { catalog, hide ->
                 MaterialWorldUiState(
-                    foldersByEmotion = folders,
-                    imagesByFolder = images,
+                    foldersByEmotion = catalog.foldersByEmotion,
+                    imagesByFolder = catalog.imagesByFolder,
                     hideExampleMaterials = hide,
-                    isLoading = false,
+                    isLoading = catalog.isLoading,
                 )
             }.stateIn(
                 viewModelScope,
@@ -123,14 +102,9 @@ class WizardMaterialViewModel
         fun addedEmotionsSeed(
             world: MaterialWorldUiState,
             materialSelection: MaterialSelection,
-        ): Set<EmotionId> {
-            val usedImageIds = materialSelection.imageUsages.map { it.imageId }.toSet()
-            if (usedImageIds.isEmpty()) return emptySet()
-            return world.foldersByEmotion
-                .filterValues { folders ->
-                    folders.any { folder -> world.imagesByFolder[folder.id].orEmpty().any { it.id in usedImageIds } }
-                }.keys
-        }
+        ): Set<EmotionId> =
+            MaterialCatalogSnapshot(world.foldersByEmotion, world.imagesByFolder, world.isLoading)
+                .touchedEmotionIds(materialSelection.imageUsages)
 
         /** Pure join of container + world + local state — no coroutines, directly unit-testable. */
         fun buildUiState(

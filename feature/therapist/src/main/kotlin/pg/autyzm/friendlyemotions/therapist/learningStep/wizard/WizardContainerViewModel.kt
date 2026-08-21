@@ -15,6 +15,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
 import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
+import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
 import pg.autyzm.friendlyemotions.domain.usecase.learningStep.DeriveTestParametersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.learningStep.GetLearningStepUseCase
@@ -25,8 +26,9 @@ import javax.inject.Inject
  * to the wizard's nested navigation-graph back-stack entry so it survives jumping between tabs via
  * [WizardSubNavBar]. Only injects use cases, never repositories directly (ADR-002).
  *
- * Deliberately does not inject `SaveLearningStepUseCase`/`ValidateLearningStepNameUseCase` — those
- * are unused until the Summary tab exists (Phase 13.5).
+ * Deliberately does not inject `SaveLearningStepUseCase`/`UpdateLearningStepUseCase` — those are
+ * one-shot, Summary-tab-only side effects owned by `WizardSummaryViewModel` instead, keeping the
+ * container itself free of anything beyond draft state and cross-tab derivation.
  */
 @HiltViewModel
 class WizardContainerViewModel
@@ -233,6 +235,18 @@ class WizardContainerViewModel
          * never called in that state. */
         fun updateTestParameters(transform: (TestParameters) -> TestParameters) {
             _state.update { it.copy(draft = it.draft.copy(testParameters = transform(it.draft.testParameters))) }
+        }
+
+        /** The Summary tab's name text field. */
+        fun updateName(name: String) {
+            _state.update { it.copy(draft = it.draft.copy(name = name)) }
+        }
+
+        /** Applies [transform] to the draft's [ReinforcementSettings]. */
+        fun updateReinforcementSettings(transform: (ReinforcementSettings) -> ReinforcementSettings) {
+            _state.update {
+                it.copy(draft = it.draft.copy(reinforcementSettings = transform(it.draft.reinforcementSettings)))
+            }
         }
 
         /** The "Zmień dla testu" checkbox. Turning it off immediately re-derives [TestParameters]

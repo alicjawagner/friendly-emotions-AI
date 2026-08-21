@@ -315,7 +315,7 @@ private fun HintTypeCheckboxGroup(
     }
 }
 
-private fun HintType.labelRes(): Int =
+internal fun HintType.labelRes(): Int =
     when (this) {
         HintType.OUTLINE_CORRECT -> R.string.therapist_wizard_learning_hint_outline
         HintType.ANIMATE_CORRECT -> R.string.therapist_wizard_learning_hint_animate

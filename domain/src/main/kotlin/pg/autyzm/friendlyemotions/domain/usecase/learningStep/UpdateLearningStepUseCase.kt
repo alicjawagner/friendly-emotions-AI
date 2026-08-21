@@ -34,6 +34,9 @@ class UpdateLearningStepUseCase
             if (validation is Result.Failure) {
                 return validation
             }
+            if (draft.materialSelection.imageUsages.isEmpty()) {
+                return Result.Failure(DomainError.NoMaterialSelected)
+            }
 
             learningStepRepository.updateStep(stepId, draft)
             return Result.Success(Unit)

@@ -146,4 +146,43 @@
     <string name="therapist_wizard_test_hint_delay_banner">If the child does not choose an answer, the screen will change automatically after the time set in the LEARNING section - Show hint after (seconds).</string>
     <string name="therapist_wizard_test_no_hints_banner">In test mode, hints and reinforcements are not used and the therapist does not help or talk to the child until the test is finished.</string>
     <string name="therapist_wizard_test_next">NEXT</string>
+
+    <string name="therapist_wizard_reinforcements_help_text">Select the reinforcements that will help the child retain the knowledge.</string>
+    <string name="therapist_wizard_reinforcements_praise_header">Choose verbal reinforcements:</string>
+    <string name="therapist_wizard_reinforcements_animation_header">Choose visual reinforcements:</string>
+    <string name="therapist_wizard_reinforcements_theme_flowers">Flowers</string>
+    <string name="therapist_wizard_reinforcements_theme_butterflies">Butterflies</string>
+    <string name="therapist_wizard_reinforcements_theme_balloons">Balloons</string>
+    <string name="therapist_wizard_reinforcements_theme_cars">Cars</string>
+    <string name="therapist_wizard_reinforcements_theme_balls">Balls</string>
+    <string name="therapist_wizard_reinforcements_end_session_header">Choose end-of-session reinforcements:</string>
+    <string name="therapist_wizard_reinforcements_end_animation_label">Additional animation at the end of learning</string>
+    <string name="therapist_wizard_reinforcements_end_fanfare_label">Fanfare sound at the end of learning</string>
+    <string name="therapist_wizard_reinforcements_next">NEXT</string>
+
+    <string name="therapist_wizard_summary_name_label">Enter step name:</string>
+    <string name="therapist_wizard_summary_save">SAVE</string>
+    <string name="therapist_wizard_summary_header_info">STEP INFORMATION</string>
+    <string name="therapist_wizard_summary_header_learning">LEARNING MODE</string>
+    <string name="therapist_wizard_summary_header_test">TEST MODE</string>
+    <string name="therapist_wizard_summary_row_emotion_count">Number of emotions taught</string>
+    <string name="therapist_wizard_summary_row_emotions">Emotions taught</string>
+    <string name="therapist_wizard_summary_row_image_count">Number of images shown</string>
+    <string name="therapist_wizard_summary_row_repetitions">Repetitions per emotion</string>
+    <string name="therapist_wizard_summary_row_prompt">Command type</string>
+    <string name="therapist_wizard_summary_row_captions">Captions under images</string>
+    <string name="therapist_wizard_summary_row_tts">Read command aloud</string>
+    <string name="therapist_wizard_summary_row_hint_delay">Show hint after</string>
+    <string name="therapist_wizard_summary_row_hints">Hints</string>
+    <string name="therapist_wizard_summary_row_praise">Verbal praise</string>
+    <string name="therapist_wizard_summary_row_animations">Animations</string>
+    <string name="therapist_wizard_summary_row_mixed_gender">Mixed type in answer set</string>
+    <string name="therapist_wizard_summary_value_yes">Yes</string>
+    <string name="therapist_wizard_summary_value_no">No</string>
+    <string name="therapist_wizard_summary_value_not_applicable">X</string>
+    <string name="therapist_wizard_summary_value_seconds_suffix">%1$d s</string>
+    <string name="therapist_wizard_summary_error_dialog_title">Info</string>
+    <string name="therapist_wizard_summary_error_name_blank">The step name cannot be blank.</string>
+    <string name="therapist_wizard_summary_error_name_duplicate">A step with this name already exists.</string>
+    <string name="therapist_wizard_summary_error_no_material">Select at least one emotion and material before saving.</string>
 </resources>
