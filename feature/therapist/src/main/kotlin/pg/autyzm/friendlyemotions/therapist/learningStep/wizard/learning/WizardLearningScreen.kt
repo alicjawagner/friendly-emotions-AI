@@ -1,13 +1,16 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.learning
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Subtitles
@@ -157,56 +160,63 @@ private fun WizardLearningContent(
 ) {
     var promptDropdownExpanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+    Row(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+        Column(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(end = CONTENT_PADDING)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
+                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = stringResource(R.string.therapist_wizard_learning_prompt_label),
+                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            )
+            PromptTemplateDropdown(
+                selected = learningParameters.promptTemplate,
+                onSelected = onPromptTemplateChanged,
+                expanded = promptDropdownExpanded,
+                onExpandedChange = { promptDropdownExpanded = it },
+            )
+            Text(
+                text = stringResource(R.string.therapist_wizard_learning_image_count_label),
+                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            )
+            RangeSlider(
+                value = learningParameters.displayedImageCount,
+                onValueChange = onDisplayedImageCountChanged,
+                range = LearningParameters.DISPLAYED_IMAGE_COUNT_RANGE,
+                contentDescription = stringResource(R.string.therapist_wizard_learning_image_count_label),
+            )
+            Text(
+                text = stringResource(R.string.therapist_wizard_learning_repetitions_label),
+                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            )
+            RangeSlider(
+                value = learningParameters.repetitionsPerEmotion,
+                onValueChange = onRepetitionsChanged,
+                range = LearningParameters.REPETITIONS_PER_EMOTION_RANGE,
+                contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
+            )
+        }
+        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
+        Column(
+            modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
+        ) {
             Column(
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
-                    style = FriendlyEmotionsTextStyles.headingH5Regular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
-                Text(
-                    text = stringResource(R.string.therapist_wizard_learning_prompt_label),
-                    style = FriendlyEmotionsTextStyles.headingH5Regular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                )
-                PromptTemplateDropdown(
-                    selected = learningParameters.promptTemplate,
-                    onSelected = onPromptTemplateChanged,
-                    expanded = promptDropdownExpanded,
-                    onExpandedChange = { promptDropdownExpanded = it },
-                )
-                Text(
-                    text = stringResource(R.string.therapist_wizard_learning_image_count_label),
-                    style = FriendlyEmotionsTextStyles.headingH5Regular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                )
-                RangeSlider(
-                    value = learningParameters.displayedImageCount,
-                    onValueChange = onDisplayedImageCountChanged,
-                    range = LearningParameters.DISPLAYED_IMAGE_COUNT_RANGE,
-                    contentDescription = stringResource(R.string.therapist_wizard_learning_image_count_label),
-                )
-                Text(
-                    text = stringResource(R.string.therapist_wizard_learning_repetitions_label),
-                    style = FriendlyEmotionsTextStyles.headingH5Regular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                )
-                RangeSlider(
-                    value = learningParameters.repetitionsPerEmotion,
-                    onValueChange = onRepetitionsChanged,
-                    range = LearningParameters.REPETITIONS_PER_EMOTION_RANGE,
-                    contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
-                )
-            }
-            VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
-            Column(
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
@@ -268,12 +278,13 @@ private fun WizardLearningContent(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            TherapistButton(
+                text = stringResource(R.string.therapist_wizard_learning_next),
+                onClick = onNextClick,
+                modifier = Modifier.align(Alignment.End),
+            )
         }
-        TherapistButton(
-            text = stringResource(R.string.therapist_wizard_learning_next),
-            onClick = onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(CONTENT_PADDING),
-        )
     }
 }
 

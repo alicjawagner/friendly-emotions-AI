@@ -250,183 +250,186 @@ private fun WizardMaterialContent(
     onImageTestToggle: (ImageTileUi) -> Unit,
     onNextClick: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize().padding(vertical = CONTENT_PADDING)) {
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(horizontal = CONTENT_PADDING),
+    Row(modifier = Modifier.fillMaxSize().padding(vertical = CONTENT_PADDING)) {
+        Column(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(horizontal = CONTENT_PADDING),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TherapistButton(
-                        text = stringResource(R.string.therapist_wizard_material_add_emotion),
-                        icon = Icons.Filled.Add,
-                        onClick = onAddEmotionClick,
-                        modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = state.hideExampleMaterials,
-                            onCheckedChange = onHideExampleMaterialsToggled,
-                            colors =
-                                CheckboxDefaults.colors(
-                                    checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                    uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                ),
-                        )
-                        Text(
-                            text = stringResource(R.string.therapist_wizard_material_hide_examples),
-                            style = FriendlyEmotionsTextStyles.bodyRegular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(18.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = TABLE_HORIZONTAL_PADDING),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = stringResource(R.string.therapist_wizard_material_header_emotion),
-                        style = FriendlyEmotionsTextStyles.captionC1,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        modifier = Modifier.width(NAME_COLUMN_WIDTH),
+                TherapistButton(
+                    text = stringResource(R.string.therapist_wizard_material_add_emotion),
+                    icon = Icons.Filled.Add,
+                    onClick = onAddEmotionClick,
+                    modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = state.hideExampleMaterials,
+                        onCheckedChange = onHideExampleMaterialsToggled,
+                        colors =
+                            CheckboxDefaults.colors(
+                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                            ),
                     )
                     Text(
-                        text = stringResource(R.string.therapist_wizard_material_header_learning),
-                        style = FriendlyEmotionsTextStyles.captionC1,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(HEADER_COLUMN_WIDTH),
+                        text = stringResource(R.string.therapist_wizard_material_hide_examples),
+                        style = FriendlyEmotionsTextStyles.bodyRegular,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                     )
-                    Text(
-                        text = stringResource(R.string.therapist_wizard_material_header_test),
-                        style = FriendlyEmotionsTextStyles.captionC1,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(HEADER_COLUMN_WIDTH),
-                    )
-                    Text(
-                        text = stringResource(R.string.therapist_wizard_material_header_delete),
-                        style = FriendlyEmotionsTextStyles.captionC1,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width(DELETE_COLUMN_WIDTH),
-                    )
-                }
-                Spacer(modifier = Modifier.height(11.dp))
-                val listState = rememberLazyListState()
-                listState.ScrollToNewlyAdded(state.emotionRows, key = { it.emotionId.name })
-                LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(state.emotionRows, key = { it.emotionId.name }) { row ->
-                        EmotionTableRow(
-                            label = row.label,
-                            inLearningChecked = row.inLearningChecked,
-                            inTestChecked = row.inTestChecked,
-                            isFocused = row.emotionId == state.focusedEmotionId,
-                            onRowClick = { onEmotionRowClick(row.emotionId) },
-                            onLearningToggle = { onEmotionLearningToggle(row) },
-                            onTestToggle = { onEmotionTestToggle(row) },
-                            onDeleteClick = { onEmotionDeleteRequested(row.emotionId) },
-                        )
-                    }
                 }
             }
-            Column(
-                modifier =
-                    Modifier
-                        .width(SIDE_PANEL_WIDTH)
-                        .fillMaxHeight()
-                        .padding(horizontal = CONTENT_PADDING),
+            Spacer(modifier = Modifier.height(18.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = TABLE_HORIZONTAL_PADDING),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                val focusedFolder = state.focusedFolder
-                if (focusedFolder != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    ) {
-                        IconButton(onClick = onFolderBackClick) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription =
-                                    stringResource(
-                                        R.string.therapist_wizard_material_folder_back_description,
-                                    ),
-                                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                modifier = Modifier.size(HEADER_BACK_ICON_SIZE),
-                            )
-                        }
+                Text(
+                    text = stringResource(R.string.therapist_wizard_material_header_emotion),
+                    style = FriendlyEmotionsTextStyles.captionC1,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    modifier = Modifier.width(NAME_COLUMN_WIDTH),
+                )
+                Text(
+                    text = stringResource(R.string.therapist_wizard_material_header_learning),
+                    style = FriendlyEmotionsTextStyles.captionC1,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(HEADER_COLUMN_WIDTH),
+                )
+                Text(
+                    text = stringResource(R.string.therapist_wizard_material_header_test),
+                    style = FriendlyEmotionsTextStyles.captionC1,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(HEADER_COLUMN_WIDTH),
+                )
+                Text(
+                    text = stringResource(R.string.therapist_wizard_material_header_delete),
+                    style = FriendlyEmotionsTextStyles.captionC1,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(DELETE_COLUMN_WIDTH),
+                )
+            }
+            Spacer(modifier = Modifier.height(11.dp))
+            val listState = rememberLazyListState()
+            listState.ScrollToNewlyAdded(state.emotionRows, key = { it.emotionId.name })
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(state.emotionRows, key = { it.emotionId.name }) { row ->
+                    EmotionTableRow(
+                        label = row.label,
+                        inLearningChecked = row.inLearningChecked,
+                        inTestChecked = row.inTestChecked,
+                        isFocused = row.emotionId == state.focusedEmotionId,
+                        onRowClick = { onEmotionRowClick(row.emotionId) },
+                        onLearningToggle = { onEmotionLearningToggle(row) },
+                        onTestToggle = { onEmotionTestToggle(row) },
+                        onDeleteClick = { onEmotionDeleteRequested(row.emotionId) },
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            TherapistButton(
+                text = stringResource(R.string.therapist_wizard_material_next),
+                onClick = onNextClick,
+                modifier = Modifier.align(Alignment.End),
+            )
+        }
+        Column(
+            modifier =
+                Modifier
+                    .width(SIDE_PANEL_WIDTH)
+                    .fillMaxHeight()
+                    .padding(horizontal = CONTENT_PADDING),
+        ) {
+            val focusedFolder = state.focusedFolder
+            if (focusedFolder != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                ) {
+                    IconButton(onClick = onFolderBackClick) {
                         Icon(
-                            imageVector = Icons.Filled.Folder,
-                            contentDescription = null,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                stringResource(
+                                    R.string.therapist_wizard_material_folder_back_description,
+                                ),
                             tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            modifier = Modifier.size(HEADER_FOLDER_ICON_SIZE),
-                        )
-                        Text(
-                            text = focusedFolder.name,
-                            style = FriendlyEmotionsTextStyles.headingH5Regular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                            modifier = Modifier.padding(start = 4.dp),
+                            modifier = Modifier.size(HEADER_BACK_ICON_SIZE),
                         )
                     }
-                    val gridState = rememberLazyGridState()
-                    gridState.ScrollToNewlyAdded(state.images, key = { it.id.value })
-                    LazyVerticalGrid(
-                        state = gridState,
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                    ) {
-                        items(state.images, key = { it.id.value }) { image ->
-                            WizardImageTile(
-                                filePath = image.filePath,
-                                selected = image.selected,
-                                inLearningChecked = image.inLearningChecked,
-                                inTestChecked = image.inTestChecked,
-                                onSelectToggle = { onImageSelectToggle(image) },
-                                onLearningToggle = { onImageLearningToggle(image) },
-                                onTestToggle = { onImageTestToggle(image) },
-                            )
-                        }
+                    Icon(
+                        imageVector = Icons.Filled.Folder,
+                        contentDescription = null,
+                        tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                        modifier = Modifier.size(HEADER_FOLDER_ICON_SIZE),
+                    )
+                    Text(
+                        text = focusedFolder.name,
+                        style = FriendlyEmotionsTextStyles.headingH5Regular,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                        modifier = Modifier.padding(start = 4.dp),
+                    )
+                }
+                val gridState = rememberLazyGridState()
+                gridState.ScrollToNewlyAdded(state.images, key = { it.id.value })
+                LazyVerticalGrid(
+                    state = gridState,
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                ) {
+                    items(state.images, key = { it.id.value }) { image ->
+                        WizardImageTile(
+                            filePath = image.filePath,
+                            selected = image.selected,
+                            inLearningChecked = image.inLearningChecked,
+                            inTestChecked = image.inTestChecked,
+                            onSelectToggle = { onImageSelectToggle(image) },
+                            onLearningToggle = { onImageLearningToggle(image) },
+                            onTestToggle = { onImageTestToggle(image) },
+                        )
                     }
-                } else {
-                    val gridState = rememberLazyGridState()
-                    gridState.ScrollToNewlyAdded(state.folders, key = { it.id.value })
-                    LazyVerticalGrid(
-                        state = gridState,
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                    ) {
-                        items(state.folders, key = { it.id.value }) { folder ->
-                            WizardFolderTile(
-                                name = folder.name,
-                                selected = folder.selected,
-                                inLearningChecked = folder.inLearningChecked,
-                                inTestChecked = folder.inTestChecked,
-                                onSelectToggle = { onFolderSelectToggle(folder) },
-                                onLearningToggle = { onFolderLearningToggle(folder) },
-                                onTestToggle = { onFolderTestToggle(folder) },
-                                onClick = { onFolderClick(folder) },
-                            )
-                        }
+                }
+            } else {
+                val gridState = rememberLazyGridState()
+                gridState.ScrollToNewlyAdded(state.folders, key = { it.id.value })
+                LazyVerticalGrid(
+                    state = gridState,
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                ) {
+                    items(state.folders, key = { it.id.value }) { folder ->
+                        WizardFolderTile(
+                            name = folder.name,
+                            selected = folder.selected,
+                            inLearningChecked = folder.inLearningChecked,
+                            inTestChecked = folder.inTestChecked,
+                            onSelectToggle = { onFolderSelectToggle(folder) },
+                            onLearningToggle = { onFolderLearningToggle(folder) },
+                            onTestToggle = { onFolderTestToggle(folder) },
+                            onClick = { onFolderClick(folder) },
+                        )
                     }
                 }
             }
         }
-        TherapistButton(
-            text = stringResource(R.string.therapist_wizard_material_next),
-            onClick = onNextClick,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp, end = 20.dp),
-        )
     }
     if (state.addEmotionDialogOpen) {
         AddEmotionDialog(

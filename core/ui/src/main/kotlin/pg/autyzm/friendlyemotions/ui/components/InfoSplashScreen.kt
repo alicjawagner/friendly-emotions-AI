@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -100,74 +102,77 @@ fun InfoSplashScreen(
                     .widthIn(max = 200.dp),
         )
 
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 48.dp, vertical = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 48.dp, vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Image(
+                        painter = painterResource(appIconRes),
+                        contentDescription = null,
+                        modifier = Modifier.size(90.dp),
+                    )
+                    Text(
+                        text = appTitle,
+                        style = FriendlyEmotionsTextStyles.displayD2,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.core_ui_splash_subtitle),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.Shades.Black,
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            Column(
+                modifier =
+                    Modifier
+                        .padding(start = 70.dp)
+                        .widthIn(max = 800.dp)
+                        .background(FriendlyEmotionsColors.Shades.White, FriendlyEmotionsModalShape)
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                SPLASH_BULLETS.forEach { bullet ->
+                    BulletRow(bullet.emojiRes, bullet.labelRes, bullet.bodyRes)
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
             Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                        .background(FriendlyEmotionsColors.Shades.White.copy(alpha = 0.5f)),
+                horizontalArrangement = Arrangement.spacedBy(64.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Image(
-                    painter = painterResource(appIconRes),
+                    painter = painterResource(R.drawable.gdansk_university_of_technology_and_eti_logo),
                     contentDescription = null,
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier.height(80.dp),
+                    contentScale = ContentScale.FillHeight,
                 )
-                Text(
-                    text = appTitle,
-                    style = FriendlyEmotionsTextStyles.displayD2,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                Image(
+                    painter = painterResource(R.drawable.iwrd_logo),
+                    contentDescription = null,
+                    modifier = Modifier.height(80.dp),
+                    contentScale = ContentScale.FillHeight,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.core_ui_splash_subtitle),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
-                color = FriendlyEmotionsColors.Shades.Black,
-                textAlign = TextAlign.Center,
-            )
-        }
-
-        Column(
-            modifier =
-                Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 70.dp, top = 20.dp)
-                    .widthIn(max = 800.dp)
-                    .background(FriendlyEmotionsColors.Shades.White, FriendlyEmotionsModalShape)
-                    .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            SPLASH_BULLETS.forEach { bullet ->
-                BulletRow(bullet.emojiRes, bullet.labelRes, bullet.bodyRes)
-            }
-        }
-
-        Row(
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(130.dp)
-                    .background(FriendlyEmotionsColors.Shades.White.copy(alpha = 0.5f)),
-            horizontalArrangement = Arrangement.spacedBy(64.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(R.drawable.gdansk_university_of_technology_and_eti_logo),
-                contentDescription = null,
-                modifier = Modifier.height(80.dp),
-                contentScale = ContentScale.FillHeight,
-            )
-            Image(
-                painter = painterResource(R.drawable.iwrd_logo),
-                contentDescription = null,
-                modifier = Modifier.height(80.dp),
-                contentScale = ContentScale.FillHeight,
-            )
         }
     }
 }

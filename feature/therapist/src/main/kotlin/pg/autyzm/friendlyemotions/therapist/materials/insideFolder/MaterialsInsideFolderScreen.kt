@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -134,25 +136,26 @@ private fun MaterialsInsideFolderContent(
 ) {
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = state.hideExampleMaterials,
-                    onCheckedChange = onHideExampleMaterialsToggled,
-                    colors =
-                        CheckboxDefaults.colors(
-                            checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        ),
-                )
-                Text(
-                    text = stringResource(R.string.therapist_materials_hide_examples),
-                    style = FriendlyEmotionsTextStyles.bodyRegular,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                )
+            Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = state.hideExampleMaterials,
+                        onCheckedChange = onHideExampleMaterialsToggled,
+                        colors =
+                            CheckboxDefaults.colors(
+                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                            ),
+                    )
+                    Text(
+                        text = stringResource(R.string.therapist_materials_hide_examples),
+                        style = FriendlyEmotionsTextStyles.bodyRegular,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
-            Spacer(modifier = Modifier.weight(1f))
             GenderLegend()
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))

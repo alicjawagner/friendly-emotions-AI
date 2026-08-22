@@ -3,7 +3,6 @@ package pg.autyzm.friendlyemotions.therapist.materials.folders
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,6 +11,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.runtime.Composable
@@ -101,8 +102,12 @@ private fun MaterialsFoldersContent(
 ) {
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
-            EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
-            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
+            }
             GenderLegend()
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))

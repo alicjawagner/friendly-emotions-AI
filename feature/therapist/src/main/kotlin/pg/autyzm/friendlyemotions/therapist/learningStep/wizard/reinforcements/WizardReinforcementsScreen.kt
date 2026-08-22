@@ -1,13 +1,16 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.reinforcements
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -148,9 +151,9 @@ private fun WizardReinforcementsContent(
     onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
+    Column(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING)) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING),
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(40.dp),
         ) {
             Column(
@@ -211,10 +214,11 @@ private fun WizardReinforcementsContent(
                 }
             }
         }
+        Spacer(modifier = Modifier.height(CONTENT_PADDING))
         TherapistButton(
             text = stringResource(R.string.therapist_wizard_reinforcements_next),
             onClick = onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(CONTENT_PADDING),
+            modifier = Modifier.align(Alignment.End),
         )
     }
 }

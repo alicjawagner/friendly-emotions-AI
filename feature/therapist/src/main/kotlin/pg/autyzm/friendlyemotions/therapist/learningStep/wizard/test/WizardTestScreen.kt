@@ -2,12 +2,15 @@ package pg.autyzm.friendlyemotions.therapist.learningStep.wizard.test
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Subtitles
@@ -178,126 +181,130 @@ private fun WizardTestContent(
     val mixedGenderInAnswers =
         if (overridesLearning) testParameters.mixedGenderInAnswers else displayedLearningParameters.mixedGenderInAnswers
 
-    Box(modifier = modifier) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = overridesLearning,
-                    onCheckedChange = onOverrideToggled,
-                    colors =
-                        CheckboxDefaults.colors(
-                            checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        ),
-                )
+    Column(
+        modifier = modifier.fillMaxSize().padding(CONTENT_PADDING),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = overridesLearning,
+                onCheckedChange = onOverrideToggled,
+                colors =
+                    CheckboxDefaults.colors(
+                        checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                        uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                    ),
+            )
+            Text(
+                text = stringResource(R.string.therapist_wizard_test_override_label),
+                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            )
+        }
+        Row(modifier = Modifier.weight(1f).fillMaxSize()) {
+            Column(
+                modifier =
+                    Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING)
+                        .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
+                        .clickable(enabled = !overridesLearning) { showOverrideHint = true }
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Text(
-                    text = stringResource(R.string.therapist_wizard_test_override_label),
+                    text = stringResource(R.string.therapist_wizard_learning_prompt_label),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
+                PromptTemplateDropdown(
+                    selected = promptTemplate,
+                    onSelected = onPromptTemplateChanged,
+                    expanded = promptDropdownExpanded,
+                    onExpandedChange = { promptDropdownExpanded = it },
+                    enabled = overridesLearning,
+                )
+                Text(
+                    text = stringResource(R.string.therapist_wizard_learning_image_count_label),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                )
+                RangeSlider(
+                    value = displayedImageCount,
+                    onValueChange = onDisplayedImageCountChanged,
+                    range = LearningParameters.DISPLAYED_IMAGE_COUNT_RANGE,
+                    enabled = overridesLearning,
+                    contentDescription = stringResource(R.string.therapist_wizard_learning_image_count_label),
+                )
+                Text(
+                    text = stringResource(R.string.therapist_wizard_learning_repetitions_label),
+                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                )
+                RangeSlider(
+                    value = repetitionsPerEmotion,
+                    onValueChange = onRepetitionsChanged,
+                    range = LearningParameters.REPETITIONS_PER_EMOTION_RANGE,
+                    enabled = overridesLearning,
+                    contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
+                )
+                StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_hint_delay_banner))
             }
-            Box(
-                modifier =
-                    Modifier.weight(1f)
-                        .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
-                        .clickable(enabled = !overridesLearning) { showOverrideHint = true },
+            VerticalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
+            Column(
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
             ) {
-                Row(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.therapist_wizard_learning_prompt_label),
-                            style = FriendlyEmotionsTextStyles.headingH5Regular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        )
-                        PromptTemplateDropdown(
-                            selected = promptTemplate,
-                            onSelected = onPromptTemplateChanged,
-                            expanded = promptDropdownExpanded,
-                            onExpandedChange = { promptDropdownExpanded = it },
+                Column(
+                    modifier =
+                        Modifier.weight(1f)
+                            .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
+                            .clickable(enabled = !overridesLearning) { showOverrideHint = true }
+                            .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.therapist_wizard_learning_options_label),
+                        style = FriendlyEmotionsTextStyles.headingH5Regular,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                        ToggleInfoRow(
+                            icon = Icons.Filled.Subtitles,
+                            label = stringResource(R.string.therapist_wizard_learning_captions_label),
+                            checked = captionsEnabled,
+                            onCheckedChange = onCaptionsToggled,
+                            infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
+                            infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
                             enabled = overridesLearning,
                         )
-                        Text(
-                            text = stringResource(R.string.therapist_wizard_learning_image_count_label),
-                            style = FriendlyEmotionsTextStyles.headingH5Regular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        )
-                        RangeSlider(
-                            value = displayedImageCount,
-                            onValueChange = onDisplayedImageCountChanged,
-                            range = LearningParameters.DISPLAYED_IMAGE_COUNT_RANGE,
+                        ToggleInfoRow(
+                            icon = Icons.Filled.RecordVoiceOver,
+                            label = stringResource(R.string.therapist_wizard_learning_tts_label),
+                            checked = ttsEnabled,
+                            onCheckedChange = onTtsToggled,
+                            infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
+                            infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
                             enabled = overridesLearning,
-                            contentDescription = stringResource(R.string.therapist_wizard_learning_image_count_label),
                         )
-                        Text(
-                            text = stringResource(R.string.therapist_wizard_learning_repetitions_label),
-                            style = FriendlyEmotionsTextStyles.headingH5Regular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        )
-                        RangeSlider(
-                            value = repetitionsPerEmotion,
-                            onValueChange = onRepetitionsChanged,
-                            range = LearningParameters.REPETITIONS_PER_EMOTION_RANGE,
+                        ToggleInfoRow(
+                            icon = Icons.Filled.Wc,
+                            label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
+                            checked = mixedGenderInAnswers,
+                            onCheckedChange = onMixedGenderToggled,
+                            infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
+                            infoMessage =
+                                stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
                             enabled = overridesLearning,
-                            contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
                         )
-                        StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_hint_delay_banner))
                     }
-                    VerticalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
-                    Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.therapist_wizard_learning_options_label),
-                            style = FriendlyEmotionsTextStyles.headingH5Regular,
-                            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                        )
-                        Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                            ToggleInfoRow(
-                                icon = Icons.Filled.Subtitles,
-                                label = stringResource(R.string.therapist_wizard_learning_captions_label),
-                                checked = captionsEnabled,
-                                onCheckedChange = onCaptionsToggled,
-                                infoTitle = stringResource(R.string.therapist_wizard_learning_captions_info_title),
-                                infoMessage = stringResource(R.string.therapist_wizard_learning_captions_info_message),
-                                enabled = overridesLearning,
-                            )
-                            ToggleInfoRow(
-                                icon = Icons.Filled.RecordVoiceOver,
-                                label = stringResource(R.string.therapist_wizard_learning_tts_label),
-                                checked = ttsEnabled,
-                                onCheckedChange = onTtsToggled,
-                                infoTitle = stringResource(R.string.therapist_wizard_learning_tts_info_title),
-                                infoMessage = stringResource(R.string.therapist_wizard_learning_tts_info_message),
-                                enabled = overridesLearning,
-                            )
-                            ToggleInfoRow(
-                                icon = Icons.Filled.Wc,
-                                label = stringResource(R.string.therapist_wizard_learning_mixed_gender_label),
-                                checked = mixedGenderInAnswers,
-                                onCheckedChange = onMixedGenderToggled,
-                                infoTitle = stringResource(R.string.therapist_wizard_learning_mixed_gender_info_title),
-                                infoMessage =
-                                    stringResource(R.string.therapist_wizard_learning_mixed_gender_info_message),
-                                enabled = overridesLearning,
-                            )
-                        }
-                        StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_no_hints_banner))
-                    }
+                    StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_no_hints_banner))
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                TherapistButton(
+                    text = stringResource(R.string.therapist_wizard_test_next),
+                    onClick = onNextClick,
+                    modifier = Modifier.align(Alignment.End),
+                )
             }
         }
-        TherapistButton(
-            text = stringResource(R.string.therapist_wizard_test_next),
-            onClick = onNextClick,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(CONTENT_PADDING),
-        )
     }
 
     if (showOverrideHint) {
