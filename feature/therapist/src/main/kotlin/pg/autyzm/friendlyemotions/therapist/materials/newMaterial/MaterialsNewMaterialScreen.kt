@@ -6,8 +6,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,14 +22,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +56,8 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.components.VerticalDividerBar
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.StaticInfoBanner
+import pg.autyzm.friendlyemotions.therapist.materials.components.GenderLegend
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.TILE_CONTENT_SIZE
 import pg.autyzm.friendlyemotions.therapist.materials.components.currentLocaleCode
@@ -69,13 +69,13 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
+import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val RAIL_WIDTH = 402.dp
 private val CONTENT_PADDING = 20.dp
 private val FORM_ITEM_SPACING = 24.dp
-private val FIELD_BORDER_WIDTH = 1.dp
 
 /**
  * Figma `screens/materials/new-material`: fixed-gender variant `983:4442`, MIXED-folder variant
@@ -143,6 +143,7 @@ private fun MaterialsNewMaterialContent(
     val scope = rememberCoroutineScope()
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
     var showCameraPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showGenderLegend by remember { mutableStateOf(false) }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -236,8 +237,8 @@ private fun MaterialsNewMaterialContent(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                InfoBox(
-                    message =
+                StaticInfoBanner(
+                    text =
                         if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
                             stringResource(R.string.therapist_materials_new_material_mixed_info)
                         } else {
@@ -247,6 +248,12 @@ private fun MaterialsNewMaterialContent(
                             )
                         },
                 )
+                if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
+                    StaticInfoBanner(
+                        text = stringResource(R.string.therapist_materials_new_material_show_legend),
+                        modifier = Modifier.clickable { showGenderLegend = true },
+                    )
+                }
             }
             Spacer((Modifier.height(FORM_ITEM_SPACING)))
             TherapistButton(
@@ -311,6 +318,23 @@ private fun MaterialsNewMaterialContent(
             onDismiss = { showCameraPermissionDeniedDialog = false },
         )
     }
+    if (showGenderLegend) {
+        AlertDialog(
+            onDismissRequest = { showGenderLegend = false },
+            shape = FriendlyEmotionsModalShape,
+            containerColor = FriendlyEmotionsColors.Shades.White,
+            text = { GenderLegend() },
+            confirmButton = {
+                TextButton(onClick = { showGenderLegend = false }) {
+                    Text(
+                        text = stringResource(android.R.string.ok),
+                        style = FriendlyEmotionsTextStyles.button,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+                    )
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -330,44 +354,6 @@ private fun ReadOnlyField(
             style = FriendlyEmotionsTextStyles.bodyRegular,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             modifier = Modifier.padding(top = 4.dp),
-        )
-    }
-}
-
-@Composable
-private fun InfoBox(
-    message: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .border(
-                    FIELD_BORDER_WIDTH,
-                    FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                    RoundedCornerShape(10.dp),
-                )
-                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P50, RoundedCornerShape(10.dp))
-                .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(
-                imageVector = Icons.Rounded.Info,
-                contentDescription = null,
-                tint = FriendlyEmotionsColors.Neutral.N400,
-            )
-            Text(
-                text = stringResource(R.string.therapist_materials_gender_required_dialog_title),
-                style = FriendlyEmotionsTextStyles.captionC1,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            )
-        }
-        Text(
-            text = message,
-            style = FriendlyEmotionsTextStyles.bodyRegular,
-            color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
         )
     }
 }

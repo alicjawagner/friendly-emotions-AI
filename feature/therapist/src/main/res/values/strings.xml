@@ -53,6 +53,7 @@
     <string name="therapist_materials_new_material_gallery_header">Dodane obrazki:</string>
     <string name="therapist_materials_new_material_mixed_info">Pamiętaj, aby dostosować rodzaj dla każdego obrazka klikając w przekreślone kółeczko w prawym górnym rogu.</string>
     <string name="therapist_materials_new_material_fixed_info">Ten folder ma na stałe przypisany %1$s, dlatego wszystkie dodawane do niego obrazki będą automatycznie oznaczane jako %1$s.</string>
+    <string name="therapist_materials_new_material_show_legend">Kliknij, aby wyświetlić legendę rodzajów</string>
     <string name="therapist_materials_new_material_camera_permission_denied">Aby zrobić zdjęcie, zezwól aplikacji na dostęp do aparatu w ustawieniach urządzenia.</string>
 
     <string name="therapist_materials_gender_required_dialog_title">Info</string>
