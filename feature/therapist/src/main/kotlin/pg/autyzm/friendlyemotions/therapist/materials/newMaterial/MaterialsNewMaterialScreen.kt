@@ -237,22 +237,24 @@ private fun MaterialsNewMaterialContent(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                StaticInfoBanner(
-                    text =
-                        if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
-                            stringResource(R.string.therapist_materials_new_material_mixed_info)
-                        } else {
-                            stringResource(
-                                R.string.therapist_materials_new_material_fixed_info,
-                                stringResource(state.folderGenderPolicy.descriptionRes()),
-                            )
-                        },
-                )
-                if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     StaticInfoBanner(
-                        text = stringResource(R.string.therapist_materials_new_material_show_legend),
-                        modifier = Modifier.clickable { showGenderLegend = true },
+                        text =
+                            if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
+                                stringResource(R.string.therapist_materials_new_material_mixed_info)
+                            } else {
+                                stringResource(
+                                    R.string.therapist_materials_new_material_fixed_info,
+                                    stringResource(state.folderGenderPolicy.descriptionRes()),
+                                )
+                            },
                     )
+                    if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
+                        StaticInfoBanner(
+                            text = stringResource(R.string.therapist_materials_new_material_show_legend),
+                            modifier = Modifier.clickable { showGenderLegend = true },
+                        )
+                    }
                 }
             }
             Spacer((Modifier.height(FORM_ITEM_SPACING)))
