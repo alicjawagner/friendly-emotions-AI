@@ -23,6 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -136,6 +139,7 @@ private fun LearningStepsListContent(
     onHideExampleStepsToggled: (Boolean) -> Unit,
     onErrorDismissed: () -> Unit,
 ) {
+    var showCannotPlayInfo by remember { mutableStateOf(false) }
     Column(
         verticalArrangement = Arrangement.spacedBy(22.dp),
         modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING),
@@ -150,8 +154,13 @@ private fun LearningStepsListContent(
             TherapistButton(
                 text = stringResource(R.string.therapist_learning_steps_play),
                 icon = Icons.Filled.PlayCircleFilled,
-                enabled = state.canPlayActiveStep,
-                onClick = onPlayClick,
+                onClick = {
+                    if (state.canPlayActiveStep) {
+                        onPlayClick()
+                    } else {
+                        showCannotPlayInfo = true
+                    }
+                },
             )
         }
         LearningStepSearchBox(query = state.searchQuery, onQueryChanged = onSearchQueryChanged)
@@ -225,6 +234,13 @@ private fun LearningStepsListContent(
             title = stringResource(R.string.therapist_learning_steps_error_dialog_title),
             message = stringResource(state.error.toMessageRes()),
             onDismiss = onErrorDismissed,
+        )
+    }
+    if (showCannotPlayInfo) {
+        InfoDialog(
+            title = stringResource(R.string.therapist_learning_steps_cannot_play_title),
+            message = stringResource(R.string.therapist_learning_steps_cannot_play_message),
+            onDismiss = { showCannotPlayInfo = false },
         )
     }
 }

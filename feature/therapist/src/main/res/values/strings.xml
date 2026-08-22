@@ -84,6 +84,8 @@
     <string name="therapist_learning_steps_delete_title">Usunąć krok uczenia?</string>
     <string name="therapist_learning_steps_delete_message">Ten krok uczenia zostanie trwale usunięty.</string>
     <string name="therapist_learning_steps_error_dialog_title">Info</string>
+    <string name="therapist_learning_steps_cannot_play_title">Nie można uruchomić</string>
+    <string name="therapist_learning_steps_cannot_play_message">Aktywny krok uczenia nie ma wystarczającej liczby obrazków skonfigurowanych dla wybranego trybu. Dodaj materiały, aby móc go uruchomić.</string>
 
     <string name="therapist_wizard_title_create">Nowy krok uczenia:</string>
     <string name="therapist_wizard_title_edit">Edytuj krok uczenia:</string>
