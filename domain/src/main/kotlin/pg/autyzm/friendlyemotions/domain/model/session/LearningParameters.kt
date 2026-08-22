@@ -6,9 +6,9 @@ data class LearningParameters(
     val repetitionsPerEmotion: Int = DEFAULT_REPETITIONS_PER_EMOTION,
     val promptTemplate: PromptTemplate = PromptTemplate.EMOTION_ONLY,
     val ttsEnabled: Boolean = true,
-    val captionsEnabled: Boolean = true,
+    val captionsEnabled: Boolean = false,
     val hintDelaySeconds: Int = DEFAULT_HINT_DELAY_SECONDS,
-    val activeHintTypes: Set<HintType> = setOf(HintType.DIM_INCORRECT),
+    val activeHintTypes: Set<HintType> = HintType.entries.toSet(),
     val mixedGenderInAnswers: Boolean = true,
 ) {
     init {
