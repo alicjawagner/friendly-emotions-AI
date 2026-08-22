@@ -112,8 +112,14 @@ private fun MaterialsFoldersContent(
         }
         VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
         val gridState = rememberLazyGridState()
-        gridState.ScrollToNewlyAdded(state.folders, key = { it.id.value }, indexOffset = 1)
-        val newlyAddedFolders = rememberNewlyAddedPulse(state.folders, key = { it.id.value })
+        gridState.ScrollToNewlyAdded(
+            state.folders,
+            key = { it.id.value },
+            indexOffset = 1,
+            resetKey = state.selectedEmotionId,
+        )
+        val newlyAddedFolders =
+            rememberNewlyAddedPulse(state.folders, key = { it.id.value }, resetKey = state.selectedEmotionId)
         LazyVerticalGrid(
             state = gridState,
             columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),

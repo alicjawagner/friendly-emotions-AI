@@ -22,19 +22,28 @@ import androidx.compose.runtime.setValue
  * [items]. Tracked via [rememberSaveable] rather than [androidx.compose.runtime.remember] because
  * the screen calling this is torn down and recreated when navigating to a child "add" screen and
  * back, while Navigation's `SaveableStateHolder` preserves `rememberSaveable` state for the
- * covered destination.
+ * covered destination. [resetKey], when it changes (e.g. the therapist switches emotions and
+ * [items] is swapped out for a different emotion's list within the same screen instance), rebases
+ * onto the new [items] instead of scrolling to what would otherwise look like a batch of new items.
  */
 @Composable
 fun <T> LazyGridState.ScrollToNewlyAdded(
     items: List<T>,
     key: (T) -> String,
     indexOffset: Int = 0,
+    resetKey: Any? = null,
 ) {
     val keys = items.map(key)
     var previousKeys by rememberSaveable(
         stateSaver = listSaver(save = { it }, restore = { it }),
     ) { mutableStateOf(keys) }
-    LaunchedEffect(keys) {
+    var previousResetKey by remember { mutableStateOf(resetKey) }
+    LaunchedEffect(keys, resetKey) {
+        if (resetKey != previousResetKey) {
+            previousResetKey = resetKey
+            previousKeys = keys
+            return@LaunchedEffect
+        }
         val newIndex = keys.indexOfFirst { it !in previousKeys }
         if (newIndex >= 0) animateScrollToItem(newIndex + indexOffset)
         previousKeys = keys
@@ -59,19 +68,29 @@ private const val NEWLY_ADDED_PEAK_FRACTION = 0.6f
  * (not in a [LaunchedEffect]) so a newly added item's very first composition already reflects it,
  * letting [rememberNewlyAddedPulse] start its pop-in animation immediately instead of one frame
  * late. Backed by [rememberSaveable] for the same reason as [ScrollToNewlyAdded]: navigating to a
- * child "add" screen and back tears down and recreates this composable.
+ * child "add" screen and back tears down and recreates this composable. [resetKey] changing (e.g.
+ * switching emotions swaps [items] for a different emotion's list within the same screen instance)
+ * rebases onto [items] instead of treating the whole swapped-in list as newly added.
  */
 @Composable
 private fun <T> rememberNewlyAddedKeys(
     items: List<T>,
     key: (T) -> String,
+    resetKey: Any? = null,
 ): Set<String> {
     val keys = items.map(key)
     var previousKeys by rememberSaveable(
         stateSaver = listSaver(save = { it }, restore = { it }),
     ) { mutableStateOf(keys) }
-    val newlyAdded = remember(keys) { keys.filterNot { it in previousKeys }.toSet() }
-    SideEffect { previousKeys = keys }
+    var previousResetKey by remember { mutableStateOf(resetKey) }
+    val newlyAdded =
+        remember(keys, resetKey) {
+            if (resetKey != previousResetKey) emptySet() else keys.filterNot { it in previousKeys }.toSet()
+        }
+    SideEffect {
+        previousKeys = keys
+        previousResetKey = resetKey
+    }
     return newlyAdded
 }
 
@@ -100,8 +119,9 @@ class NewlyAddedPulse internal constructor(
 fun <T> rememberNewlyAddedPulse(
     items: List<T>,
     key: (T) -> String,
+    resetKey: Any? = null,
 ): NewlyAddedPulse {
-    val newlyAddedKeys = rememberNewlyAddedKeys(items, key)
+    val newlyAddedKeys = rememberNewlyAddedKeys(items, key, resetKey)
     val scale =
         remember(newlyAddedKeys) {
             Animatable(if (newlyAddedKeys.isNotEmpty()) NEWLY_ADDED_INITIAL_SCALE else 1f)
@@ -134,12 +154,19 @@ fun <T> LazyListState.ScrollToNewlyAdded(
     items: List<T>,
     key: (T) -> String,
     indexOffset: Int = 0,
+    resetKey: Any? = null,
 ) {
     val keys = items.map(key)
     var previousKeys by rememberSaveable(
         stateSaver = listSaver(save = { it }, restore = { it }),
     ) { mutableStateOf(keys) }
-    LaunchedEffect(keys) {
+    var previousResetKey by remember { mutableStateOf(resetKey) }
+    LaunchedEffect(keys, resetKey) {
+        if (resetKey != previousResetKey) {
+            previousResetKey = resetKey
+            previousKeys = keys
+            return@LaunchedEffect
+        }
         val newIndex = keys.indexOfFirst { it !in previousKeys }
         if (newIndex >= 0) animateScrollToItem(newIndex + indexOffset)
         previousKeys = keys
