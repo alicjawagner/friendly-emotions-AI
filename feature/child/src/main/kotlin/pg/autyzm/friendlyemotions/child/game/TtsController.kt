@@ -20,10 +20,24 @@ class TtsController(context: Context) : DefaultLifecycleObserver {
     /** [EmotionCatalog.LOCALE_POLISH] / [EmotionCatalog.LOCALE_ENGLISH], detected from the device locale. */
     val localeCode: String = detectLocaleCode()
 
+    private var isReady = false
+
+    /**
+     * `TextToSpeech`'s engine init is async, but the first trial calls [speak] as soon as
+     * `GameUiState.Content` is rendered — often before [status] SUCCESS fires — so those
+     * utterances would otherwise be silently dropped. Buffered here and replayed once ready.
+     */
+    private val pendingUtterances = mutableListOf<PendingUtterance>()
+
     private var textToSpeech: TextToSpeech? =
         TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 textToSpeech?.language = localeFor(localeCode)
+                isReady = true
+                pendingUtterances.forEach { (text, queueMode) ->
+                    textToSpeech?.speak(text, queueMode, null, null)
+                }
+                pendingUtterances.clear()
             }
         }
 
@@ -32,12 +46,18 @@ class TtsController(context: Context) : DefaultLifecycleObserver {
         text: String,
         queueMode: Int,
     ) {
-        textToSpeech?.speak(text, queueMode, null, null)
+        if (isReady) {
+            textToSpeech?.speak(text, queueMode, null, null)
+        } else {
+            if (queueMode == QUEUE_FLUSH) pendingUtterances.clear()
+            pendingUtterances.add(PendingUtterance(text, queueMode))
+        }
     }
 
     override fun onDestroy(owner: LifecycleOwner) = shutdown()
 
     fun shutdown() {
+        pendingUtterances.clear()
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         textToSpeech = null
@@ -58,3 +78,5 @@ class TtsController(context: Context) : DefaultLifecycleObserver {
         const val QUEUE_ADD = TextToSpeech.QUEUE_ADD
     }
 }
+
+private data class PendingUtterance(val text: String, val queueMode: Int)
