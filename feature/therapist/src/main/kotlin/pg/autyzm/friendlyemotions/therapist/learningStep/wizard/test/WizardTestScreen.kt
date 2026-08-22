@@ -15,8 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Wc
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -42,6 +40,7 @@ import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerViewModel
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardSubNavBar
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.FriendlyEmotionsSwitch
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.PromptTemplateDropdown
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.StaticInfoBanner
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.ToggleInfoRow
@@ -186,18 +185,13 @@ private fun WizardTestContent(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
+            FriendlyEmotionsSwitch(
                 checked = overridesLearning,
                 onCheckedChange = onOverrideToggled,
-                colors =
-                    CheckboxDefaults.colors(
-                        checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                    ),
             )
             Text(
                 text = stringResource(R.string.therapist_wizard_test_override_label),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                style = FriendlyEmotionsTextStyles.headingH5Medium,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
             )
         }
@@ -246,7 +240,10 @@ private fun WizardTestContent(
                     enabled = overridesLearning,
                     contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
                 )
-                StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_hint_delay_banner))
+                StaticInfoBanner(
+                    text = stringResource(R.string.therapist_wizard_test_hint_delay_banner),
+                    modifier = Modifier.padding(top = 10.dp),
+                )
             }
             VerticalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
             Column(
@@ -295,7 +292,10 @@ private fun WizardTestContent(
                             enabled = overridesLearning,
                         )
                     }
-                    StaticInfoBanner(text = stringResource(R.string.therapist_wizard_test_no_hints_banner))
+                    StaticInfoBanner(
+                        text = stringResource(R.string.therapist_wizard_test_no_hints_banner),
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 TherapistButton(

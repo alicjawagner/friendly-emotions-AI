@@ -40,7 +40,7 @@ fun StaticInfoBanner(
         Icon(
             imageVector = Icons.Rounded.Info,
             contentDescription = null,
-            tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
         )
         Text(
             text = text,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -62,6 +63,7 @@ fun RangeSlider(
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp),
         ) {
             Slider(
                 value = value.toFloat(),
@@ -84,6 +86,7 @@ fun RangeSlider(
                 modifier =
                     Modifier
                         .fillMaxWidth()
+                        .height(25.dp)
                         .padding(horizontal = 3.dp)
                         .let {
                             if (contentDescription != null) {
@@ -135,8 +138,8 @@ private fun RoundActionButton(
         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
         modifier =
             modifier
-                .size(30.dp)
-                .offset(y = 8.dp),
+                .size(23.dp)
+                .offset(y = 1.dp),
     ) {
         Box(
             contentAlignment = Alignment.Center,

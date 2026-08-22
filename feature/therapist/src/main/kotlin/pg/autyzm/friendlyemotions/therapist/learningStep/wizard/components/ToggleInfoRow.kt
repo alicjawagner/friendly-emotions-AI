@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -64,7 +63,10 @@ fun ToggleInfoRow(
                     style = FriendlyEmotionsTextStyles.bodyRegular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                 )
-                IconButton(onClick = { showInfo = true }) {
+                IconButton(
+                    onClick = { showInfo = true },
+                    modifier = Modifier.size(24.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.Info,
                         contentDescription = null,
@@ -72,17 +74,10 @@ fun ToggleInfoRow(
                     )
                 }
             }
-            Switch(
+            FriendlyEmotionsSwitch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 enabled = enabled,
-                colors =
-                    SwitchDefaults.colors(
-                        checkedTrackColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300,
-                        checkedThumbColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                        uncheckedTrackColor = FriendlyEmotionsColors.Neutral.N300,
-                        uncheckedThumbColor = FriendlyEmotionsColors.Shades.White,
-                    ),
             )
         }
     }

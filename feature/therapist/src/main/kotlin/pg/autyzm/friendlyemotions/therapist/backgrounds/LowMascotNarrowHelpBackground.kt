@@ -45,11 +45,6 @@ fun LowMascotNarrowHelpBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 353.dp).size(461.dp),
-        )
-        Image(
-            painter = painterResource(CoreUiR.drawable.background_ellipse),
-            contentDescription = null,
             modifier = Modifier.align(Alignment.TopEnd).offset(x = 269.dp, y = (-266).dp).size(461.dp),
         )
         Image(
@@ -68,6 +63,11 @@ fun LowMascotNarrowHelpBackground(
                     .rotate(16f),
         )
         Image(
+            painter = painterResource(CoreUiR.drawable.background_ellipse),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 353.dp).size(461.dp),
+        )
+        Image(
             painter = painterResource(CoreUiR.drawable.mascot),
             contentDescription = null,
             modifier =
@@ -80,8 +80,8 @@ fun LowMascotNarrowHelpBackground(
             text = helpText,
             modifier =
                 Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 983.dp, bottom = 286.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 95.dp, bottom = 286.dp)
                     .width(206.dp),
         )
         content()

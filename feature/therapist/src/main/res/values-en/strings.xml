@@ -140,7 +140,7 @@
     <string name="therapist_wizard_learning_mixed_gender_info_message">When disabled, the images to choose from will share the same grammatical gender as the correct answer.</string>
     <string name="therapist_wizard_learning_next">NEXT</string>
 
-    <string name="therapist_wizard_test_override_label">Change for test</string>
+    <string name="therapist_wizard_test_override_label">Change for TEST</string>
     <string name="therapist_wizard_test_override_hint_title">Info</string>
     <string name="therapist_wizard_test_override_hint_message">To change these settings, check the checkbox at the top of the screen. Otherwise, the test will use the same settings as learning.</string>
     <string name="therapist_wizard_test_hint_delay_banner">If the child does not choose an answer, the screen will change automatically after the time set in the LEARNING section - Show hint after (seconds).</string>

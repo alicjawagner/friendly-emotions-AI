@@ -140,7 +140,7 @@
     <string name="therapist_wizard_learning_mixed_gender_info_message">Gdy wyłączone, obrazki do wyboru będą tego samego rodzaju gramatycznego co poprawna odpowiedź.</string>
     <string name="therapist_wizard_learning_next">DALEJ</string>
 
-    <string name="therapist_wizard_test_override_label">Zmień dla testu</string>
+    <string name="therapist_wizard_test_override_label">Zmień dla TESTU</string>
     <string name="therapist_wizard_test_override_hint_title">Info</string>
     <string name="therapist_wizard_test_override_hint_message">Aby zmienić te ustawienia, zaznacz pole wyboru na górze ekranu. W przeciwnym razie w teście będą obowiązywać te same ustawienia co w uczeniu.</string>
     <string name="therapist_wizard_test_hint_delay_banner">Jeśli dziecko nie wybierze odpowiedzi, ekran zmieni się automatycznie po czasie ustawionym w sekcji UCZENIE - Pokaż podpowiedź po (sekundach).</string>

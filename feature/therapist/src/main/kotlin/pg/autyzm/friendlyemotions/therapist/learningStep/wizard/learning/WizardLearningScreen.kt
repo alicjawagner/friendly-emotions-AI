@@ -172,7 +172,7 @@ private fun WizardLearningContent(
         ) {
             Text(
                 text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
-                style = FriendlyEmotionsTextStyles.headingH5Regular,
+                style = FriendlyEmotionsTextStyles.headingH5Medium,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
@@ -221,7 +221,7 @@ private fun WizardLearningContent(
             ) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_learning_learning_settings_header),
-                    style = FriendlyEmotionsTextStyles.headingH5Regular,
+                    style = FriendlyEmotionsTextStyles.headingH5Medium,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
