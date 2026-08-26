@@ -53,12 +53,13 @@ class DatabaseInitializer
         suspend fun seedIfNeeded() {
             if (learningStepDao.getAllNames().isNotEmpty()) return
 
-            val imageIds = seedFoldersAndImages()
-            seedExampleSteps(imageIds)
+            val seededImages = seedFoldersAndImages()
+            seedExampleSteps(seededImages)
         }
 
-        private suspend fun seedFoldersAndImages(): List<ImageId> {
+        private suspend fun seedFoldersAndImages(): List<SeededImage> {
             val images = mutableListOf<EmotionImageEntity>()
+            val seededImages = mutableListOf<SeededImage>()
             for (emotionId in EmotionId.entries) {
                 for (spec in FOLDER_SPECS) {
                     val folderId = "${emotionId.name.lowercase()}_${spec.key}"
@@ -81,24 +82,41 @@ class DatabaseInitializer
                                 gender = gender.name,
                                 isExample = true,
                             )
+                        seededImages += SeededImage(id = ImageId(baseName), emotionId = emotionId, folderKey = spec.key)
                     }
                 }
             }
             emotionImageDao.insertAll(images)
-            return images.map { ImageId(it.id) }
+            return seededImages
         }
 
-        /** Both example steps select every seeded image, for both modes, so they are immediately playable. */
-        private suspend fun seedExampleSteps(allImageIds: List<ImageId>) {
-            val materialSelection =
-                MaterialSelection(allImageIds.map { ImageUsage(it, inLearning = true, inTest = true) })
+        /**
+         * "Zaawansowany" selects every seeded image, for both modes, so it is immediately playable
+         * with the full catalog. "Podstawowy" is intentionally restricted to a beginner-friendly
+         * subset: only the HAPPY/SAD/ANGRY emotions, and only their emotikony/inne folders.
+         */
+        private suspend fun seedExampleSteps(seededImages: List<SeededImage>) {
+            val allMaterialSelection =
+                MaterialSelection(seededImages.map { ImageUsage(it.id, inLearning = true, inTest = true) })
+
+            val podstawowyEmotions = setOf(EmotionId.HAPPY, EmotionId.SAD, EmotionId.ANGRY)
+            val podstawowyFolderKeys = setOf("emotikony", "inne")
+            val podstawowyMaterialSelection =
+                MaterialSelection(
+                    seededImages
+                        .filter { it.emotionId in podstawowyEmotions && it.folderKey in podstawowyFolderKeys }
+                        .map { ImageUsage(it.id, inLearning = true, inTest = true) },
+                )
 
             val podstawowyLearning =
                 LearningParameters(
                     displayedImageCount = 2,
                     repetitionsPerEmotion = 2,
+                    promptTemplate = PromptTemplate.WHERE_IS,
                     captionsEnabled = false,
-                    mixedGenderInAnswers = false,
+                    hintDelaySeconds = 6,
+                    activeHintTypes = HintType.entries.toSet(),
+                    mixedGenderInAnswers = true,
                 )
             val podstawowyTest =
                 TestParameters(
@@ -117,7 +135,7 @@ class DatabaseInitializer
                 draft =
                     LearningStepDraft(
                         name = "Podstawowy",
-                        materialSelection = materialSelection,
+                        materialSelection = podstawowyMaterialSelection,
                         learningParameters = podstawowyLearning,
                         testParameters = podstawowyTest,
                         reinforcementSettings =
@@ -131,16 +149,20 @@ class DatabaseInitializer
                 LearningParameters(
                     displayedImageCount = 4,
                     repetitionsPerEmotion = 3,
-                    promptTemplate = PromptTemplate.WHERE_IS,
-                    activeHintTypes = HintType.entries.toSet(),
+                    promptTemplate = PromptTemplate.TOUCH,
+                    captionsEnabled = true,
+                    mixedGenderInAnswers = false,
+                    activeHintTypes = setOf(HintType.ANIMATE_CORRECT),
                 )
             val zaawansowanyTest =
                 TestParameters(
                     overridesLearning = true,
                     displayedImageCount = zaawansowanyLearning.displayedImageCount,
-                    repetitionsPerEmotion = zaawansowanyLearning.repetitionsPerEmotion,
+                    repetitionsPerEmotion = 1,
                     promptTemplate = PromptTemplate.POINT_TO,
-                    captionsEnabled = true,
+                    ttsEnabled = true,
+                    captionsEnabled = false,
+                    mixedGenderInAnswers = false,
                 )
             seedStep(
                 id = LearningStepId(ZAAWANSOWANY_ID),
@@ -149,7 +171,7 @@ class DatabaseInitializer
                 draft =
                     LearningStepDraft(
                         name = "Zaawansowany",
-                        materialSelection = materialSelection,
+                        materialSelection = allMaterialSelection,
                         learningParameters = zaawansowanyLearning,
                         testParameters = zaawansowanyTest,
                         reinforcementSettings = ReinforcementSettings(),
@@ -168,6 +190,8 @@ class DatabaseInitializer
             )
             imageUsageDao.insertAll(draft.toImageUsageEntities(id))
         }
+
+        private data class SeededImage(val id: ImageId, val emotionId: EmotionId, val folderKey: String)
 
         private data class FolderSpec(
             val displayName: String,
