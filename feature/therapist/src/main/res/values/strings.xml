@@ -6,20 +6,48 @@
 
     <string name="therapist_welcome_title">Przyjazne Emocje Ustawienia</string>
     <string name="therapist_home_title">Strona główna</string>
+    <string name="therapist_home_page_info_title">Info</string>
+    <string name="therapist_home_page_info_message">Aplikacja Przyjazne Emocje służy do nauki rozpoznawania emocji z wykorzystaniem zdjęć/obrazków.\n\nNa początku przygotuj potrzebne do nauki obrazki w galerii obrazów. Następnie stwórz kroki uczenia, czyli zestawy ćwiczeń, w których wybiera się materiały (obrazki) z listy wcześniej utworzonych oraz ustala sposób ich wykorzystania. Użyj przycisków poniżej, aby zarządzać materiałami zdjęciowymi lub krokami uczenia używanymi podczas sesji z dzieckiem.</string>
     <string name="therapist_home_materials_button">GALERIA OBRAZÓW</string>
+    <string name="therapist_home_gallery_info_title">Info</string>
+    <string name="therapist_home_gallery_info_message">Otwiera galerię materiałów, w której możesz przeglądać, dodawać i porządkować zdjęcia używane do nauki poszczególnych emocji.</string>
     <string name="therapist_home_learning_steps_button">KROKI UCZENIA</string>
+    <string name="therapist_home_learning_steps_info_title">Info</string>
+    <string name="therapist_home_learning_steps_info_message">Otwiera listę kroków uczenia — konfigurowalnych zestawów ćwiczeń łączących materiały, ustawienia oraz test dla dziecka.</string>
     <string name="therapist_route_title_materials_folders">Galeria obrazów</string>
+    <string name="therapist_materials_folders_page_info_title">Info</string>
+    <string name="therapist_materials_folders_page_info_message">Tutaj przeglądasz foldery ze zdjęciami przypisane do wybranej emocji. Wybierz emocję po lewej stronie, aby zobaczyć jej foldery.\n\nPo wybraniu emocji możesz przejrzeć należące do niej foldery (aby wejść do folderu, naciśnij go) lub dodać nowy folder. Foldery pomagają porządkować zdjęcia. Każda emocja ma własne foldery — folder utworzony w jednej emocji nie pojawi się w innej.\n\nFolder może mieć na stałe przypisany rodzaj (męski, żeński, nijaki) — wtedy wszystkie dodane do niego zdjęcia automatycznie otrzymają ten sam rodzaj, bez możliwości jego zmiany. Jeśli chcesz umieszczać w jednym folderze zdjęcia różnych rodzajów, podczas tworzenia folderu wybierz opcję „bez przypisanego rodzaju”. W takim folderze rodzaj możesz przypisać osobno do każdego zdjęcia.\n\nFoldery można także usuwać (klikając śmietniczek w prawym górnym rogu folderu) lub zmieniać ich nazwę (po wejściu do folderu, naciskając na jego nazwę).</string>
     <string name="therapist_route_title_materials_new_folder">Nowy folder</string>
+    <string name="therapist_materials_new_folder_page_info_title">Info</string>
+    <string name="therapist_materials_new_folder_page_info_message">Utwórz nowy folder na zdjęcia dla wybranej emocji, podając jego nazwę i rodzaj gramatyczny. Jeśli wybierzesz konkretny rodzaj (męski, żeński, nijaki), wszystkie dodane do niego zdjęcia automatycznie otrzymają ten sam rodzaj, bez możliwości jego zmiany. Jeśli chcesz umieszczać w jednym folderze zdjęcia różnych rodzajów, wybierz opcję „bez przypisanego rodzaju”. W takim folderze rodzaj możesz przypisać osobno do każdego zdjęcia.</string>
     <string name="therapist_route_title_materials_inside_folder">Galeria obrazów</string>
+    <string name="therapist_materials_inside_folder_page_info_title">Info</string>
+    <string name="therapist_materials_inside_folder_page_info_message">Tutaj zarządzasz zdjęciami wewnątrz wybranego folderu: dodajesz nowe, usuwasz istniejące (śmietniczek w prawym górnym rogu zdjęcia) oraz edytujesz rodzaj zdjęcia, jeśli jest to folder bez przypisanego rodzaju (klikając ikonkę rodzaju w prawym górnym rogu zdjęcia). Jeśli folder jest rodzaju żeńskiego, męskiego lub nijakiego, nie można edytować rodzaju poszczególnych zdjęć. Usuwanie jest niedostępne dla zdjęć przykładowych.\n\nMożesz także zmienić nazwę folderu, klikając na nią.</string>
     <string name="therapist_route_title_materials_new_material">Nowy materiał</string>
+    <string name="therapist_materials_new_material_page_info_title">Info</string>
+    <string name="therapist_materials_new_material_page_info_message">Dodaj nowe zdjęcia do wybranego folderu, robiąc zdjęcie aparatem lub wybierając je z galerii urządzenia.</string>
     <string name="therapist_route_title_learning_steps_list">Kroki uczenia</string>
+    <string name="therapist_learning_steps_list_page_info_title">Info</string>
+    <string name="therapist_learning_steps_list_page_info_message">Kroki uczenia to zestawy ćwiczeń przygotowane na podstawie wcześniej dodanych materiałów edukacyjnych.\n\nTutaj zarządzasz krokami uczenia: tworzysz nowe, edytujesz, kopiujesz lub usuwasz istniejące, zmieniasz tryb (uczenie/test) oraz uruchamiasz sesję z dzieckiem dla wybranego aktualnie kroku (podświetlonego na żółto).</string>
     <string name="therapist_route_title_wizard_material">Materiał</string>
+    <string name="therapist_wizard_material_page_info_title">Info</string>
+    <string name="therapist_wizard_material_page_info_message">Wybierz emocje oraz przypisz do nich foldery i zdjęcia, które będą używane w tym kroku uczenia.</string>
     <string name="therapist_route_title_wizard_learning">Uczenie</string>
+    <string name="therapist_wizard_learning_page_info_title">Info</string>
+    <string name="therapist_wizard_learning_page_info_message">Skonfiguruj, jak wygląda i przebiega każda próba podczas uczenia oraz jakie wsparcie otrzymuje dziecko.</string>
     <string name="therapist_route_title_wizard_reinforcements">Wzmocnienia</string>
+    <string name="therapist_wizard_reinforcements_page_info_title">Info</string>
+    <string name="therapist_wizard_reinforcements_page_info_message">Wybierz wzmocnienia słowne, wizualne i końcowe, które pomogą dziecku utrwalić zdobytą wiedzę.</string>
     <string name="therapist_route_title_wizard_test">Test</string>
+    <string name="therapist_wizard_test_page_info_title">Info</string>
+    <string name="therapist_wizard_test_page_info_message">Skonfiguruj ustawienia testu dla dziecka — domyślnie takie same jak w uczeniu, ale możesz je zmienić.</string>
     <string name="therapist_route_title_wizard_summary">Podsumowanie</string>
+    <string name="therapist_wizard_summary_page_info_title">Info</string>
+    <string name="therapist_wizard_summary_page_info_message">Sprawdź podsumowanie skonfigurowanego kroku uczenia, nadaj mu nazwę i zapisz.</string>
 
     <string name="therapist_materials_rail_caption">Lista emocji:</string>
+    <string name="therapist_materials_rail_info_title">Info</string>
+    <string name="therapist_materials_rail_info_message">Wybierz emocję, aby zobaczyć jej foldery. Po wybraniu emocji możesz przejrzeć należące do niej foldery (aby wejść do folderu, naciśnij go) lub dodać nowy folder. Foldery pomagają porządkować zdjęcia. Każda emocja ma własne foldery — folder utworzony w jednej emocji nie pojawi się w innej.\n\nFolder może mieć na stałe przypisany rodzaj (męski, żeński, nijaki) — wtedy wszystkie dodane do niego zdjęcia automatycznie otrzymają ten sam rodzaj, bez możliwości jego zmiany. Jeśli chcesz umieszczać w jednym folderze zdjęcia różnych rodzajów, podczas tworzenia folderu wybierz opcję „bez przypisanego rodzaju”. W takim folderze rodzaj możesz przypisać osobno do każdego zdjęcia.\n\nFoldery można także usuwać (klikając śmietniczek w prawym górnym rogu folderu) lub zmieniać ich nazwę (po wejściu do folderu, naciskając na jego nazwę).</string>
     <string name="therapist_materials_legend_caption">Legenda:</string>
     <string name="therapist_materials_gender_masculine">rodzaj męski</string>
     <string name="therapist_materials_gender_feminine">rodzaj żeński</string>
@@ -28,6 +56,10 @@
     <string name="therapist_materials_add_folder">Dodaj nowy folder</string>
     <string name="therapist_materials_add_image">Dodaj własne zdjęcie</string>
     <string name="therapist_materials_hide_examples">Ukryj przykładowe materiały</string>
+    <string name="therapist_materials_hide_examples_info_title">Info</string>
+    <string name="therapist_materials_hide_examples_info_message">Gdy zaznaczone, przykładowe zdjęcia dołączone do aplikacji są ukrywane — widoczne są tylko materiały dodane samodzielnie.</string>
+    <string name="therapist_materials_folder_name_info_title">Info</string>
+    <string name="therapist_materials_folder_name_info_message">Nazwa aktualnie otwartego folderu i przypisany mu rodzaj gramatyczny. Kliknij nazwę, aby ją zmienić (niedostępne dla folderów przykładowych).</string>
     <string name="therapist_materials_delete_action">Usuń</string>
     <string name="therapist_materials_delete_confirm">USUŃ</string>
     <string name="therapist_materials_delete_cancel">ANULUJ</string>
@@ -70,12 +102,24 @@
 
     <string name="therapist_learning_steps_help_text">Tutaj znajdziesz wszystkie kroki uczenia. Sprawdź krok przykładowy, kopiując go, lub utwórz nowy!</string>
     <string name="therapist_learning_steps_create_new">UTWÓRZ NOWY</string>
+    <string name="therapist_learning_steps_create_new_info_title">Info</string>
+    <string name="therapist_learning_steps_create_new_info_message">Kliknij tutaj, aby przejść do tworzenia zupełnie nowego kroku uczenia.</string>
     <string name="therapist_learning_steps_play">URUCHOM</string>
+    <string name="therapist_learning_steps_play_info_title">Info</string>
+    <string name="therapist_learning_steps_play_info_message">Uruchamia sesję z użyciem aktualnie aktywnego kroku uczenia (podświetlonego na żółto) w wybranym trybie (uczenie/test).</string>
     <string name="therapist_learning_steps_search_placeholder">Szukaj</string>
     <string name="therapist_learning_steps_hide_examples">Ukryj przykładowe kroki</string>
+    <string name="therapist_learning_steps_hide_examples_info_title">Info</string>
+    <string name="therapist_learning_steps_hide_examples_info_message">Gdy zaznaczone, przykładowe kroki uczenia dołączone do aplikacji są ukrywane — widoczne są tylko kroki utworzone samodzielnie.</string>
     <string name="therapist_learning_steps_header_label">Kroki uczenia:</string>
+    <string name="therapist_learning_steps_header_label_info_title">Info</string>
+    <string name="therapist_learning_steps_header_label_info_message">Lista kroków uczenia poniżej. Kliknij wiersz, aby ustawić go jako aktywny krok używany po naciśnięciu „URUCHOM”.</string>
     <string name="therapist_learning_steps_header_mode">Tryb</string>
+    <string name="therapist_learning_steps_header_mode_info_title">Info</string>
+    <string name="therapist_learning_steps_header_mode_info_message">Przełącza krok między trybem uczenia (z podpowiedziami i wzmocnieniami) a trybem testu (bez wsparcia).</string>
     <string name="therapist_learning_steps_header_actions">Akcje</string>
+    <string name="therapist_learning_steps_header_actions_info_title">Info</string>
+    <string name="therapist_learning_steps_header_actions_info_message">Edytuj, kopiuj lub usuń krok uczenia za pomocą tych akcji. Usuwanie i edycja niedostępne dla kroków przykładowych.</string>
     <string name="therapist_learning_steps_mode_learning">Uczenie</string>
     <string name="therapist_learning_steps_mode_test">Test</string>
     <string name="therapist_learning_steps_edit_description">Edytuj</string>
@@ -96,7 +140,11 @@
     <string name="therapist_wizard_subnav_summary">PODSUMOWANIE</string>
     <string name="therapist_wizard_material_help_text">Do kroku uczenia nie dodano jeszcze żadnych materiałów. Aby to zrobić, kliknij przycisk „DODAJ”.</string>
     <string name="therapist_wizard_material_add_emotion">DODAJ</string>
+    <string name="therapist_wizard_material_add_emotion_info_title">Info</string>
+    <string name="therapist_wizard_material_add_emotion_info_message">Dodaje kolejną emocję do tego kroku uczenia, dla której będziesz mógł wybrać zdjęcia, które zostaną pokazane dziecku podczas gry.</string>
     <string name="therapist_wizard_material_hide_examples">Ukryj przykładowe materiały</string>
+    <string name="therapist_wizard_material_hide_examples_info_title">Info</string>
+    <string name="therapist_wizard_material_hide_examples_info_message">Gdy zaznaczone, wyświetlane są tylko własne zdjęcia, bez wbudowanych przykładów.</string>
     <string name="therapist_wizard_material_header_emotion">Emocja</string>
     <string name="therapist_wizard_material_header_learning">W uczeniu</string>
     <string name="therapist_wizard_material_header_test">W teście</string>
@@ -114,7 +162,11 @@
     <string name="therapist_wizard_material_next">DALEJ</string>
 
     <string name="therapist_wizard_learning_trial_settings_header">Ustawienia próby</string>
+    <string name="therapist_wizard_learning_trial_settings_info_title">Info</string>
+    <string name="therapist_wizard_learning_trial_settings_info_message">Kontroluje sposób prezentowania każdej próby dziecku: treść polecenia odczytywanego przez lektora, liczbę wyświetlanych obrazków oraz liczbę powtórzeń dla każdej emocji.</string>
     <string name="therapist_wizard_learning_learning_settings_header">Ustawienia uczenia</string>
+    <string name="therapist_wizard_learning_learning_settings_info_title">Info</string>
+    <string name="therapist_wizard_learning_learning_settings_info_message">Kontroluje wsparcie udzielane podczas uczenia: czas i rodzaj podpowiedzi, podpisy pod obrazkami, głosowe odtwarzanie polecenia oraz mieszany rodzaj w zestawie odpowiedzi.</string>
     <string name="therapist_wizard_learning_prompt_label">Rodzaj polecenia:</string>
     <string name="therapist_wizard_learning_prompt_emotion_only">{emocja}</string>
     <string name="therapist_wizard_learning_prompt_where_is">Gdzie jest {emocja}?</string>
@@ -144,6 +196,8 @@
     <string name="therapist_wizard_learning_next">DALEJ</string>
 
     <string name="therapist_wizard_test_override_label">Zmień dla TESTU</string>
+    <string name="therapist_wizard_test_override_info_title">Info</string>
+    <string name="therapist_wizard_test_override_info_message">Włącz, aby użyć innych ustawień dla testu niż dla uczenia. Gdy wyłączone, test korzysta z ustawień uczenia widocznych na karcie „Uczenie”.</string>
     <string name="therapist_wizard_test_override_hint_title">Info</string>
     <string name="therapist_wizard_test_override_hint_message">Aby zmienić te ustawienia, zaznacz pole wyboru na górze ekranu. W przeciwnym razie w teście będą obowiązywać te same ustawienia co w uczeniu.</string>
     <string name="therapist_wizard_test_hint_delay_banner">Jeśli dziecko nie wybierze odpowiedzi, ekran zmieni się automatycznie po czasie ustawionym w sekcji UCZENIE - Pokaż podpowiedź po (sekundach).</string>

@@ -66,6 +66,8 @@ fun MaterialsFoldersScreen(
         title = stringResource(R.string.therapist_route_title_materials_folders),
         onBackClick = onBackClick,
         onHomeClick = onHomeClick,
+        infoTitle = stringResource(R.string.therapist_materials_folders_page_info_title),
+        infoMessage = stringResource(R.string.therapist_materials_folders_page_info_message),
         modifier = modifier,
     ) { innerPadding ->
         PlainBackground(modifier = Modifier.padding(innerPadding)) {

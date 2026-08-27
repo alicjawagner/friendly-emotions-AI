@@ -14,6 +14,8 @@ fun TherapistScaffold(
     title: String,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
+    infoTitle: String,
+    infoMessage: String,
     modifier: Modifier = Modifier,
     showHomeButton: Boolean = true,
     content: @Composable (PaddingValues) -> Unit,
@@ -25,6 +27,8 @@ fun TherapistScaffold(
                 title = title,
                 onBackClick = onBackClick,
                 onHomeClick = onHomeClick,
+                infoTitle = infoTitle,
+                infoMessage = infoMessage,
                 showHomeButton = showHomeButton,
             )
         },

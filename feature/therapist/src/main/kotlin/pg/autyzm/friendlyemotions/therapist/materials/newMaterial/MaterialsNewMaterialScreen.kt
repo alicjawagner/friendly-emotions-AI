@@ -97,6 +97,8 @@ fun MaterialsNewMaterialScreen(
         title = stringResource(R.string.therapist_route_title_materials_new_material),
         onBackClick = { if (hasUnsavedChanges) showExitConfirmation = true else onBackClick() },
         onHomeClick = onHomeClick,
+        infoTitle = stringResource(R.string.therapist_materials_new_material_page_info_title),
+        infoMessage = stringResource(R.string.therapist_materials_new_material_page_info_message),
         modifier = modifier,
     ) { innerPadding ->
         PlainBackground(modifier = Modifier.padding(innerPadding)) {

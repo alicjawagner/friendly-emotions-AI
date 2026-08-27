@@ -99,6 +99,8 @@ fun WizardReinforcementsScreen(
             title = stringResource(titleRes),
             onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
+            infoTitle = stringResource(R.string.therapist_wizard_reinforcements_page_info_title),
+            infoMessage = stringResource(R.string.therapist_wizard_reinforcements_page_info_message),
         )
         WizardSubNavBar(selectedTab = WizardTab.REINFORCEMENTS, onTabClick = onTabSelected)
         LowMascotNarrowHelpBackground(

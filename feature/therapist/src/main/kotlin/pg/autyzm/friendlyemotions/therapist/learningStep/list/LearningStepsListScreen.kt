@@ -48,6 +48,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -61,7 +62,7 @@ private val HEADER_ICON_SIZE = 18.dp
  * Manually tuned so "Tryb"/"Mode" sits roughly above [LearningStepRow]'s toggle — the header and
  * row don't share a layout-computed width, so this may need another visual nudge.
  */
-private val MODE_HEADER_END_PADDING = 200.dp
+private val MODE_HEADER_END_PADDING = 160.dp
 
 /**
  * Figma `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`), roadmap
@@ -83,6 +84,8 @@ fun LearningStepsListScreen(
         title = stringResource(R.string.therapist_route_title_learning_steps_list),
         onBackClick = onBackClick,
         onHomeClick = onHomeClick,
+        infoTitle = stringResource(R.string.therapist_learning_steps_list_page_info_title),
+        infoMessage = stringResource(R.string.therapist_learning_steps_list_page_info_message),
         modifier = modifier,
     ) { innerPadding ->
         when (val state = uiState) {
@@ -145,23 +148,35 @@ private fun LearningStepsListContent(
         modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            TherapistButton(
-                text = stringResource(R.string.therapist_learning_steps_create_new),
-                icon = Icons.Filled.AddCircleOutline,
-                onClick = onCreateNewClick,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TherapistButton(
+                    text = stringResource(R.string.therapist_learning_steps_create_new),
+                    icon = Icons.Filled.AddCircleOutline,
+                    onClick = onCreateNewClick,
+                )
+                InfoIconButton(
+                    infoTitle = stringResource(R.string.therapist_learning_steps_create_new_info_title),
+                    infoMessage = stringResource(R.string.therapist_learning_steps_create_new_info_message),
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
-            TherapistButton(
-                text = stringResource(R.string.therapist_learning_steps_play),
-                icon = Icons.Filled.PlayCircleFilled,
-                onClick = {
-                    if (state.canPlayActiveStep) {
-                        onPlayClick()
-                    } else {
-                        showCannotPlayInfo = true
-                    }
-                },
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                InfoIconButton(
+                    infoTitle = stringResource(R.string.therapist_learning_steps_play_info_title),
+                    infoMessage = stringResource(R.string.therapist_learning_steps_play_info_message),
+                )
+                TherapistButton(
+                    text = stringResource(R.string.therapist_learning_steps_play),
+                    icon = Icons.Filled.PlayCircleFilled,
+                    onClick = {
+                        if (state.canPlayActiveStep) {
+                            onPlayClick()
+                        } else {
+                            showCannotPlayInfo = true
+                        }
+                    },
+                )
+            }
         }
         LearningStepSearchBox(query = state.searchQuery, onQueryChanged = onSearchQueryChanged)
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -179,22 +194,33 @@ private fun LearningStepsListContent(
                 style = FriendlyEmotionsTextStyles.captionC1,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
             )
+            InfoIconButton(
+                infoTitle = stringResource(R.string.therapist_learning_steps_hide_examples_info_title),
+                infoMessage = stringResource(R.string.therapist_learning_steps_hide_examples_info_message),
+                modifier = Modifier.padding(start = 5.dp),
+            )
         }
         Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth().weight(1f)) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 HeaderLabel(
                     icon = Icons.Filled.Inventory,
                     text = stringResource(R.string.therapist_learning_steps_header_label),
+                    infoTitle = stringResource(R.string.therapist_learning_steps_header_label_info_title),
+                    infoMessage = stringResource(R.string.therapist_learning_steps_header_label_info_message),
                     modifier = Modifier.weight(1f),
                 )
                 HeaderLabel(
                     icon = Icons.Filled.Settings,
                     text = stringResource(R.string.therapist_learning_steps_header_mode),
+                    infoTitle = stringResource(R.string.therapist_learning_steps_header_mode_info_title),
+                    infoMessage = stringResource(R.string.therapist_learning_steps_header_mode_info_message),
                     modifier = Modifier.padding(end = MODE_HEADER_END_PADDING),
                 )
                 HeaderLabel(
                     icon = Icons.Filled.Build,
                     text = stringResource(R.string.therapist_learning_steps_header_actions),
+                    infoTitle = stringResource(R.string.therapist_learning_steps_header_actions_info_title),
+                    infoMessage = stringResource(R.string.therapist_learning_steps_header_actions_info_message),
                 )
             }
             val listState = rememberLazyListState()
@@ -250,6 +276,8 @@ private fun HeaderLabel(
     icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier,
+    infoTitle: String? = null,
+    infoMessage: String? = null,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Icon(
@@ -264,6 +292,13 @@ private fun HeaderLabel(
             style = FriendlyEmotionsTextStyles.captionC1,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
         )
+        if (infoTitle != null && infoMessage != null) {
+            InfoIconButton(
+                infoTitle = infoTitle,
+                infoMessage = infoMessage,
+                modifier = Modifier.padding(start = 5.dp),
+            )
+        }
     }
 }
 

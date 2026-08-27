@@ -58,6 +58,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -88,6 +89,8 @@ fun MaterialsInsideFolderScreen(
         title = stringResource(R.string.therapist_route_title_materials_inside_folder),
         onBackClick = onBackClick,
         onHomeClick = onHomeClick,
+        infoTitle = stringResource(R.string.therapist_materials_inside_folder_page_info_title),
+        infoMessage = stringResource(R.string.therapist_materials_inside_folder_page_info_message),
         modifier = modifier,
     ) { innerPadding ->
         PlainBackground(modifier = Modifier.padding(innerPadding)) {
@@ -152,6 +155,11 @@ private fun MaterialsInsideFolderContent(
                         style = FriendlyEmotionsTextStyles.bodyRegular,
                         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                     )
+                    InfoIconButton(
+                        infoTitle = stringResource(R.string.therapist_materials_hide_examples_info_title),
+                        infoMessage = stringResource(R.string.therapist_materials_hide_examples_info_message),
+                        modifier = Modifier.padding(start = 5.dp),
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
@@ -194,6 +202,11 @@ private fun MaterialsInsideFolderContent(
                                     )
                                 }
                             },
+                )
+                InfoIconButton(
+                    infoTitle = stringResource(R.string.therapist_materials_folder_name_info_title),
+                    infoMessage = stringResource(R.string.therapist_materials_folder_name_info_message),
+                    modifier = Modifier.padding(start = 5.dp),
                 )
             }
             val gridState = rememberLazyGridState()

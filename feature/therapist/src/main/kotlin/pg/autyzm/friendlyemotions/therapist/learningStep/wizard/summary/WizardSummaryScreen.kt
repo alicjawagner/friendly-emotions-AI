@@ -124,6 +124,8 @@ fun WizardSummaryScreen(
             title = stringResource(titleRes),
             onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
+            infoTitle = stringResource(R.string.therapist_wizard_summary_page_info_title),
+            infoMessage = stringResource(R.string.therapist_wizard_summary_page_info_message),
         )
         WizardSubNavBar(selectedTab = WizardTab.SUMMARY, onTabClick = onTabSelected)
         PlainBackground(modifier = Modifier.weight(1f)) {

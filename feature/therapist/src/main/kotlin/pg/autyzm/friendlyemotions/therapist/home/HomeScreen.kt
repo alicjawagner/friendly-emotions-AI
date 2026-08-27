@@ -3,6 +3,7 @@ package pg.autyzm.friendlyemotions.therapist.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,6 +19,7 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.HomeBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 import androidx.compose.material.icons.filled.Image as ImageIcon
 
@@ -41,6 +43,8 @@ fun HomeScreen(
         title = stringResource(R.string.therapist_home_title),
         onBackClick = onBackClick,
         onHomeClick = onHomeClick,
+        infoTitle = stringResource(R.string.therapist_home_page_info_title),
+        infoMessage = stringResource(R.string.therapist_home_page_info_message),
         showHomeButton = false,
         modifier = modifier,
     ) { innerPadding ->
@@ -50,18 +54,36 @@ fun HomeScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    TherapistButton(
-                        text = stringResource(R.string.therapist_home_materials_button),
-                        icon = Icons.Filled.ImageIcon,
-                        onClick = onMaterialsClick,
-                        modifier = Modifier.width(346.dp),
-                    )
-                    TherapistButton(
-                        text = stringResource(R.string.therapist_home_learning_steps_button),
-                        icon = Icons.Filled.Inventory,
-                        onClick = onLearningStepsClick,
-                        modifier = Modifier.width(346.dp),
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        TherapistButton(
+                            text = stringResource(R.string.therapist_home_materials_button),
+                            icon = Icons.Filled.ImageIcon,
+                            onClick = onMaterialsClick,
+                            modifier = Modifier.width(346.dp),
+                        )
+                        InfoIconButton(
+                            infoTitle = stringResource(R.string.therapist_home_gallery_info_title),
+                            infoMessage = stringResource(R.string.therapist_home_gallery_info_message),
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        TherapistButton(
+                            text = stringResource(R.string.therapist_home_learning_steps_button),
+                            icon = Icons.Filled.Inventory,
+                            onClick = onLearningStepsClick,
+                            modifier = Modifier.width(346.dp),
+                        )
+                        InfoIconButton(
+                            infoTitle = stringResource(R.string.therapist_home_learning_steps_info_title),
+                            infoMessage = stringResource(R.string.therapist_home_learning_steps_info_message),
+                        )
+                    }
                 }
             }
         }

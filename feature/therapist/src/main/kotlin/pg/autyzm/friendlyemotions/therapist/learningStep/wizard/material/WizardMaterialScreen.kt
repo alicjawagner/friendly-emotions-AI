@@ -61,6 +61,7 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.compone
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -134,6 +135,8 @@ fun WizardMaterialScreen(
             title = stringResource(titleRes),
             onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
+            infoTitle = stringResource(R.string.therapist_wizard_material_page_info_title),
+            infoMessage = stringResource(R.string.therapist_wizard_material_page_info_message),
         )
         WizardSubNavBar(selectedTab = WizardTab.MATERIAL, onTabClick = onTabSelected)
         val isEmpty = uiState is WizardMaterialUiState.Content && uiState.emotionRows.isEmpty()
@@ -263,12 +266,21 @@ private fun WizardMaterialContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TherapistButton(
-                    text = stringResource(R.string.therapist_wizard_material_add_emotion),
-                    icon = Icons.Filled.Add,
-                    onClick = onAddEmotionClick,
-                    modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TherapistButton(
+                        text = stringResource(R.string.therapist_wizard_material_add_emotion),
+                        icon = Icons.Filled.Add,
+                        onClick = onAddEmotionClick,
+                        modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
+                    )
+                    InfoIconButton(
+                        infoTitle = stringResource(R.string.therapist_wizard_material_add_emotion_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_material_add_emotion_info_message),
+                    )
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = state.hideExampleMaterials,
@@ -283,6 +295,11 @@ private fun WizardMaterialContent(
                         text = stringResource(R.string.therapist_wizard_material_hide_examples),
                         style = FriendlyEmotionsTextStyles.bodyRegular,
                         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
+                    )
+                    InfoIconButton(
+                        infoTitle = stringResource(R.string.therapist_wizard_material_hide_examples_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_material_hide_examples_info_message),
+                        modifier = Modifier.padding(start = 5.dp),
                     )
                 }
             }

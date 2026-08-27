@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.therapist.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.therapist.R
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -37,6 +39,8 @@ fun TherapistTopBar(
     title: String,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
+    infoTitle: String,
+    infoMessage: String,
     modifier: Modifier = Modifier,
     showHomeButton: Boolean = true,
 ) {
@@ -61,8 +65,15 @@ fun TherapistTopBar(
             text = title,
             style = FriendlyEmotionsTextStyles.headingH5Regular,
             color = FriendlyEmotionsColors.Shades.White,
-            modifier = Modifier.weight(1f).padding(start = 16.dp),
+            modifier = Modifier.padding(start = 16.dp),
         )
+        InfoIconButton(
+            infoTitle = infoTitle,
+            infoMessage = infoMessage,
+            tint = FriendlyEmotionsColors.Shades.White,
+            iconSize = 36.dp,
+        )
+        Spacer(modifier = Modifier.weight(1f))
         if (showHomeButton) {
             IconButton(onClick = onHomeClick) {
                 Icon(
@@ -80,6 +91,12 @@ fun TherapistTopBar(
 @Composable
 private fun TherapistTopBarPreview() {
     FriendlyEmotionsTheme {
-        TherapistTopBar(title = "Materiały", onBackClick = {}, onHomeClick = {})
+        TherapistTopBar(
+            title = "Materiały",
+            onBackClick = {},
+            onHomeClick = {},
+            infoTitle = "Info",
+            infoMessage = "Placeholder info message.",
+        )
     }
 }

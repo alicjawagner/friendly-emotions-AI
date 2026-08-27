@@ -47,6 +47,7 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.PromptTemplateDropdown
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.ToggleInfoRow
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.RangeSlider
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -97,6 +98,8 @@ fun WizardLearningScreen(
             title = stringResource(titleRes),
             onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
+            infoTitle = stringResource(R.string.therapist_wizard_learning_page_info_title),
+            infoMessage = stringResource(R.string.therapist_wizard_learning_page_info_message),
         )
         WizardSubNavBar(selectedTab = WizardTab.LEARNING, onTabClick = onTabSelected)
         PlainBackground(modifier = Modifier.weight(1f)) {
@@ -170,13 +173,23 @@ private fun WizardLearningContent(
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(
-                text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
-                style = FriendlyEmotionsTextStyles.headingH5Medium,
-                color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-            )
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.therapist_wizard_learning_trial_settings_header),
+                    style = FriendlyEmotionsTextStyles.headingH5Medium,
+                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                    textAlign = TextAlign.Center,
+                )
+                InfoIconButton(
+                    infoTitle = stringResource(R.string.therapist_wizard_learning_trial_settings_info_title),
+                    infoMessage = stringResource(R.string.therapist_wizard_learning_trial_settings_info_message),
+                    modifier = Modifier.padding(start = 5.dp),
+                )
+            }
             Text(
                 text = stringResource(R.string.therapist_wizard_learning_prompt_label),
                 style = FriendlyEmotionsTextStyles.headingH5Regular,
@@ -219,13 +232,23 @@ private fun WizardLearningContent(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text(
-                    text = stringResource(R.string.therapist_wizard_learning_learning_settings_header),
-                    style = FriendlyEmotionsTextStyles.headingH5Medium,
-                    color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.therapist_wizard_learning_learning_settings_header),
+                        style = FriendlyEmotionsTextStyles.headingH5Medium,
+                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+                        textAlign = TextAlign.Center,
+                    )
+                    InfoIconButton(
+                        infoTitle = stringResource(R.string.therapist_wizard_learning_learning_settings_info_title),
+                        infoMessage = stringResource(R.string.therapist_wizard_learning_learning_settings_info_message),
+                        modifier = Modifier.padding(start = 5.dp),
+                    )
+                }
                 Text(
                     text = stringResource(R.string.therapist_wizard_learning_hint_delay_label),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,

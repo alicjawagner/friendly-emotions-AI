@@ -46,6 +46,7 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.Stati
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.components.ToggleInfoRow
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
+import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.RangeSlider
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
@@ -102,6 +103,8 @@ fun WizardTestScreen(
             title = stringResource(titleRes),
             onBackClick = { if (backLeavesWizard) guardedExit(onBackClick) else onBackClick() },
             onHomeClick = { guardedExit(onHomeClick) },
+            infoTitle = stringResource(R.string.therapist_wizard_test_page_info_title),
+            infoMessage = stringResource(R.string.therapist_wizard_test_page_info_message),
         )
         WizardSubNavBar(selectedTab = WizardTab.TEST, onTabClick = onTabSelected)
         PlainBackground(modifier = Modifier.weight(1f)) {
@@ -193,6 +196,11 @@ private fun WizardTestContent(
                 text = stringResource(R.string.therapist_wizard_test_override_label),
                 style = FriendlyEmotionsTextStyles.headingH5Medium,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
+            )
+            InfoIconButton(
+                infoTitle = stringResource(R.string.therapist_wizard_test_override_info_title),
+                infoMessage = stringResource(R.string.therapist_wizard_test_override_info_message),
+                modifier = Modifier.padding(start = 5.dp),
             )
         }
         Row(modifier = Modifier.weight(1f).fillMaxSize()) {
