@@ -113,7 +113,7 @@ class DatabaseInitializer
                     displayedImageCount = 2,
                     repetitionsPerEmotion = 2,
                     promptTemplate = PromptTemplate.WHERE_IS,
-                    captionsEnabled = false,
+                    captionsEnabled = true,
                     hintDelaySeconds = 6,
                     activeHintTypes = HintType.entries.toSet(),
                     mixedGenderInAnswers = true,
@@ -150,7 +150,7 @@ class DatabaseInitializer
                     displayedImageCount = 4,
                     repetitionsPerEmotion = 3,
                     promptTemplate = PromptTemplate.TOUCH,
-                    captionsEnabled = true,
+                    captionsEnabled = false,
                     mixedGenderInAnswers = false,
                     activeHintTypes = setOf(HintType.ANIMATE_CORRECT),
                 )
