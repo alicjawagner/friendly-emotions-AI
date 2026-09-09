@@ -77,9 +77,21 @@ class MaterialsNewMaterialViewModel
             }
         }
 
-        fun onImageRemoved(localId: String) {
+        fun onDeleteImageRequested(localId: String) {
+            updateContent { content -> content.copy(pendingDeleteImageLocalId = localId) }
+        }
+
+        fun onDeleteImageCancelled() {
+            updateContent { content -> content.copy(pendingDeleteImageLocalId = null) }
+        }
+
+        fun onDeleteImageConfirmed() {
             updateContent { content ->
-                content.copy(pendingImages = content.pendingImages.filterNot { it.localId == localId })
+                val localId = content.pendingDeleteImageLocalId ?: return@updateContent content
+                content.copy(
+                    pendingImages = content.pendingImages.filterNot { it.localId == localId },
+                    pendingDeleteImageLocalId = null,
+                )
             }
         }
 

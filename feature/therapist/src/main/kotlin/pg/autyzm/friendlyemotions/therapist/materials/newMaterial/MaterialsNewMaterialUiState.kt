@@ -14,6 +14,7 @@ sealed class MaterialsNewMaterialUiState {
         val folderGenderPolicy: FolderGenderPolicy,
         val emotionId: EmotionId,
         val pendingImages: List<PendingImage> = emptyList(),
+        val pendingDeleteImageLocalId: String? = null,
         val showGenderRequiredDialog: Boolean = false,
         val showValidationErrors: Boolean = false,
         val error: DomainError? = null,

@@ -110,7 +110,9 @@ fun MaterialsNewMaterialScreen(
                     MaterialsNewMaterialContent(
                         state = state,
                         onImageAdded = viewModel::onImageAdded,
-                        onImageRemoved = viewModel::onImageRemoved,
+                        onDeleteImageRequested = viewModel::onDeleteImageRequested,
+                        onDeleteImageCancelled = viewModel::onDeleteImageCancelled,
+                        onDeleteImageConfirmed = viewModel::onDeleteImageConfirmed,
                         onGenderCycled = viewModel::onGenderCycled,
                         onSaveClicked = viewModel::onSaveClicked,
                         onGenderRequiredDialogDismissed = viewModel::onGenderRequiredDialogDismissed,
@@ -135,7 +137,9 @@ fun MaterialsNewMaterialScreen(
 private fun MaterialsNewMaterialContent(
     state: MaterialsNewMaterialUiState.Content,
     onImageAdded: (String) -> Unit,
-    onImageRemoved: (String) -> Unit,
+    onDeleteImageRequested: (String) -> Unit,
+    onDeleteImageCancelled: () -> Unit,
+    onDeleteImageConfirmed: () -> Unit,
     onGenderCycled: (String) -> Unit,
     onSaveClicked: () -> Unit,
     onGenderRequiredDialogDismissed: () -> Unit,
@@ -292,7 +296,7 @@ private fun MaterialsNewMaterialContent(
                         filePath = image.filePath,
                         gender = image.gender,
                         highlightUnassigned = state.showValidationErrors,
-                        onDeleteClick = { onImageRemoved(image.localId) },
+                        onDeleteClick = { onDeleteImageRequested(image.localId) },
                         onGenderClick =
                             { onGenderCycled(image.localId) }
                                 .takeIf { state.folderGenderPolicy == FolderGenderPolicy.MIXED },
@@ -300,6 +304,16 @@ private fun MaterialsNewMaterialContent(
                 }
             }
         }
+    }
+    if (state.pendingDeleteImageLocalId != null) {
+        YesNoConfirmationDialog(
+            title = stringResource(R.string.therapist_materials_delete_image_title),
+            message = stringResource(R.string.therapist_materials_delete_image_message),
+            confirmLabel = stringResource(R.string.therapist_materials_delete_confirm),
+            dismissLabel = stringResource(R.string.therapist_materials_delete_cancel),
+            onConfirm = onDeleteImageConfirmed,
+            onDismiss = onDeleteImageCancelled,
+        )
     }
     if (state.showGenderRequiredDialog) {
         InfoDialog(
@@ -382,7 +396,9 @@ private fun MaterialsNewMaterialContentMixedPreview() {
                         ),
                 ),
             onImageAdded = {},
-            onImageRemoved = {},
+            onDeleteImageRequested = {},
+            onDeleteImageCancelled = {},
+            onDeleteImageConfirmed = {},
             onGenderCycled = {},
             onSaveClicked = {},
             onGenderRequiredDialogDismissed = {},
