@@ -6,20 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.PlayCircleFilled
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,13 +49,12 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 private val CONTENT_PADDING = 20.dp
-private val HEADER_ICON_SIZE = 18.dp
 
 /**
  * Manually tuned so "Tryb"/"Mode" sits roughly above [LearningStepRow]'s toggle — the header and
  * row don't share a layout-computed width, so this may need another visual nudge.
  */
-private val MODE_HEADER_END_PADDING = 160.dp
+private val MODE_HEADER_END_PADDING = 180.dp
 
 /**
  * Figma `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`), roadmap
@@ -203,21 +195,18 @@ private fun LearningStepsListContent(
         Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth().weight(1f)) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 HeaderLabel(
-                    icon = Icons.Filled.Inventory,
                     text = stringResource(R.string.therapist_learning_steps_header_label),
                     infoTitle = stringResource(R.string.therapist_learning_steps_header_label_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_header_label_info_message),
                     modifier = Modifier.weight(1f),
                 )
                 HeaderLabel(
-                    icon = Icons.Filled.Settings,
                     text = stringResource(R.string.therapist_learning_steps_header_mode),
                     infoTitle = stringResource(R.string.therapist_learning_steps_header_mode_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_header_mode_info_message),
                     modifier = Modifier.padding(end = MODE_HEADER_END_PADDING),
                 )
                 HeaderLabel(
-                    icon = Icons.Filled.Build,
                     text = stringResource(R.string.therapist_learning_steps_header_actions),
                     infoTitle = stringResource(R.string.therapist_learning_steps_header_actions_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_header_actions_info_message),
@@ -273,20 +262,12 @@ private fun LearningStepsListContent(
 
 @Composable
 private fun HeaderLabel(
-    icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier,
     infoTitle: String? = null,
     infoMessage: String? = null,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-            modifier = Modifier.size(HEADER_ICON_SIZE),
-        )
-        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = text,
             style = FriendlyEmotionsTextStyles.captionC1,

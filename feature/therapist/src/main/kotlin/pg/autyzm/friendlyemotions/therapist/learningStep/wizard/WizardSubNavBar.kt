@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -142,9 +142,9 @@ fun WizardSubNavBar(
 private fun WizardTab.icon(): ImageVector =
     when (this) {
         WizardTab.MATERIAL -> Icons.Filled.Image
-        WizardTab.LEARNING -> Icons.Filled.Settings
+        WizardTab.LEARNING -> Icons.Filled.School
         WizardTab.REINFORCEMENTS -> Icons.Filled.ThumbUp
-        WizardTab.TEST -> Icons.Filled.School
+        WizardTab.TEST -> Icons.Filled.PendingActions
         WizardTab.SUMMARY -> Icons.Filled.Checklist
     }
 

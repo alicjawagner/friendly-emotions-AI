@@ -12,16 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -108,12 +103,10 @@ private fun InfoPanel(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoRow(
-            icon = Icons.Filled.Inventory,
             label = stringResource(R.string.child_home_active_step_label),
             value = uiState.activeStepName ?: stringResource(R.string.child_home_no_active_step),
         )
         InfoRow(
-            icon = Icons.Filled.Settings,
             label = stringResource(R.string.child_home_mode_label),
             value = uiState.activeMode.displayLabel(),
         )
@@ -122,7 +115,6 @@ private fun InfoPanel(
 
 @Composable
 private fun InfoRow(
-    icon: ImageVector,
     label: String,
     value: String,
     modifier: Modifier = Modifier,
@@ -132,12 +124,6 @@ private fun InfoRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            modifier = Modifier.size(32.dp),
-        )
         Text(
             text = label,
             style = FriendlyEmotionsTextStyles.headingH3Medium,
