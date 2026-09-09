@@ -26,7 +26,9 @@ private val TILE_PADDING = 10.dp
  * `Material` node, e.g. `910:16571`): fills its grid slot's width and stays square via
  * `aspectRatio(1f)` — rather than a fixed [TILE_CONTENT_SIZE] box — so a slot wider than the grid's
  * adaptive minimum (e.g. when fewer columns fit) doesn't leave blank space beside the tile.
- * [content] is a [BoxScope] slot so callers can overlay a [GenderBadge] via `Alignment.TopEnd`.
+ * [content] is a [BoxScope] slot so callers can overlay a [GenderBadge] via `Alignment.TopStart`
+ * and a [DeleteBadge] via `Alignment.TopEnd`, kept in opposite corners so a missed tap on the
+ * gender icon can't land on delete.
  * [newlyAddedScale], from [NewlyAddedPulse.scaleFor], pops the tile in to draw the therapist's eye
  * to a folder/image they just added.
  */

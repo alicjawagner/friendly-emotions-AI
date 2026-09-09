@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
+import pg.autyzm.friendlyemotions.therapist.materials.components.DeleteBadge
 import pg.autyzm.friendlyemotions.therapist.materials.components.GenderBadge
 import pg.autyzm.friendlyemotions.therapist.materials.components.MaterialTileContainer
 import pg.autyzm.friendlyemotions.therapist.materials.components.badgeIconResOrEmpty
@@ -21,10 +22,12 @@ private val UNASSIGNED_BORDER_WIDTH = 2.dp
 /**
  * A not-yet-persisted image in the "new material" gallery (Figma `screens/materials/new-material`
  * `Material` nodes, e.g. `933:24833`): same visual shell as [pg.autyzm.friendlyemotions.therapist.materials.components.ImageTile],
- * but [onDeleteClick] removes it from the in-memory pending list (nothing is persisted yet) and
- * [gender] may be `null` — the "not yet assigned" state for a MIXED folder, shown with the
- * `empty_set` icon. Once [highlightUnassigned] is set (after a failed save attempt), an
- * unassigned tile also gets a red border until [onGenderClick] cycles it to a real value.
+ * with the gender badge in the top-left corner and the delete badge in the top-right (kept apart
+ * so a missed tap on the gender icon can't land on delete), but [onDeleteClick] removes it from
+ * the in-memory pending list (nothing is persisted yet) and [gender] may be `null` — the
+ * "not yet assigned" state for a MIXED folder, shown with the `empty_set` icon. Once
+ * [highlightUnassigned] is set (after a failed save attempt), an unassigned tile also gets a red
+ * border until [onGenderClick] cycles it to a real value.
  */
 @Composable
 fun PendingImageTile(
@@ -54,11 +57,10 @@ fun PendingImageTile(
         )
         GenderBadge(
             iconRes = gender.badgeIconResOrEmpty(),
-            showDeleteAction = true,
-            onDeleteClick = onDeleteClick,
             onIconClick = onGenderClick,
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier.align(Alignment.TopStart),
         )
+        DeleteBadge(onDeleteClick = onDeleteClick, modifier = Modifier.align(Alignment.TopEnd))
     }
 }
 

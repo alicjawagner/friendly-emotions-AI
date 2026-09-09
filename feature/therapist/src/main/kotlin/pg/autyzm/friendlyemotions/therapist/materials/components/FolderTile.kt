@@ -26,8 +26,10 @@ private const val ICON_SIZE_FRACTION = 0.7f
 
 /**
  * A folder in the materials gallery (Figma `Material` node, e.g. `910:16572`): a folder icon,
- * the folder's name, and a [GenderBadge] showing its gender policy — with a delete action only
- * when [isExample] is false. Uses the built-in [Icons.Filled.Folder] rather than the user-supplied
+ * the folder's name, a [GenderBadge] showing its gender policy in the top-left corner, and a
+ * [DeleteBadge] in the top-right corner — kept in opposite corners so a missed tap on the gender
+ * icon can't land on delete — shown only when [isExample] is false. Uses the built-in
+ * [Icons.Filled.Folder] rather than the user-supplied
  * `folder.png` drawable, whose quality didn't hold up at this size. Reusable wherever a folder
  * gallery is needed (e.g. the Phase 13 Wizard material tab). The icon is sized relative to the
  * tile's actual (grid-computed) width rather than fixed, so the name always has room to render
@@ -68,10 +70,11 @@ fun FolderTile(
         }
         GenderBadge(
             iconRes = genderPolicy.badgeIconRes(),
-            showDeleteAction = !isExample,
-            onDeleteClick = onDeleteClick,
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier.align(Alignment.TopStart),
         )
+        if (!isExample) {
+            DeleteBadge(onDeleteClick = onDeleteClick, modifier = Modifier.align(Alignment.TopEnd))
+        }
     }
 }
 

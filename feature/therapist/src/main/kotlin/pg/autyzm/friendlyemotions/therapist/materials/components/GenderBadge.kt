@@ -27,18 +27,16 @@ private val BADGE_HEIGHT = 28.dp
 private val BADGE_CORNER_RADIUS = 10.dp
 
 /**
- * Small white badge overlaid on the top-right corner of a folder/image tile (Figma tile-level
- * badge box, e.g. node `932:23778`): always shows the gender/type icon, and additionally shows a
- * delete action only when [showDeleteAction] is true — i.e. never for example content.
+ * Small white badge overlaid on the top-left corner of a folder/image tile (Figma tile-level
+ * badge box, e.g. node `932:23778`, mirrored to the opposite corner): shows the gender/type icon.
  * [onIconClick], when non-null (Phase 11 gender editing/assignment), makes the icon itself
  * clickable — e.g. to cycle a MIXED folder image's gender; `null` keeps it purely informational,
- * as for fixed-gender folders or Phase 10 browsing.
+ * as for fixed-gender folders or Phase 10 browsing. Kept in the opposite corner from [DeleteBadge]
+ * so a tap that misses the gender icon can't land on delete instead.
  */
 @Composable
 fun GenderBadge(
     @DrawableRes iconRes: Int,
-    showDeleteAction: Boolean,
-    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     onIconClick: (() -> Unit)? = null,
 ) {
@@ -48,7 +46,7 @@ fun GenderBadge(
                 .height(BADGE_HEIGHT)
                 .background(
                     color = FriendlyEmotionsColors.Shades.White,
-                    shape = RoundedCornerShape(bottomStart = BADGE_CORNER_RADIUS),
+                    shape = RoundedCornerShape(bottomEnd = BADGE_CORNER_RADIUS),
                 ).padding(horizontal = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -63,14 +61,34 @@ fun GenderBadge(
                         if (onIconClick != null) iconModifier.clickable(onClick = onIconClick) else iconModifier
                     },
         )
-        if (showDeleteAction) {
-            IconButton(onClick = onDeleteClick, modifier = Modifier.size(24.dp)) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = stringResource(R.string.therapist_materials_delete_action),
-                    tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                )
-            }
+    }
+}
+
+/**
+ * Small white badge overlaid on the top-right corner of a folder/image tile, opposite
+ * [GenderBadge]: the delete action, shown only for non-example content.
+ */
+@Composable
+fun DeleteBadge(
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier =
+            modifier
+                .height(BADGE_HEIGHT)
+                .background(
+                    color = FriendlyEmotionsColors.Shades.White,
+                    shape = RoundedCornerShape(bottomStart = BADGE_CORNER_RADIUS),
+                ).padding(horizontal = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onDeleteClick, modifier = Modifier.size(24.dp)) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = stringResource(R.string.therapist_materials_delete_action),
+                tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
+            )
         }
     }
 }
@@ -79,6 +97,14 @@ fun GenderBadge(
 @Composable
 private fun GenderBadgePreview() {
     FriendlyEmotionsTheme {
-        GenderBadge(iconRes = R.drawable.face_woman, showDeleteAction = true, onDeleteClick = {})
+        GenderBadge(iconRes = R.drawable.face_woman)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DeleteBadgePreview() {
+    FriendlyEmotionsTheme {
+        DeleteBadge(onDeleteClick = {})
     }
 }

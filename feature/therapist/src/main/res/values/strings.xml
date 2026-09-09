@@ -22,7 +22,7 @@
     <string name="therapist_materials_new_folder_page_info_message">Utwórz nowy folder na zdjęcia dla wybranej emocji, podając jego nazwę i rodzaj gramatyczny. Jeśli wybierzesz konkretny rodzaj (męski, żeński, nijaki), wszystkie dodane do niego zdjęcia automatycznie otrzymają ten sam rodzaj, bez możliwości jego zmiany. Jeśli chcesz umieszczać w jednym folderze zdjęcia różnych rodzajów, wybierz opcję „bez przypisanego rodzaju”. W takim folderze rodzaj możesz przypisać osobno do każdego zdjęcia.</string>
     <string name="therapist_route_title_materials_inside_folder">Galeria obrazów</string>
     <string name="therapist_materials_inside_folder_page_info_title">Info</string>
-    <string name="therapist_materials_inside_folder_page_info_message">Tutaj zarządzasz zdjęciami wewnątrz wybranego folderu: dodajesz nowe, usuwasz istniejące (śmietniczek w prawym górnym rogu zdjęcia) oraz edytujesz rodzaj zdjęcia, jeśli jest to folder bez przypisanego rodzaju (klikając ikonkę rodzaju w prawym górnym rogu zdjęcia). Jeśli folder jest rodzaju żeńskiego, męskiego lub nijakiego, nie można edytować rodzaju poszczególnych zdjęć. Usuwanie jest niedostępne dla zdjęć przykładowych.\n\nMożesz także zmienić nazwę folderu, klikając na nią.</string>
+    <string name="therapist_materials_inside_folder_page_info_message">Tutaj zarządzasz zdjęciami wewnątrz wybranego folderu: dodajesz nowe, usuwasz istniejące (śmietniczek w prawym górnym rogu zdjęcia) oraz edytujesz rodzaj zdjęcia, jeśli jest to folder bez przypisanego rodzaju (klikając ikonkę rodzaju w lewym górnym rogu zdjęcia). Jeśli folder jest rodzaju żeńskiego, męskiego lub nijakiego, nie można edytować rodzaju poszczególnych zdjęć. Usuwanie jest niedostępne dla zdjęć przykładowych.\n\nMożesz także zmienić nazwę folderu, klikając na nią.</string>
     <string name="therapist_route_title_materials_new_material">Nowy materiał</string>
     <string name="therapist_materials_new_material_page_info_title">Info</string>
     <string name="therapist_materials_new_material_page_info_message">Dodaj nowe zdjęcia do wybranego folderu, robiąc zdjęcie aparatem lub wybierając je z galerii urządzenia.</string>
@@ -83,13 +83,13 @@
     <string name="therapist_materials_new_material_from_gallery">Z GALERII URZĄDZENIA</string>
     <string name="therapist_materials_new_material_save">ZAPISZ</string>
     <string name="therapist_materials_new_material_gallery_header">Dodane obrazki:</string>
-    <string name="therapist_materials_new_material_mixed_info">Pamiętaj, aby dostosować rodzaj dla każdego obrazka klikając w przekreślone kółeczko w prawym górnym rogu.</string>
+    <string name="therapist_materials_new_material_mixed_info">Pamiętaj, aby dostosować rodzaj dla każdego obrazka klikając w przekreślone kółeczko w lewym górnym rogu.</string>
     <string name="therapist_materials_new_material_fixed_info">Ten folder ma na stałe przypisany %1$s, dlatego wszystkie dodawane do niego obrazki będą automatycznie oznaczane jako %1$s.</string>
     <string name="therapist_materials_new_material_show_legend">Kliknij, aby wyświetlić legendę rodzajów</string>
     <string name="therapist_materials_new_material_camera_permission_denied">Aby zrobić zdjęcie, zezwól aplikacji na dostęp do aparatu w ustawieniach urządzenia.</string>
 
     <string name="therapist_materials_gender_required_dialog_title">Info</string>
-    <string name="therapist_materials_gender_required_dialog_message">Dostosuj rodzaj dla każdego obrazka klikając w przekreślone kółeczko w prawym górnym rogu.</string>
+    <string name="therapist_materials_gender_required_dialog_message">Dostosuj rodzaj dla każdego obrazka klikając w przekreślone kółeczko w lewym górnym rogu.</string>
 
     <string name="therapist_materials_rename_folder_title">Zmień nazwę folderu</string>
     <string name="therapist_materials_rename_folder_hint">Nazwa folderu</string>

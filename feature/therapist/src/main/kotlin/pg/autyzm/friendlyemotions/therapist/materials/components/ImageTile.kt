@@ -11,11 +11,12 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 
 /**
  * A photo in a folder's image grid (Figma `Material` node, e.g. `910:8163`): the image loaded
- * from [filePath] via Coil, and a [GenderBadge] showing its assigned gender — with a delete
- * action only when [isExample] is false. Reusable wherever an image grid is needed (e.g. the
- * Phase 13 Wizard material tab). [onGenderClick], when non-null (Phase 11: editing an already-
- * saved MIXED folder's image gender), makes the gender icon clickable; `null` keeps it read-only,
- * as Phase 10 browsing and fixed-gender folders require.
+ * from [filePath] via Coil, a [GenderBadge] showing its assigned gender in the top-left corner,
+ * and a [DeleteBadge] in the top-right corner — kept in opposite corners so a missed tap on the
+ * gender icon can't land on delete — shown only when [isExample] is false. Reusable wherever an
+ * image grid is needed (e.g. the Phase 13 Wizard material tab). [onGenderClick], when non-null
+ * (Phase 11: editing an already-saved MIXED folder's image gender), makes the gender icon
+ * clickable; `null` keeps it read-only, as Phase 10 browsing and fixed-gender folders require.
  */
 @Composable
 fun ImageTile(
@@ -36,11 +37,12 @@ fun ImageTile(
         )
         GenderBadge(
             iconRes = gender.badgeIconRes(),
-            showDeleteAction = !isExample,
-            onDeleteClick = onDeleteClick,
             onIconClick = onGenderClick,
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier.align(Alignment.TopStart),
         )
+        if (!isExample) {
+            DeleteBadge(onDeleteClick = onDeleteClick, modifier = Modifier.align(Alignment.TopEnd))
+        }
     }
 }
 

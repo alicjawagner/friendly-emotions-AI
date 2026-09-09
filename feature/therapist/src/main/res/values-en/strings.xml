@@ -22,7 +22,7 @@
     <string name="therapist_materials_new_folder_page_info_message">Create a new folder for photos for the selected emotion by entering its name and grammatical gender. If you select a specific gender (masculine, feminine, or neuter), all photos added to the folder will automatically be assigned the same gender, with no option to change it. If you want to keep photos of different genders in one folder, select “no assigned gender”. In such a folder, you can assign a different gender to each photo.</string>
     <string name="therapist_route_title_materials_inside_folder">Materials</string>
     <string name="therapist_materials_inside_folder_page_info_title">Info</string>
-    <string name="therapist_materials_inside_folder_page_info_message">Here you can manage photos inside the selected folder: add new photos, delete existing ones (trash icon in the top-right corner of the photo), and edit the gender of a photo if the folder has no assigned gender (click the gender icon in the top-right corner of the photo). If the folder has a feminine, masculine, or neuter gender, the gender of individual photos cannot be edited. Deletion is not available for example photos.\n\nYou can also rename the folder by clicking its name.</string>
+    <string name="therapist_materials_inside_folder_page_info_message">Here you can manage photos inside the selected folder: add new photos, delete existing ones (trash icon in the top-right corner of the photo), and edit the gender of a photo if the folder has no assigned gender (click the gender icon in the top-left corner of the photo). If the folder has a feminine, masculine, or neuter gender, the gender of individual photos cannot be edited. Deletion is not available for example photos.\n\nYou can also rename the folder by clicking its name.</string>
     <string name="therapist_route_title_materials_new_material">Add material</string>
     <string name="therapist_materials_new_material_page_info_title">Info</string>
     <string name="therapist_materials_new_material_page_info_message">Add new photos to the selected folder by taking a photo with the camera or selecting photos from the device gallery.</string>
@@ -83,13 +83,13 @@
     <string name="therapist_materials_new_material_from_gallery">FROM DEVICE GALLERY</string>
     <string name="therapist_materials_new_material_save">SAVE</string>
     <string name="therapist_materials_new_material_gallery_header">Added photos:</string>
-    <string name="therapist_materials_new_material_mixed_info">Remember to set the gender for each photo by tapping the crossed-out circle in the top-right corner.</string>
+    <string name="therapist_materials_new_material_mixed_info">Remember to set the gender for each photo by tapping the crossed-out circle in the top-left corner.</string>
     <string name="therapist_materials_new_material_fixed_info">This folder has a fixed %1$s, so every photo added to it will automatically be marked as %1$s.</string>
     <string name="therapist_materials_new_material_show_legend">Tap here to show gender legend</string>
     <string name="therapist_materials_new_material_camera_permission_denied">To take a photo, allow the app to access the camera in your device settings.</string>
 
     <string name="therapist_materials_gender_required_dialog_title">Info</string>
-    <string name="therapist_materials_gender_required_dialog_message">Set the gender for each photo by tapping the crossed-out circle in the top-right corner.</string>
+    <string name="therapist_materials_gender_required_dialog_message">Set the gender for each photo by tapping the crossed-out circle in the top-left corner.</string>
 
     <string name="therapist_materials_rename_folder_title">Rename folder</string>
     <string name="therapist_materials_rename_folder_hint">Folder name</string>
