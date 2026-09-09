@@ -22,7 +22,7 @@ import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCas
 
 /**
  * Verifies [DatabaseInitializer]'s seeding contract (phase-3 plan session 3.5 Definition of Done):
- * 24 example folders, 144 example images, 2 example learning steps with "Podstawowy" active in
+ * 24 example folders, 144 example images, 2 example learning steps with "Podstawowy (krok przykładowy)" active in
  * `LEARNING` mode, idempotent on a second call, and — closing the loop on the whole data-layer
  * stack — a real [InitializeSessionUseCase] invocation against the seeded data returns a non-empty
  * trial list (see the phase-3 plan's end-to-end verification step 5).
@@ -77,9 +77,12 @@ class DatabaseInitializerTest {
         runTest {
             initializer.seedIfNeeded()
 
-            assertEquals(setOf("Podstawowy", "Zaawansowany"), db.learningStepDao().getAllNames().toSet())
+            assertEquals(
+                setOf("Podstawowy (krok przykładowy)", "Zaawansowany (krok przykładowy)"),
+                db.learningStepDao().getAllNames().toSet(),
+            )
             val active = db.learningStepDao().observeActive().first()
-            assertEquals("Podstawowy", active?.name)
+            assertEquals("Podstawowy (krok przykładowy)", active?.name)
             assertEquals(SessionMode.LEARNING.name, active?.mode)
 
             val repository =
@@ -87,11 +90,11 @@ class DatabaseInitializerTest {
             val steps = repository.observeAllSteps().first().associateBy { it.name }
             assertEquals(
                 setOf("balloons", "cars", "flowers"),
-                steps.getValue("Podstawowy").reinforcementSettings.enabledAnimationThemes,
+                steps.getValue("Podstawowy (krok przykładowy)").reinforcementSettings.enabledAnimationThemes,
             )
             assertEquals(
                 ReinforcementSettings.ANIMATION_THEMES,
-                steps.getValue("Zaawansowany").reinforcementSettings.enabledAnimationThemes,
+                steps.getValue("Zaawansowany (krok przykładowy)").reinforcementSettings.enabledAnimationThemes,
             )
         }
 

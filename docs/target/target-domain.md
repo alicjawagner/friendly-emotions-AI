@@ -277,7 +277,7 @@ Controls all aspects of learning-mode trial generation and presentation.
 | `repetitionsPerEmotion` | `Int` | 2 | 1–10 |
 | `promptTemplate` | `PromptTemplate` | `EMOTION_ONLY` | — |
 | `ttsEnabled` | `Boolean` | `true` | — |
-| `captionsEnabled` | `Boolean` | `true` | — |
+| `captionsEnabled` | `Boolean` | `false` | — |
 | `hintDelaySeconds` | `Int` | 5 | 3–10 |
 | `activeHintTypes` | `Set<HintType>` | `{DIM_INCORRECT}` | ≥1 element |
 | `mixedGenderInAnswers` | `Boolean` | `true` | — |

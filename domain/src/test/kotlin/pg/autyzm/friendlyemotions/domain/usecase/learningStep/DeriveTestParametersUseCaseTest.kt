@@ -43,7 +43,7 @@ class DeriveTestParametersUseCaseTest {
         assertEquals(LearningParameters().repetitionsPerEmotion, testParameters.repetitionsPerEmotion)
         assertEquals(LearningParameters().promptTemplate, testParameters.promptTemplate)
         assertEquals(true, testParameters.ttsEnabled)
-        assertEquals(true, testParameters.captionsEnabled)
+        assertEquals(false, testParameters.captionsEnabled)
         assertEquals(true, testParameters.mixedGenderInAnswers)
     }
 }
