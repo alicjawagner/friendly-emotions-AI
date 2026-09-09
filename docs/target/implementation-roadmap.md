@@ -433,8 +433,9 @@ Key DAO requirements: `@Transaction` on `activateStep`/`deactivateStep`, `observ
 **Components:**
 - `LearningStepsListScreen` + `LearningStepsListViewModel` + `LearningStepsListUiState` (Figma names this frame "Tasks-list" internally — same screen/concept, "Learning Steps" is the correct product-facing name)
 - Display step list: name, active badge, mode badge (LEARNING/TEST), example badge
-- Activate step: tapping the row or its checkbox (no dialog) → `ActivateLearningStepUseCase(stepId)` (atomic transaction; uses the step's already-stored mode)
+- Activate step: tapping the row's checkbox (no dialog) → `ActivateLearningStepUseCase(stepId)` (atomic transaction; uses the step's already-stored mode)
 - Toggle mode: per-row inline toggle, valid for any step (active or not) → `SetLearningStepModeUseCase(stepId, mode)`; persists across app restarts even while inactive
+- Row tap (outside the checkbox/toggle/action icons) opens the step for editing, same as the Edit icon; for example steps (which can't be edited) it instead shows a read-only info dialog ("OK" / "Copy step") that offers to copy the step
 - Copy step: `CopyLearningStepUseCase` (auto-generated name of the form `"{original} ({n})"` with `n` the smallest available positive integer, always inactive, inherits the source step's mode)
 - Delete step: `YesNoConfirmationDialog` + `DeleteLearningStepUseCase` (fallback activation if active); block on example steps
 - Filter hide example steps toggle

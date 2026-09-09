@@ -514,8 +514,8 @@ Manages the repeat-stage mechanism. Active in `LEARNING` mode only. See §14 for
 
 - At most one LearningStep is active at any time.
 - `mode` is always present and is set independently of `isActive` — therapists may pick a
-  step's mode via its list-row toggle before ever activating it, and the value is retained
-  whether or not that step is currently active.
+  step's mode via its list-row toggle before ever activating it (via its row checkbox), and the
+  value is retained whether or not that step is currently active.
 - LearningStep names must be unique (case-insensitive).
 - Deleting the active LearningStep triggers automatic fallback: the first available example step is activated in `LEARNING` mode.
 - Example steps cannot be edited or deleted. They can be copied.
@@ -786,7 +786,7 @@ The therapist configures a LearningStep through a five-tab wizard. All state is 
 
 **Name validation:** blank name blocked; duplicate name blocked. On edit, the step's own name is excluded from the uniqueness check.
 
-**Activation:** separate from creation. After saving, the therapist activates the step from the list screen, choosing LEARNING or TEST mode. The mode can be toggled independently for the active step at any time.
+**Activation:** separate from creation. After saving, the therapist activates the step from the list screen via its row checkbox, using its already-stored mode. The mode can be toggled independently for the active step at any time. Tapping the row itself (not the checkbox) reopens the step for editing instead of activating it.
 
 ---
 

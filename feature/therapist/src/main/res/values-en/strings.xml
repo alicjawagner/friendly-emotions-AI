@@ -113,7 +113,7 @@
     <string name="therapist_learning_steps_hide_examples_info_message">When enabled, the example learning steps included with the app are hidden — only steps created by you are visible.</string>
     <string name="therapist_learning_steps_header_label">Learning steps:</string>
     <string name="therapist_learning_steps_header_label_info_title">Info</string>
-    <string name="therapist_learning_steps_header_label_info_message">The list of learning steps below. Tap a row to set it as the active step used when you press “RUN”.</string>
+    <string name="therapist_learning_steps_header_label_info_message">The list of learning steps below. Check a row\'s checkbox to set it as the active step used when you press “RUN”. Tap the row to edit it.</string>
     <string name="therapist_learning_steps_header_mode">Mode</string>
     <string name="therapist_learning_steps_header_mode_info_title">Info</string>
     <string name="therapist_learning_steps_header_mode_info_message">Switches a step between Learning mode (with hints and reinforcements) and Test mode (no assistance).</string>
@@ -130,6 +130,9 @@
     <string name="therapist_learning_steps_error_dialog_title">Info</string>
     <string name="therapist_learning_steps_cannot_play_title">Can\'t start</string>
     <string name="therapist_learning_steps_cannot_play_message">The active learning step doesn\'t have enough images configured for the selected mode. Add materials to be able to run it.</string>
+    <string name="therapist_learning_steps_readonly_title">Read-only step</string>
+    <string name="therapist_learning_steps_readonly_message">This learning step is for demonstration purposes only. If you want to edit it, create a copy.</string>
+    <string name="therapist_learning_steps_readonly_copy">COPY STEP</string>
 
     <string name="therapist_wizard_title_create">New learning step:</string>
     <string name="therapist_wizard_title_edit">Edit learning step:</string>

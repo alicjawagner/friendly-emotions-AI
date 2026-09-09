@@ -113,7 +113,7 @@
     <string name="therapist_learning_steps_hide_examples_info_message">Gdy zaznaczone, przykładowe kroki uczenia dołączone do aplikacji są ukrywane — widoczne są tylko kroki utworzone samodzielnie.</string>
     <string name="therapist_learning_steps_header_label">Kroki uczenia:</string>
     <string name="therapist_learning_steps_header_label_info_title">Info</string>
-    <string name="therapist_learning_steps_header_label_info_message">Lista kroków uczenia poniżej. Kliknij wiersz, aby ustawić go jako aktywny krok używany po naciśnięciu „URUCHOM”.</string>
+    <string name="therapist_learning_steps_header_label_info_message">Lista kroków uczenia poniżej. Zaznacz checkbox wiersza, aby ustawić go jako aktywny krok używany po naciśnięciu „URUCHOM”. Kliknij wiersz, aby go edytować.</string>
     <string name="therapist_learning_steps_header_mode">Tryb</string>
     <string name="therapist_learning_steps_header_mode_info_title">Info</string>
     <string name="therapist_learning_steps_header_mode_info_message">Przełącza krok między trybem uczenia (z podpowiedziami i wzmocnieniami) a trybem testu (bez wsparcia).</string>
@@ -130,6 +130,9 @@
     <string name="therapist_learning_steps_error_dialog_title">Info</string>
     <string name="therapist_learning_steps_cannot_play_title">Nie można uruchomić</string>
     <string name="therapist_learning_steps_cannot_play_message">Aktywny krok uczenia nie ma wystarczającej liczby obrazków skonfigurowanych dla wybranego trybu. Dodaj materiały, aby móc go uruchomić.</string>
+    <string name="therapist_learning_steps_readonly_title">Krok tylko do odczytu</string>
+    <string name="therapist_learning_steps_readonly_message">Ten krok uczenia służy jedynie do prezentacji. Jeśli chcesz go edytować, utwórz jego kopię.</string>
+    <string name="therapist_learning_steps_readonly_copy">KOPIUJ KROK</string>
 
     <string name="therapist_wizard_title_create">Nowy krok uczenia:</string>
     <string name="therapist_wizard_title_edit">Edytuj krok uczenia:</string>

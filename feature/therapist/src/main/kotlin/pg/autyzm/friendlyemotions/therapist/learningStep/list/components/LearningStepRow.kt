@@ -39,11 +39,13 @@ private val ROW_ICON_BUTTON_TOUCH_SIZE = 48.dp
 private val ROW_ACTION_ICON_SPACING = 8.dp
 
 /**
- * One row of the learning step list (Figma `Task-item`, `896:17504`/`896:24139`). Tapping
- * anywhere on the row or its checkbox activates the step (using its already-stored mode); the
- * mode toggle is an independent action that never activates. Edit/delete are only rendered for
- * non-example steps — their layout space is still reserved so the copy icon stays aligned across
- * rows, matching Figma's `opacity-0` treatment of those icons on example rows.
+ * One row of the learning step list (Figma `Task-item`, `896:17504`/`896:24139`). The checkbox
+ * is the sole activation control (using the step's already-stored mode); the mode toggle is an
+ * independent action that never activates. Tapping anywhere else on the row opens the step for
+ * editing — for example steps, which can't be edited, it invokes [onReadOnlyClick] instead so the
+ * caller can offer a read-only explanation and a way to copy the step. Edit/delete are only
+ * rendered for non-example steps — their layout space is still reserved so the copy icon stays
+ * aligned across rows, matching Figma's `opacity-0` treatment of those icons on example rows.
  */
 @Composable
 fun LearningStepRow(
@@ -51,6 +53,7 @@ fun LearningStepRow(
     onActivateClick: (LearningStepId) -> Unit,
     onModeToggled: (LearningStepId, SessionMode) -> Unit,
     onEditClick: (LearningStepId) -> Unit,
+    onReadOnlyClick: (LearningStepId) -> Unit,
     onCopyClick: (LearningStepId) -> Unit,
     onDeleteClick: (LearningStepId) -> Unit,
     modifier: Modifier = Modifier,
@@ -68,7 +71,9 @@ fun LearningStepRow(
                 .fillMaxWidth()
                 .shadow(elevation = 1.dp, shape = FriendlyEmotionsModalShape)
                 .background(color = backgroundColor, shape = FriendlyEmotionsModalShape)
-                .clickable { onActivateClick(step.id) }
+                .clickable {
+                    if (step.isExample) onReadOnlyClick(step.id) else onEditClick(step.id)
+                }
                 .padding(horizontal = 20.dp, vertical = 10.dp),
     ) {
         Checkbox(
@@ -156,6 +161,7 @@ private fun LearningStepRowActivePreview() {
             onActivateClick = {},
             onModeToggled = { _, _ -> },
             onEditClick = {},
+            onReadOnlyClick = {},
             onCopyClick = {},
             onDeleteClick = {},
         )
@@ -178,6 +184,7 @@ private fun LearningStepRowCustomPreview() {
             onActivateClick = {},
             onModeToggled = { _, _ -> },
             onEditClick = {},
+            onReadOnlyClick = {},
             onCopyClick = {},
             onDeleteClick = {},
         )

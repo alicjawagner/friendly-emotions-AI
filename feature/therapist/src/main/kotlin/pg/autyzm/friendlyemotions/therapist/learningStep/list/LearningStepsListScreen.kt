@@ -135,6 +135,7 @@ private fun LearningStepsListContent(
     onErrorDismissed: () -> Unit,
 ) {
     var showCannotPlayInfo by remember { mutableStateOf(false) }
+    var readOnlyStepId by remember { mutableStateOf<LearningStepId?>(null) }
     Column(
         verticalArrangement = Arrangement.spacedBy(22.dp),
         modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING),
@@ -226,6 +227,7 @@ private fun LearningStepsListContent(
                         onActivateClick = onStepActivated,
                         onModeToggled = onModeToggled,
                         onEditClick = onEditStepClick,
+                        onReadOnlyClick = { readOnlyStepId = it },
                         onCopyClick = onCopyRequested,
                         onDeleteClick = onDeleteRequested,
                         newlyAddedScale = newlyAddedSteps.scaleFor(row.id.value),
@@ -256,6 +258,20 @@ private fun LearningStepsListContent(
             title = stringResource(R.string.therapist_learning_steps_cannot_play_title),
             message = stringResource(R.string.therapist_learning_steps_cannot_play_message),
             onDismiss = { showCannotPlayInfo = false },
+        )
+    }
+    val clickedReadOnlyStepId = readOnlyStepId
+    if (clickedReadOnlyStepId != null) {
+        YesNoConfirmationDialog(
+            title = stringResource(R.string.therapist_learning_steps_readonly_title),
+            message = stringResource(R.string.therapist_learning_steps_readonly_message),
+            confirmLabel = stringResource(R.string.therapist_learning_steps_readonly_copy),
+            dismissLabel = stringResource(android.R.string.ok),
+            onConfirm = {
+                onCopyRequested(clickedReadOnlyStepId)
+                readOnlyStepId = null
+            },
+            onDismiss = { readOnlyStepId = null },
         )
     }
 }

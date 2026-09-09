@@ -392,7 +392,7 @@ LearningStepsListViewModel
   → user taps the row's mode toggle (any row, active or not)
   → calls SetLearningStepModeUseCase(stepId, mode)
         → persists LearningStep.mode directly; does not touch isActive
-  → user taps the row or its checkbox
+  → user taps the row's checkbox
   → calls ActivateLearningStepUseCase(stepId)
         → LearningStepActivationService.activate(stepId)
               → wrapped in a single @Transaction:
@@ -404,6 +404,12 @@ LearningStepsListViewModel
 
 There is no mode-picker dialog — the per-row toggle and the activate action are independent,
 both directly reachable from `LearningStepsListScreen` (Figma `screens/Tasks-list/*`).
+
+The checkbox is the sole activation control. Tapping the row itself (outside the checkbox and
+the mode toggle/action icons) instead opens the step for editing, same destination as the Edit
+icon — except for example steps, which can't be edited: tapping an example step's row shows a
+read-only info dialog ("OK" / "Copy step") instead, letting the therapist copy it via
+`CopyLearningStepUseCase` without leaving the list screen.
 
 The child app collects `LearningStepRepository.observeActiveStep()` as a `StateFlow`. Any activation by the therapist automatically reaches the child app through the shared Room database and Kotlin Flow infrastructure.
 
