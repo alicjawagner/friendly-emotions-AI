@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -20,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -39,9 +37,8 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 private val contentPadding = 35.dp
 private val playButtonSize = 150.dp
 private val playButtonIconSize = 22.dp
-private val smileyShadowElevation = 24.dp
-private val smileySizeWithScorePanel = 290.dp
-private val smileySizeStandalone = 380.dp
+private val trophySizeWithScorePanel = 290.dp
+private val trophySizeStandalone = 380.dp
 private val scorePanelWidth = 600.dp
 private val scoreValueColumnWidth = 90.dp
 private val scoreValuesGap = 49.dp
@@ -50,7 +47,7 @@ private val scoreValuesGap = 49.dp
  * Shown after both `LEARNING` and `TEST` sessions (Figma nodes `377:35271` after-test /
  * `980:10033` after-learning) — same background/mascot/play-button family as `ChildHomeScreen`
  * (reuses [GameFloorBackground]), but only `TEST` mode renders the score panel
- * (functional-spec §5.6/§5.7); `LEARNING` shows a larger, standalone smiley instead. A stateless
+ * (functional-spec §5.6/§5.7); `LEARNING` shows a larger, standalone trophy instead. A stateless
  * renderer — all state comes from [uiState].
  */
 @Composable
@@ -71,19 +68,12 @@ fun SessionEndScreen(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             )
 
-            val smileySize =
-                if (uiState.mode == SessionMode.TEST) smileySizeWithScorePanel else smileySizeStandalone
+            val trophySize =
+                if (uiState.mode == SessionMode.TEST) trophySizeWithScorePanel else trophySizeStandalone
             Image(
-                painter = painterResource(R.drawable.smiley),
+                painter = painterResource(R.drawable.trophy),
                 contentDescription = null,
-                modifier =
-                    Modifier
-                        .size(smileySize)
-                        .shadow(
-                            elevation = smileyShadowElevation,
-                            shape = CircleShape,
-                            clip = false,
-                        ),
+                modifier = Modifier.size(trophySize),
             )
 
             if (uiState.mode == SessionMode.TEST) {
