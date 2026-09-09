@@ -22,7 +22,7 @@ import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCas
 
 /**
  * Verifies [DatabaseInitializer]'s seeding contract (phase-3 plan session 3.5 Definition of Done):
- * 24 example folders, 48 example images, 2 example learning steps with "Podstawowy" active in
+ * 24 example folders, 144 example images, 2 example learning steps with "Podstawowy" active in
  * `LEARNING` mode, idempotent on a second call, and — closing the loop on the whole data-layer
  * stack — a real [InitializeSessionUseCase] invocation against the seeded data returns a non-empty
  * trial list (see the phase-3 plan's end-to-end verification step 5).
@@ -65,11 +65,11 @@ class DatabaseInitializerTest {
         }
 
     @Test
-    fun `seedIfNeeded creates 48 example images`() =
+    fun `seedIfNeeded creates 144 example images`() =
         runTest {
             initializer.seedIfNeeded()
 
-            assertEquals(48, db.emotionImageDao().getAllFilePaths().size)
+            assertEquals(144, db.emotionImageDao().getAllFilePaths().size)
         }
 
     @Test
@@ -102,7 +102,7 @@ class DatabaseInitializerTest {
             initializer.seedIfNeeded()
 
             assertEquals(2, db.learningStepDao().getAllNames().size)
-            assertEquals(48, db.emotionImageDao().getAllFilePaths().size)
+            assertEquals(144, db.emotionImageDao().getAllFilePaths().size)
         }
 
     @Test

@@ -36,7 +36,7 @@ import javax.inject.Singleton
  * seed content, not therapist-created data, so stable ids make manual DB inspection and debugging
  * easier without changing any observable behavior.
  *
- * The 48 referenced image files (e.g. `file:///android_asset/example_images/happy_kobiety_1.png`)
+ * The 144 referenced image files (e.g. `file:///android_asset/example_images/happy_kobiety_1.png`)
  * are throwaway placeholders — simple solid-background PNGs with the emotion's Polish label
  * rendered on them, explicitly not final creative assets, swappable for real photography later
  * with no code change. See the module README for the exact list of expected filenames.
@@ -93,14 +93,14 @@ class DatabaseInitializer
         /**
          * "Zaawansowany" selects every seeded image, for both modes, so it is immediately playable
          * with the full catalog. "Podstawowy" is intentionally restricted to a beginner-friendly
-         * subset: only the HAPPY/SAD/ANGRY emotions, and only their emotikony/inne folders.
+         * subset: only the HAPPY/SAD/ANGRY emotions, and only their buzki/zwierzaki folders.
          */
         private suspend fun seedExampleSteps(seededImages: List<SeededImage>) {
             val allMaterialSelection =
                 MaterialSelection(seededImages.map { ImageUsage(it.id, inLearning = true, inTest = true) })
 
             val podstawowyEmotions = setOf(EmotionId.HAPPY, EmotionId.SAD, EmotionId.ANGRY)
-            val podstawowyFolderKeys = setOf("emotikony", "inne")
+            val podstawowyFolderKeys = setOf("buzki", "zwierzaki")
             val podstawowyMaterialSelection =
                 MaterialSelection(
                     seededImages
@@ -197,7 +197,7 @@ class DatabaseInitializer
             val displayName: String,
             val key: String,
             val genderPolicy: FolderGenderPolicy,
-            /** One [GrammaticalGender] per seeded image in this folder (2 images per folder). */
+            /** One [GrammaticalGender] per seeded image in this folder (6 images per folder). */
             val imageGenders: List<GrammaticalGender>,
         )
 
@@ -207,9 +207,9 @@ class DatabaseInitializer
             private const val ZAAWANSOWANY_ID = "example-step-zaawansowany"
 
             /**
-             * The 4 example folders seeded per emotion (functional spec §6.4). `Inne` (MIXED policy)
-             * seeds one MASCULINE and one FEMININE image to demonstrate mixed-gender material within a
-             * single folder; the other 3 folders' images all match their folder's fixed gender policy.
+             * The 4 example folders seeded per emotion (functional spec §6.4). `Buźki` and `Zwierzaki`
+             * (MIXED policy) each seed a mix of genders to demonstrate mixed-gender material within a
+             * single folder; the other 2 folders' images all match their folder's fixed gender policy.
              */
             private val FOLDER_SPECS =
                 listOf(
@@ -217,25 +217,41 @@ class DatabaseInitializer
                         displayName = "Kobiety",
                         key = "kobiety",
                         genderPolicy = FolderGenderPolicy.FEMININE,
-                        imageGenders = listOf(GrammaticalGender.FEMININE, GrammaticalGender.FEMININE),
+                        imageGenders = List(6) { GrammaticalGender.FEMININE },
                     ),
                     FolderSpec(
                         displayName = "Mężczyźni",
                         key = "mezczyzni",
                         genderPolicy = FolderGenderPolicy.MASCULINE,
-                        imageGenders = listOf(GrammaticalGender.MASCULINE, GrammaticalGender.MASCULINE),
+                        imageGenders = List(6) { GrammaticalGender.MASCULINE },
                     ),
                     FolderSpec(
-                        displayName = "Emotikony",
-                        key = "emotikony",
-                        genderPolicy = FolderGenderPolicy.NEUTER,
-                        imageGenders = listOf(GrammaticalGender.NEUTER, GrammaticalGender.NEUTER),
-                    ),
-                    FolderSpec(
-                        displayName = "Inne",
-                        key = "inne",
+                        displayName = "Buźki",
+                        key = "buzki",
                         genderPolicy = FolderGenderPolicy.MIXED,
-                        imageGenders = listOf(GrammaticalGender.MASCULINE, GrammaticalGender.FEMININE),
+                        imageGenders =
+                            listOf(
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.NEUTER,
+                            ),
+                    ),
+                    FolderSpec(
+                        displayName = "Zwierzaki",
+                        key = "zwierzaki",
+                        genderPolicy = FolderGenderPolicy.MIXED,
+                        imageGenders =
+                            listOf(
+                                GrammaticalGender.MASCULINE,
+                                GrammaticalGender.MASCULINE,
+                                GrammaticalGender.MASCULINE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                                GrammaticalGender.FEMININE,
+                            ),
                     ),
                 )
         }
