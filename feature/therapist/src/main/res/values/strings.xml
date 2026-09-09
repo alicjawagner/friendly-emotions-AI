@@ -142,9 +142,6 @@
     <string name="therapist_wizard_material_add_emotion">DODAJ</string>
     <string name="therapist_wizard_material_add_emotion_info_title">Info</string>
     <string name="therapist_wizard_material_add_emotion_info_message">Dodaje kolejną emocję do tego kroku uczenia, dla której będziesz mógł wybrać zdjęcia, które zostaną pokazane dziecku podczas gry.</string>
-    <string name="therapist_wizard_material_hide_examples">Ukryj przykładowe materiały</string>
-    <string name="therapist_wizard_material_hide_examples_info_title">Info</string>
-    <string name="therapist_wizard_material_hide_examples_info_message">Gdy zaznaczone, wyświetlane są tylko własne zdjęcia, bez wbudowanych przykładów.</string>
     <string name="therapist_wizard_material_header_emotion">Emocja</string>
     <string name="therapist_wizard_material_header_learning">W uczeniu</string>
     <string name="therapist_wizard_material_header_test">W teście</string>

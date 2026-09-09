@@ -142,9 +142,6 @@
     <string name="therapist_wizard_material_add_emotion">ADD</string>
     <string name="therapist_wizard_material_add_emotion_info_title">Info</string>
     <string name="therapist_wizard_material_add_emotion_info_message">Adds another emotion to this learning step, for which you can select photos that will be shown to the child during the game.</string>
-    <string name="therapist_wizard_material_hide_examples">Hide example materials</string>
-    <string name="therapist_wizard_material_hide_examples_info_title">Info</string>
-    <string name="therapist_wizard_material_hide_examples_info_message">When enabled, only your own photos are displayed, without the built-in examples.</string>
     <string name="therapist_wizard_material_header_emotion">Emotion</string>
     <string name="therapist_wizard_material_header_learning">In learning</string>
     <string name="therapist_wizard_material_header_test">In test</string>

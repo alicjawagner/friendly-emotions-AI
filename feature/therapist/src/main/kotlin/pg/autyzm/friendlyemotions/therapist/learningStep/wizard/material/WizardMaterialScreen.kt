@@ -24,8 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -153,7 +151,6 @@ fun WizardMaterialScreen(
                             viewModel.onAddEmotionDialogDismissed()
                         },
                         onAllEmotionsAddedInfoDismissed = viewModel::onAllEmotionsAddedInfoDismissed,
-                        onHideExampleMaterialsToggled = viewModel::onHideExampleMaterialsToggled,
                         onEmotionRowClick = containerViewModel::setFocusedEmotion,
                         onEmotionLearningToggle = { row ->
                             containerViewModel.setUsageForImages(
@@ -236,7 +233,6 @@ private fun WizardMaterialContent(
     onAddEmotionDialogDismissed: () -> Unit,
     onAddEmotionConfirmed: (EmotionId) -> Unit,
     onAllEmotionsAddedInfoDismissed: () -> Unit,
-    onHideExampleMaterialsToggled: (Boolean) -> Unit,
     onEmotionRowClick: (EmotionId) -> Unit,
     onEmotionLearningToggle: (EmotionRowUi) -> Unit,
     onEmotionTestToggle: (EmotionRowUi) -> Unit,
@@ -262,46 +258,19 @@ private fun WizardMaterialContent(
                     .padding(horizontal = CONTENT_PADDING),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    TherapistButton(
-                        text = stringResource(R.string.therapist_wizard_material_add_emotion),
-                        icon = Icons.Filled.Add,
-                        onClick = onAddEmotionClick,
-                        modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
-                    )
-                    InfoIconButton(
-                        infoTitle = stringResource(R.string.therapist_wizard_material_add_emotion_info_title),
-                        infoMessage = stringResource(R.string.therapist_wizard_material_add_emotion_info_message),
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = state.hideExampleMaterials,
-                        onCheckedChange = onHideExampleMaterialsToggled,
-                        colors =
-                            CheckboxDefaults.colors(
-                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            ),
-                    )
-                    Text(
-                        text = stringResource(R.string.therapist_wizard_material_hide_examples),
-                        style = FriendlyEmotionsTextStyles.bodyRegular,
-                        color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                    )
-                    InfoIconButton(
-                        infoTitle = stringResource(R.string.therapist_wizard_material_hide_examples_info_title),
-                        infoMessage = stringResource(R.string.therapist_wizard_material_hide_examples_info_message),
-                        modifier = Modifier.padding(start = 5.dp),
-                    )
-                }
+                TherapistButton(
+                    text = stringResource(R.string.therapist_wizard_material_add_emotion),
+                    icon = Icons.Filled.Add,
+                    onClick = onAddEmotionClick,
+                    modifier = Modifier.alpha(if (state.canAddMoreEmotions) 1f else 0.5f),
+                )
+                InfoIconButton(
+                    infoTitle = stringResource(R.string.therapist_wizard_material_add_emotion_info_title),
+                    infoMessage = stringResource(R.string.therapist_wizard_material_add_emotion_info_message),
+                )
             }
             Spacer(modifier = Modifier.height(18.dp))
             Row(
@@ -490,13 +459,11 @@ private fun WizardMaterialContentEmptyPreview() {
                         focusedFolder = null,
                         folders = emptyList(),
                         images = emptyList(),
-                        hideExampleMaterials = false,
                     ),
                 onAddEmotionClick = {},
                 onAddEmotionDialogDismissed = {},
                 onAddEmotionConfirmed = {},
                 onAllEmotionsAddedInfoDismissed = {},
-                onHideExampleMaterialsToggled = {},
                 onEmotionRowClick = {},
                 onEmotionLearningToggle = {},
                 onEmotionTestToggle = {},

@@ -29,7 +29,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveFoldersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveImagesForFolderUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
-import pg.autyzm.friendlyemotions.domain.usecase.preferences.SetHideExampleFoldersUseCase
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerState
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardMaterialBrowsingState
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardStepDraft
@@ -39,7 +38,6 @@ class WizardMaterialViewModelTest {
     private val observeFoldersUseCase = mockk<ObserveFoldersUseCase>()
     private val observeImagesForFolderUseCase = mockk<ObserveImagesForFolderUseCase>()
     private val observeHideExampleFoldersUseCase = mockk<ObserveHideExampleFoldersUseCase>()
-    private val setHideExampleFoldersUseCase = mockk<SetHideExampleFoldersUseCase>()
 
     @Before
     fun setUp() {
@@ -64,7 +62,6 @@ class WizardMaterialViewModelTest {
             observeFoldersUseCase,
             observeImagesForFolderUseCase,
             observeHideExampleFoldersUseCase,
-            setHideExampleFoldersUseCase,
         )
 
     private val folder =

@@ -17,7 +17,6 @@ sealed class WizardMaterialUiState {
         val focusedFolder: FocusedFolderUi?,
         val folders: List<FolderTileUi>,
         val images: List<ImageTileUi>,
-        val hideExampleMaterials: Boolean,
         val addEmotionDialogOpen: Boolean = false,
         val pendingDeleteEmotionId: EmotionId? = null,
         val showAllEmotionsAddedInfo: Boolean = false,

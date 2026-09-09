@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
@@ -21,7 +20,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveFoldersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveImagesForFolderUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
-import pg.autyzm.friendlyemotions.domain.usecase.preferences.SetHideExampleFoldersUseCase
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerState
 import pg.autyzm.friendlyemotions.therapist.materials.components.currentLocaleCode
 import javax.inject.Inject
@@ -44,7 +42,6 @@ class WizardMaterialViewModel
         private val observeFoldersUseCase: ObserveFoldersUseCase,
         private val observeImagesForFolderUseCase: ObserveImagesForFolderUseCase,
         private val observeHideExampleFoldersUseCase: ObserveHideExampleFoldersUseCase,
-        private val setHideExampleFoldersUseCase: SetHideExampleFoldersUseCase,
     ) : ViewModel() {
         private val materialCatalog = observeMaterialCatalog(observeFoldersUseCase, observeImagesForFolderUseCase)
 
@@ -64,10 +61,6 @@ class WizardMaterialViewModel
 
         private val _localState = MutableStateFlow(WizardMaterialLocalState())
         val localState: StateFlow<WizardMaterialLocalState> = _localState.asStateFlow()
-
-        fun onHideExampleMaterialsToggled(hide: Boolean) {
-            viewModelScope.launch { setHideExampleFoldersUseCase(hide) }
-        }
 
         fun onAddEmotionClicked(canAddMore: Boolean) {
             _localState.update {
@@ -177,7 +170,6 @@ class WizardMaterialViewModel
                 focusedFolder = focusedFolder,
                 folders = folders,
                 images = images,
-                hideExampleMaterials = world.hideExampleMaterials,
                 addEmotionDialogOpen = local.addEmotionDialogOpen,
                 pendingDeleteEmotionId = local.pendingDeleteEmotionId,
                 showAllEmotionsAddedInfo = local.showAllEmotionsAddedInfo,
