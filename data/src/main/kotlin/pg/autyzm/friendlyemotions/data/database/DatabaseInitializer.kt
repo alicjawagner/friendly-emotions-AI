@@ -134,7 +134,7 @@ class DatabaseInitializer
                 mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
-                        name = "Podstawowy",
+                        name = "Podstawowy (krok przykładowy)",
                         materialSelection = podstawowyMaterialSelection,
                         learningParameters = podstawowyLearning,
                         testParameters = podstawowyTest,
@@ -170,7 +170,7 @@ class DatabaseInitializer
                 mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
-                        name = "Zaawansowany",
+                        name = "Zaawansowany (krok przykładowy)",
                         materialSelection = allMaterialSelection,
                         learningParameters = zaawansowanyLearning,
                         testParameters = zaawansowanyTest,
