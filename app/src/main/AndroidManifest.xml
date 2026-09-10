@@ -24,7 +24,7 @@
             android:label="@string/app_name_child"
             android:launchMode="singleTask"
             android:roundIcon="@mipmap/friendly_emotions_round"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.FriendlyEmotions">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
             android:label="@string/app_name_therapist"
             android:launchMode="singleTask"
             android:roundIcon="@mipmap/friendly_emotions_settings_round"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.FriendlyEmotions">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
