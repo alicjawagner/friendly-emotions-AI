@@ -14,8 +14,10 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.PlayCircleFilled
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +57,7 @@ private val CONTENT_PADDING = 20.dp
  * Manually tuned so "Tryb"/"Mode" sits roughly above [LearningStepRow]'s toggle — the header and
  * row don't share a layout-computed width, so this may need another visual nudge.
  */
-private val MODE_HEADER_END_PADDING = 180.dp
+private val MODE_HEADER_END_PADDING = 210.dp
 
 /**
  * Figma `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`), roadmap
@@ -180,15 +182,17 @@ private fun LearningStepsListContent(
         }
         LearningStepSearchBox(query = state.searchQuery, onQueryChanged = onSearchQueryChanged)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = state.hideExampleSteps,
-                onCheckedChange = onHideExampleStepsToggled,
-                colors =
-                    CheckboxDefaults.colors(
-                        checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                    ),
-            )
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 38.dp.scaled()) {
+                Checkbox(
+                    checked = state.hideExampleSteps,
+                    onCheckedChange = onHideExampleStepsToggled,
+                    colors =
+                        CheckboxDefaults.colors(
+                            checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                            uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                        ),
+                )
+            }
             Text(
                 text = stringResource(R.string.therapist_learning_steps_hide_examples),
                 style = FriendlyEmotionsTextStyles.captionC1,
@@ -312,6 +316,51 @@ private fun HeaderLabel(
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
 @Composable
 private fun LearningStepsListContentOnlyExamplesPreview() {
+    FriendlyEmotionsTheme {
+        LearningStepsListContent(
+            state =
+                LearningStepsListUiState.Content(
+                    rows =
+                        listOf(
+                            LearningStepRowUi(
+                                id = LearningStepId("step-1"),
+                                name = "Krok przykładowy 1",
+                                isActive = true,
+                                isExample = true,
+                                mode = SessionMode.LEARNING,
+                            ),
+                            LearningStepRowUi(
+                                id = LearningStepId("step-2"),
+                                name = "Krok przykładowy 2",
+                                isActive = false,
+                                isExample = true,
+                                mode = SessionMode.LEARNING,
+                            ),
+                        ),
+                    searchQuery = "",
+                    hideExampleSteps = false,
+                    onlyExampleStepsExist = true,
+                    canPlayActiveStep = true,
+                ),
+            onEditStepClick = {},
+            onCreateNewClick = {},
+            onPlayClick = {},
+            onStepActivated = {},
+            onModeToggled = { _, _ -> },
+            onCopyRequested = {},
+            onDeleteRequested = {},
+            onDeleteCancelled = {},
+            onDeleteConfirmed = {},
+            onSearchQueryChanged = {},
+            onHideExampleStepsToggled = {},
+            onErrorDismissed = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1340, heightDp = 600)
+@Composable
+private fun LearningStepsListContentOnlyExamplesSmallPreview() {
     FriendlyEmotionsTheme {
         LearningStepsListContent(
             state =

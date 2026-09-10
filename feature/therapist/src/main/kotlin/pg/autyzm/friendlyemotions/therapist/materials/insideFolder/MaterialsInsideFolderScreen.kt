@@ -26,8 +26,10 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -142,15 +144,17 @@ private fun MaterialsInsideFolderContent(
         Column(modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight()) {
             Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = state.hideExampleMaterials,
-                        onCheckedChange = onHideExampleMaterialsToggled,
-                        colors =
-                            CheckboxDefaults.colors(
-                                checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                                uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                            ),
-                    )
+                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 38.dp.scaled()) {
+                        Checkbox(
+                            checked = state.hideExampleMaterials,
+                            onCheckedChange = onHideExampleMaterialsToggled,
+                            colors =
+                                CheckboxDefaults.colors(
+                                    checkedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                    uncheckedColor = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
+                                ),
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.therapist_materials_hide_examples),
                         style = FriendlyEmotionsTextStyles.bodyRegular,
@@ -275,6 +279,51 @@ private fun MaterialsInsideFolderContent(
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
 @Composable
 private fun MaterialsInsideFolderContentPreview() {
+    FriendlyEmotionsTheme {
+        MaterialsInsideFolderContent(
+            state =
+                MaterialsInsideFolderUiState.Content(
+                    folderId = FolderId("folder-1"),
+                    folderName = "Kobiety",
+                    folderGenderPolicy = FolderGenderPolicy.FEMININE,
+                    folderIsExample = false,
+                    selectedEmotionId = EmotionId.SAD,
+                    images =
+                        listOf(
+                            ImageUi(
+                                id = ImageId("image-1"),
+                                filePath = "",
+                                gender = GrammaticalGender.FEMININE,
+                                isExample = true,
+                            ),
+                            ImageUi(
+                                id = ImageId("image-2"),
+                                filePath = "",
+                                gender = GrammaticalGender.FEMININE,
+                                isExample = false,
+                            ),
+                        ),
+                    hideExampleMaterials = false,
+                ),
+            onBackClick = {},
+            onEmotionSelected = {},
+            onHideExampleMaterialsToggled = {},
+            onAddImageClick = {},
+            onDeleteImageRequested = {},
+            onDeleteImageCancelled = {},
+            onDeleteImageConfirmed = {},
+            onImageGenderClicked = { _, _ -> },
+            onRenameRequested = {},
+            onRenameCancelled = {},
+            onRenameConfirmed = {},
+            onErrorDismissed = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1340, heightDp = 600)
+@Composable
+private fun MaterialsInsideFolderContentSmallPreview() {
     FriendlyEmotionsTheme {
         MaterialsInsideFolderContent(
             state =
