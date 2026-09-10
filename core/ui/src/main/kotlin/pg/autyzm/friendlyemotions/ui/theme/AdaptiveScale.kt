@@ -5,6 +5,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 
 private const val REFERENCE_WIDTH_DP = 1280f
 
@@ -41,10 +43,15 @@ fun ProvideAdaptiveScale(content: @Composable () -> Unit) {
     }
 }
 
-/**
- * Scales a layout dimension (spacing, panel width, icon size, ...) by [LocalAdaptiveScale].
- * Intentionally not used for text (`sp`) sizes — those stay static so they keep respecting the
- * user's system font-scale accessibility setting instead of compounding with it.
- */
+/** Scales a layout dimension (spacing, panel width, icon size, ...) by [LocalAdaptiveScale]. */
 @Composable
 fun Dp.scaled(): Dp = this * LocalAdaptiveScale.current
+
+/**
+ * Scales a text size by [LocalAdaptiveScale]. Computed via [TextUnit.value] rather than a
+ * `TextUnit * Float` operator since every call site is a known `.sp` value — stacks on top of
+ * whatever font-scale multiplier the user has set in Android's accessibility settings, which is
+ * an intentional, confirmed tradeoff (see plan).
+ */
+@Composable
+fun TextUnit.scaled(): TextUnit = (this.value * LocalAdaptiveScale.current).sp

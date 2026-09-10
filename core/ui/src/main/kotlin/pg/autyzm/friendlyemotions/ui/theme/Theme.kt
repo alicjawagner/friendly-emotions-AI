@@ -34,7 +34,7 @@ fun FriendlyEmotionsTheme(content: @Composable () -> Unit) {
     ProvideAdaptiveScale {
         MaterialTheme(
             colorScheme = FriendlyEmotionsColorScheme,
-            typography = FriendlyEmotionsTypography,
+            typography = friendlyEmotionsTypography(),
             shapes = FriendlyEmotionsShapes,
             content = content,
         )
