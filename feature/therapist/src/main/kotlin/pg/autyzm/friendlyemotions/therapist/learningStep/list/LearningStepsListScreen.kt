@@ -1,11 +1,13 @@
 package pg.autyzm.friendlyemotions.therapist.learningStep.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -37,6 +39,10 @@ import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepRow
 import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.LearningStepSearchBox
+import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.ROW_ACTIONS_SECTION_WIDTH
+import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.ROW_HORIZONTAL_PADDING
+import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.ROW_ITEM_SPACING
+import pg.autyzm.friendlyemotions.therapist.learningStep.list.components.ROW_MODE_SECTION_WIDTH
 import pg.autyzm.friendlyemotions.therapist.materials.components.ScrollToNewlyAdded
 import pg.autyzm.friendlyemotions.therapist.materials.components.rememberNewlyAddedPulse
 import pg.autyzm.friendlyemotions.therapist.materials.components.toMessageRes
@@ -52,12 +58,6 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
 import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 20.dp
-
-/**
- * Manually tuned so "Tryb"/"Mode" sits roughly above [LearningStepRow]'s toggle — the header and
- * row don't share a layout-computed width, so this may need another visual nudge.
- */
-private val MODE_HEADER_END_PADDING = 210.dp
 
 /**
  * Figma `screens/Tasks-list/default` (`360:28282`) + `list` variant (`896:18299`), roadmap
@@ -208,24 +208,40 @@ private fun LearningStepsListContent(
             verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             modifier = Modifier.fillMaxWidth().weight(1f),
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ROW_ITEM_SPACING.scaled()),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = ROW_HORIZONTAL_PADDING.scaled()),
+            ) {
                 HeaderLabel(
                     text = stringResource(R.string.therapist_learning_steps_header_label),
                     infoTitle = stringResource(R.string.therapist_learning_steps_header_label_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_header_label_info_message),
                     modifier = Modifier.weight(1f),
                 )
-                HeaderLabel(
-                    text = stringResource(R.string.therapist_learning_steps_header_mode),
-                    infoTitle = stringResource(R.string.therapist_learning_steps_header_mode_info_title),
-                    infoMessage = stringResource(R.string.therapist_learning_steps_header_mode_info_message),
-                    modifier = Modifier.padding(end = MODE_HEADER_END_PADDING.scaled()),
-                )
-                HeaderLabel(
-                    text = stringResource(R.string.therapist_learning_steps_header_actions),
-                    infoTitle = stringResource(R.string.therapist_learning_steps_header_actions_info_title),
-                    infoMessage = stringResource(R.string.therapist_learning_steps_header_actions_info_message),
-                )
+                Box(
+                    modifier = Modifier.width(ROW_MODE_SECTION_WIDTH.scaled()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    HeaderLabel(
+                        text = stringResource(R.string.therapist_learning_steps_header_mode),
+                        infoTitle = stringResource(R.string.therapist_learning_steps_header_mode_info_title),
+                        infoMessage = stringResource(R.string.therapist_learning_steps_header_mode_info_message),
+                    )
+                }
+                Box(
+                    modifier = Modifier.width(ROW_ACTIONS_SECTION_WIDTH.scaled()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    HeaderLabel(
+                        text = stringResource(R.string.therapist_learning_steps_header_actions),
+                        infoTitle = stringResource(R.string.therapist_learning_steps_header_actions_info_title),
+                        infoMessage = stringResource(R.string.therapist_learning_steps_header_actions_info_message),
+                    )
+                }
             }
             val listState = rememberLazyListState()
             listState.ScrollToNewlyAdded(state.rows, key = { it.id.value })
