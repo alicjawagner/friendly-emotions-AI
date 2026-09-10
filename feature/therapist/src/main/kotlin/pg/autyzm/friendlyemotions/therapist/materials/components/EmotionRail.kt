@@ -24,6 +24,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val ROW_CORNER_RADIUS = 10.dp
 private val ROW_DIVIDER_HEIGHT = 2.dp
@@ -41,7 +42,7 @@ fun EmotionRail(
 ) {
     val localeCode = currentLocaleCode()
     Column(modifier = modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp.scaled())) {
             Text(
                 text = stringResource(R.string.therapist_materials_rail_caption),
                 style = FriendlyEmotionsTextStyles.captionC1,
@@ -50,20 +51,21 @@ fun EmotionRail(
             InfoIconButton(
                 infoTitle = stringResource(R.string.therapist_materials_rail_info_title),
                 infoMessage = stringResource(R.string.therapist_materials_rail_info_message),
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(start = 5.dp.scaled()),
             )
         }
         Column {
+            val rowCornerRadius = ROW_CORNER_RADIUS.scaled()
             EmotionCatalog.all.forEachIndexed { index, emotion ->
                 val isSelected = emotion.id == selectedEmotionId
                 val isFirst = index == 0
                 val isLast = index == EmotionCatalog.all.lastIndex
                 val rowShape =
                     RoundedCornerShape(
-                        topStart = if (isFirst) ROW_CORNER_RADIUS else 0.dp,
-                        topEnd = if (isFirst) ROW_CORNER_RADIUS else 0.dp,
-                        bottomStart = if (isLast) ROW_CORNER_RADIUS else 0.dp,
-                        bottomEnd = if (isLast) ROW_CORNER_RADIUS else 0.dp,
+                        topStart = if (isFirst) rowCornerRadius else 0.dp,
+                        topEnd = if (isFirst) rowCornerRadius else 0.dp,
+                        bottomStart = if (isLast) rowCornerRadius else 0.dp,
+                        bottomEnd = if (isLast) rowCornerRadius else 0.dp,
                     )
                 Box(
                     modifier =
@@ -77,7 +79,7 @@ fun EmotionRail(
                                     FriendlyEmotionsColors.Shades.White
                                 },
                             ).clickable { onEmotionSelected(emotion.id) }
-                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                            .padding(horizontal = 20.dp.scaled(), vertical = 10.dp.scaled()),
                 ) {
                     Text(
                         text = emotion.labels[localeCode]?.neutral.orEmpty(),
@@ -90,7 +92,7 @@ fun EmotionRail(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(ROW_DIVIDER_HEIGHT)
+                                .height(ROW_DIVIDER_HEIGHT.scaled())
                                 .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P500),
                     )
                 }

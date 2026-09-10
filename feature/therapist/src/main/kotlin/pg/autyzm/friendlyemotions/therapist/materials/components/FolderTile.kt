@@ -20,6 +20,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /** Icon size as a fraction of the tile's width, leaving room below for the folder name. */
 private const val ICON_SIZE_FRACTION = 0.7f
@@ -49,7 +50,7 @@ fun FolderTile(
         BoxWithConstraints(modifier = Modifier.matchParentSize()) {
             val iconSize = maxWidth * ICON_SIZE_FRACTION
             Column(
-                modifier = Modifier.matchParentSize().padding(12.dp),
+                modifier = Modifier.matchParentSize().padding(12.dp.scaled()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {

@@ -47,6 +47,7 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 20.dp
 
@@ -137,11 +138,14 @@ private fun LearningStepsListContent(
     var showCannotPlayInfo by remember { mutableStateOf(false) }
     var readOnlyStepId by remember { mutableStateOf<LearningStepId?>(null) }
     Column(
-        verticalArrangement = Arrangement.spacedBy(22.dp),
-        modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING),
+        verticalArrangement = Arrangement.spacedBy(22.dp.scaled()),
+        modifier = Modifier.fillMaxWidth().padding(CONTENT_PADDING.scaled()),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
+            ) {
                 TherapistButton(
                     text = stringResource(R.string.therapist_learning_steps_create_new),
                     icon = Icons.Filled.AddCircleOutline,
@@ -153,7 +157,10 @@ private fun LearningStepsListContent(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
+            ) {
                 InfoIconButton(
                     infoTitle = stringResource(R.string.therapist_learning_steps_play_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_play_info_message),
@@ -190,10 +197,13 @@ private fun LearningStepsListContent(
             InfoIconButton(
                 infoTitle = stringResource(R.string.therapist_learning_steps_hide_examples_info_title),
                 infoMessage = stringResource(R.string.therapist_learning_steps_hide_examples_info_message),
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(start = 5.dp.scaled()),
             )
         }
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth().weight(1f)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
+            modifier = Modifier.fillMaxWidth().weight(1f),
+        ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 HeaderLabel(
                     text = stringResource(R.string.therapist_learning_steps_header_label),
@@ -205,7 +215,7 @@ private fun LearningStepsListContent(
                     text = stringResource(R.string.therapist_learning_steps_header_mode),
                     infoTitle = stringResource(R.string.therapist_learning_steps_header_mode_info_title),
                     infoMessage = stringResource(R.string.therapist_learning_steps_header_mode_info_message),
-                    modifier = Modifier.padding(end = MODE_HEADER_END_PADDING),
+                    modifier = Modifier.padding(end = MODE_HEADER_END_PADDING.scaled()),
                 )
                 HeaderLabel(
                     text = stringResource(R.string.therapist_learning_steps_header_actions),
@@ -218,7 +228,7 @@ private fun LearningStepsListContent(
             val newlyAddedSteps = rememberNewlyAddedPulse(state.rows, key = { it.id.value })
             LazyColumn(
                 state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp.scaled()),
                 modifier = Modifier.weight(1f),
             ) {
                 items(state.rows, key = { it.id.value }) { row ->
@@ -293,7 +303,7 @@ private fun HeaderLabel(
             InfoIconButton(
                 infoTitle = infoTitle,
                 infoMessage = infoMessage,
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(start = 5.dp.scaled()),
             )
         }
     }

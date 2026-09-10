@@ -24,6 +24,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val NAVBAR_SHADOW_ELEVATION = 4.dp
 
@@ -50,7 +51,7 @@ fun TherapistTopBar(
                 .fillMaxWidth()
                 .shadow(elevation = NAVBAR_SHADOW_ELEVATION)
                 .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
-                .padding(horizontal = 16.dp, vertical = 12.5.dp),
+                .padding(horizontal = 16.dp.scaled(), vertical = 12.5.dp.scaled()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -58,20 +59,20 @@ fun TherapistTopBar(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.therapist_topbar_back_description),
                 tint = FriendlyEmotionsColors.Shades.White,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(36.dp.scaled()),
             )
         }
         Text(
             text = title,
             style = FriendlyEmotionsTextStyles.headingH5Regular,
             color = FriendlyEmotionsColors.Shades.White,
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.padding(start = 16.dp.scaled()),
         )
         InfoIconButton(
             infoTitle = infoTitle,
             infoMessage = infoMessage,
             tint = FriendlyEmotionsColors.Shades.White,
-            iconSize = 36.dp,
+            iconSize = 36.dp.scaled(),
         )
         Spacer(modifier = Modifier.weight(1f))
         if (showHomeButton) {
@@ -80,7 +81,7 @@ fun TherapistTopBar(
                     imageVector = Icons.Filled.Home,
                     contentDescription = stringResource(R.string.therapist_topbar_home_description),
                     tint = FriendlyEmotionsColors.Shades.White,
-                    modifier = Modifier.size(36.dp),
+                    modifier = Modifier.size(36.dp.scaled()),
                 )
             }
         }

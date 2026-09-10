@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 import kotlin.math.roundToInt
 
 private const val SLIDER_TRACK_ALPHA = 0.33f
@@ -51,7 +52,7 @@ fun RangeSlider(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp.scaled()),
         verticalAlignment = Alignment.Top,
     ) {
         RoundActionButton(
@@ -63,7 +64,7 @@ fun RangeSlider(
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(3.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp.scaled()),
         ) {
             Slider(
                 value = value.toFloat(),
@@ -86,8 +87,8 @@ fun RangeSlider(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(25.dp)
-                        .padding(horizontal = 3.dp)
+                        .height(25.dp.scaled())
+                        .padding(horizontal = 3.dp.scaled())
                         .let {
                             if (contentDescription != null) {
                                 it.semantics { this.contentDescription = contentDescription }
@@ -102,8 +103,8 @@ fun RangeSlider(
                     Modifier
                         .fillMaxWidth()
                         .padding(
-                            start = 8.dp,
-                            end = if (range.last >= 10) 0.dp else 8.dp,
+                            start = 8.dp.scaled(),
+                            end = if (range.last >= 10) 0.dp else 8.dp.scaled(),
                         ),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -138,8 +139,8 @@ private fun RoundActionButton(
         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
         modifier =
             modifier
-                .size(23.dp)
-                .offset(y = 1.dp),
+                .size(23.dp.scaled())
+                .offset(y = 1.dp.scaled()),
     ) {
         Box(
             contentAlignment = Alignment.Center,

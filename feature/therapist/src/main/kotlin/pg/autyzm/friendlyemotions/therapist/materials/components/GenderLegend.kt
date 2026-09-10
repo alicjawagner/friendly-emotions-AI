@@ -20,6 +20,7 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Explains the 4 gender-badge icons used on folder/image tiles (Figma "legend" node `969:13811`):
@@ -34,31 +35,31 @@ fun GenderLegend(modifier: Modifier = Modifier) {
                 imageVector = Icons.Filled.Info,
                 contentDescription = null,
                 tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp.scaled()),
             )
             Text(
                 text = stringResource(R.string.therapist_materials_legend_caption),
                 style = FriendlyEmotionsTextStyles.captionC1,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier.padding(start = 8.dp.scaled()),
             )
         }
         FolderGenderPolicy.entries.forEach { policy ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 6.dp),
+                modifier = Modifier.padding(top = 6.dp.scaled()),
             ) {
                 Icon(
                     painter = painterResource(policy.badgeIconRes()),
                     contentDescription = null,
                     tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(24.dp.scaled()),
                 )
                 Text(
                     text = stringResource(policy.descriptionRes()),
                     style = FriendlyEmotionsTextStyles.bodyRegular,
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-                    modifier = Modifier.padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp.scaled()),
                 )
             }
         }

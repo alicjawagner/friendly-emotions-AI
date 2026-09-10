@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val BADGE_HEIGHT = 28.dp
 private val BADGE_CORNER_RADIUS = 10.dp
@@ -43,11 +44,11 @@ fun GenderBadge(
     Row(
         modifier =
             modifier
-                .height(BADGE_HEIGHT)
+                .height(BADGE_HEIGHT.scaled())
                 .background(
                     color = FriendlyEmotionsColors.Shades.White,
-                    shape = RoundedCornerShape(bottomEnd = BADGE_CORNER_RADIUS),
-                ).padding(horizontal = 2.dp),
+                    shape = RoundedCornerShape(bottomEnd = BADGE_CORNER_RADIUS.scaled()),
+                ).padding(horizontal = 2.dp.scaled()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -56,7 +57,7 @@ fun GenderBadge(
             tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
             modifier =
                 Modifier
-                    .size(24.dp)
+                    .size(24.dp.scaled())
                     .let { iconModifier ->
                         if (onIconClick != null) iconModifier.clickable(onClick = onIconClick) else iconModifier
                     },
@@ -76,14 +77,14 @@ fun DeleteBadge(
     Row(
         modifier =
             modifier
-                .height(BADGE_HEIGHT)
+                .height(BADGE_HEIGHT.scaled())
                 .background(
                     color = FriendlyEmotionsColors.Shades.White,
-                    shape = RoundedCornerShape(bottomStart = BADGE_CORNER_RADIUS),
-                ).padding(horizontal = 2.dp),
+                    shape = RoundedCornerShape(bottomStart = BADGE_CORNER_RADIUS.scaled()),
+                ).padding(horizontal = 2.dp.scaled()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onDeleteClick, modifier = Modifier.size(24.dp)) {
+        IconButton(onClick = onDeleteClick, modifier = Modifier.size(24.dp.scaled())) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.therapist_materials_delete_action),

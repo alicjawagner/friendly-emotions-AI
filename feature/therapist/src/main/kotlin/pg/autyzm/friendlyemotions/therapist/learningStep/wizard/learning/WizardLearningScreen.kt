@@ -53,6 +53,7 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 20.dp
 
@@ -163,15 +164,15 @@ private fun WizardLearningContent(
 ) {
     var promptDropdownExpanded by remember { mutableStateOf(false) }
 
-    Row(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+    Row(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
         Column(
             modifier =
                 Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .padding(end = CONTENT_PADDING)
+                    .padding(end = CONTENT_PADDING.scaled())
                     .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -187,7 +188,7 @@ private fun WizardLearningContent(
                 InfoIconButton(
                     infoTitle = stringResource(R.string.therapist_wizard_learning_trial_settings_info_title),
                     infoMessage = stringResource(R.string.therapist_wizard_learning_trial_settings_info_message),
-                    modifier = Modifier.padding(start = 5.dp),
+                    modifier = Modifier.padding(start = 5.dp.scaled()),
                 )
             }
             Text(
@@ -224,13 +225,13 @@ private fun WizardLearningContent(
                 contentDescription = stringResource(R.string.therapist_wizard_learning_repetitions_label),
             )
         }
-        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
+        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp.scaled()))
         Column(
-            modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
+            modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING.scaled()),
         ) {
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -246,7 +247,7 @@ private fun WizardLearningContent(
                     InfoIconButton(
                         infoTitle = stringResource(R.string.therapist_wizard_learning_learning_settings_info_title),
                         infoMessage = stringResource(R.string.therapist_wizard_learning_learning_settings_info_message),
-                        modifier = Modifier.padding(start = 5.dp),
+                        modifier = Modifier.padding(start = 5.dp.scaled()),
                     )
                 }
                 Text(
@@ -301,7 +302,7 @@ private fun WizardLearningContent(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp.scaled()))
             TherapistButton(
                 text = stringResource(R.string.therapist_wizard_learning_next),
                 onClick = onNextClick,

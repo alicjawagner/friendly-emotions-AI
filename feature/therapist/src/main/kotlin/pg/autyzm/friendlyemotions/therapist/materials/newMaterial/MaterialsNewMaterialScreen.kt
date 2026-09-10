@@ -72,6 +72,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val RAIL_WIDTH = 402.dp
 private val CONTENT_PADDING = 20.dp
@@ -193,16 +194,16 @@ private fun MaterialsNewMaterialContent(
             }
         }
 
-    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
         Column(
-            modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight(),
+            modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight(),
         ) {
             Column(
                 modifier =
                     Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(FORM_ITEM_SPACING),
+                verticalArrangement = Arrangement.spacedBy(FORM_ITEM_SPACING.scaled()),
             ) {
                 ReadOnlyField(
                     label = stringResource(R.string.therapist_materials_new_material_emotion_label),
@@ -212,7 +213,7 @@ private fun MaterialsNewMaterialContent(
                     label = stringResource(R.string.therapist_materials_new_material_folder_label),
                     value = "${state.folderName} (${stringResource(state.folderGenderPolicy.descriptionRes())})",
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp.scaled())) {
                     Text(
                         text = stringResource(R.string.therapist_materials_new_material_add_prompt),
                         style = FriendlyEmotionsTextStyles.captionC1,
@@ -243,7 +244,7 @@ private fun MaterialsNewMaterialContent(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp.scaled())) {
                     StaticInfoBanner(
                         text =
                             if (state.folderGenderPolicy == FolderGenderPolicy.MIXED) {
@@ -263,14 +264,14 @@ private fun MaterialsNewMaterialContent(
                     }
                 }
             }
-            Spacer((Modifier.height(FORM_ITEM_SPACING)))
+            Spacer((Modifier.height(FORM_ITEM_SPACING.scaled())))
             TherapistButton(
                 text = stringResource(R.string.therapist_materials_new_material_save),
                 onClick = onSaveClicked,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
+        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp.scaled()))
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Text(
                 text = stringResource(R.string.therapist_materials_new_material_gallery_header),
@@ -280,15 +281,15 @@ private fun MaterialsNewMaterialContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                        .padding(bottom = 16.dp.scaled()),
             )
             val gridState = rememberLazyGridState()
             gridState.ScrollToNewlyAdded(state.pendingImages, key = { it.localId })
             LazyVerticalGrid(
                 state = gridState,
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
+                verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             ) {
                 items(state.pendingImages, key = { it.localId }) { image ->
@@ -371,7 +372,7 @@ private fun ReadOnlyField(
             text = value,
             style = FriendlyEmotionsTextStyles.bodyRegular,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(top = 4.dp.scaled()),
         )
     }
 }

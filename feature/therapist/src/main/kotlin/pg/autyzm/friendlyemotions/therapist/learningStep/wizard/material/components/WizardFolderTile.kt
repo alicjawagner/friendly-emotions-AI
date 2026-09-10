@@ -21,6 +21,7 @@ import pg.autyzm.friendlyemotions.therapist.materials.components.MaterialTileCon
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * A folder in the wizard Material tab's folder gallery (Figma `screens/settings/material/
@@ -46,7 +47,7 @@ fun WizardFolderTile(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         MaterialTileContainer(modifier = Modifier.clickable(onClick = onClick)) {
             Column(
-                modifier = Modifier.matchParentSize().padding(12.dp),
+                modifier = Modifier.matchParentSize().padding(12.dp.scaled()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -54,7 +55,7 @@ fun WizardFolderTile(
                     imageVector = Icons.Filled.Folder,
                     contentDescription = null,
                     tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,
-                    modifier = Modifier.size(155.dp),
+                    modifier = Modifier.size(155.dp.scaled()),
                 )
                 Text(
                     text = name,
@@ -80,7 +81,7 @@ fun WizardFolderTile(
             inTestChecked = inTestChecked,
             onLearningToggle = onLearningToggle,
             onTestToggle = onTestToggle,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = 8.dp.scaled()),
         )
     }
 }

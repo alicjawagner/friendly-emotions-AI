@@ -18,6 +18,7 @@ import coil3.compose.AsyncImage
 import pg.autyzm.friendlyemotions.therapist.materials.components.MaterialTileContainer
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CHECKBOX_BACKGROUND_EXTRA_PADDING = 4.dp
 private val CHECKBOX_BACKGROUND_CORNER_RADIUS = 4.dp
@@ -68,8 +69,8 @@ fun WizardImageTile(
                             .align(Alignment.TopStart)
                             .background(
                                 color = FriendlyEmotionsColors.Shades.White,
-                                shape = RoundedCornerShape(CHECKBOX_BACKGROUND_CORNER_RADIUS),
-                            ).padding(CHECKBOX_BACKGROUND_EXTRA_PADDING),
+                                shape = RoundedCornerShape(CHECKBOX_BACKGROUND_CORNER_RADIUS.scaled()),
+                            ).padding(CHECKBOX_BACKGROUND_EXTRA_PADDING.scaled()),
                 )
             }
         }
@@ -78,7 +79,7 @@ fun WizardImageTile(
             inTestChecked = inTestChecked,
             onLearningToggle = onLearningToggle,
             onTestToggle = onTestToggle,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = 8.dp.scaled()),
         )
     }
 }

@@ -22,6 +22,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Standard error state with a retry action. The error glyph and retry button reuse the
@@ -41,14 +42,14 @@ fun ErrorScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
+            modifier = Modifier.padding(24.dp.scaled()),
         ) {
             Icon(
                 imageVector = Icons.Rounded.Error,
                 contentDescription = null,
                 tint = FriendlyEmotionsColors.States.Error700,
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(48.dp.scaled()),
             )
             Text(
                 text = message,

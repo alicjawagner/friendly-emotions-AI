@@ -52,6 +52,7 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 20.dp
 private val OVERRIDING_ALPHA = 1f
@@ -184,8 +185,8 @@ private fun WizardTestContent(
         if (overridesLearning) testParameters.mixedGenderInAnswers else displayedLearningParameters.mixedGenderInAnswers
 
     Column(
-        modifier = modifier.fillMaxSize().padding(CONTENT_PADDING),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = modifier.fillMaxSize().padding(CONTENT_PADDING.scaled()),
+        verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             FriendlyEmotionsSwitch(
@@ -200,17 +201,17 @@ private fun WizardTestContent(
             InfoIconButton(
                 infoTitle = stringResource(R.string.therapist_wizard_test_override_info_title),
                 infoMessage = stringResource(R.string.therapist_wizard_test_override_info_message),
-                modifier = Modifier.padding(start = 5.dp),
+                modifier = Modifier.padding(start = 5.dp.scaled()),
             )
         }
         Row(modifier = Modifier.weight(1f).fillMaxSize()) {
             Column(
                 modifier =
-                    Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING)
+                    Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING.scaled())
                         .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
                         .clickable(enabled = !overridesLearning) { showOverrideHint = true }
                         .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_learning_prompt_label),
@@ -250,12 +251,12 @@ private fun WizardTestContent(
                 )
                 StaticInfoBanner(
                     text = stringResource(R.string.therapist_wizard_test_hint_delay_banner),
-                    modifier = Modifier.padding(top = 10.dp),
+                    modifier = Modifier.padding(top = 10.dp.scaled()),
                 )
             }
             VerticalDivider(color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700)
             Column(
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING),
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING.scaled()),
             ) {
                 Column(
                     modifier =
@@ -263,7 +264,7 @@ private fun WizardTestContent(
                             .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
                             .clickable(enabled = !overridesLearning) { showOverrideHint = true }
                             .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
                 ) {
                     Text(
                         text = stringResource(R.string.therapist_wizard_learning_options_label),
@@ -302,10 +303,10 @@ private fun WizardTestContent(
                     }
                     StaticInfoBanner(
                         text = stringResource(R.string.therapist_wizard_test_no_hints_banner),
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier.padding(top = 4.dp.scaled()),
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp.scaled()))
                 TherapistButton(
                     text = stringResource(R.string.therapist_wizard_test_next),
                     onClick = onNextClick,

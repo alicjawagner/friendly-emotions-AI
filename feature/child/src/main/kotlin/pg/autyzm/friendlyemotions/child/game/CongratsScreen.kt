@@ -24,6 +24,7 @@ import pg.autyzm.friendlyemotions.child.backgrounds.GameEmptyBackground
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 // Figma node `980:9511` (`screens/correct-selection`): enlarged photo (~429dp vs the game
 // screen's ~330dp). Static mascots from the Figma `animations` group were intentionally omitted.
@@ -33,8 +34,6 @@ private val congratsContentGap = 20.dp
 private val congratsCardCornerRadius = 16.dp
 private val congratsPhotoCornerRadius = 7.dp
 private val congratsCardShadowElevation = 8.dp
-private val congratsCardShape = RoundedCornerShape(congratsCardCornerRadius)
-private val congratsPhotoShape = RoundedCornerShape(congratsPhotoCornerRadius)
 
 /**
  * Full-screen congrats / correct-selection UI for [GameUiState.Congrats]. Owns its own
@@ -76,17 +75,20 @@ private fun CongratsCard(
     captionsEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val cardWidth = congratsPhotoSize + congratsCardPadding * 2
+    val scaledCardPadding = congratsCardPadding.scaled()
+    val cardShape = RoundedCornerShape(congratsCardCornerRadius.scaled())
+    val photoShape = RoundedCornerShape(congratsPhotoCornerRadius.scaled())
+    val cardWidth = congratsPhotoSize.scaled() + scaledCardPadding * 2
     Column(
         modifier =
             modifier
                 .width(cardWidth)
-                .shadow(elevation = congratsCardShadowElevation, shape = congratsCardShape, clip = false)
-                .clip(congratsCardShape)
-                .background(FriendlyEmotionsColors.Shades.White, congratsCardShape)
-                .padding(congratsCardPadding),
+                .shadow(elevation = congratsCardShadowElevation.scaled(), shape = cardShape, clip = false)
+                .clip(cardShape)
+                .background(FriendlyEmotionsColors.Shades.White, cardShape)
+                .padding(scaledCardPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(congratsContentGap),
+        verticalArrangement = Arrangement.spacedBy(congratsContentGap.scaled()),
     ) {
         AsyncImage(
             model = imagePath,
@@ -94,8 +96,8 @@ private fun CongratsCard(
             contentScale = ContentScale.Crop,
             modifier =
                 Modifier
-                    .size(congratsPhotoSize)
-                    .clip(congratsPhotoShape),
+                    .size(congratsPhotoSize.scaled())
+                    .clip(photoShape),
         )
         if (captionsEnabled) {
             Text(

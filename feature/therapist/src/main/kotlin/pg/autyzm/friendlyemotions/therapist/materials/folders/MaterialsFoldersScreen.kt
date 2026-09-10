@@ -44,6 +44,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val RAIL_WIDTH = 402.dp
 private val CONTENT_PADDING = 20.dp
@@ -102,17 +103,17 @@ private fun MaterialsFoldersContent(
     onDeleteFolderConfirmed: () -> Unit,
     onErrorDismissed: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
-        Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
+    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
+        Column(modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight()) {
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
             }
             GenderLegend()
         }
-        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
+        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp.scaled()))
         val gridState = rememberLazyGridState()
         gridState.ScrollToNewlyAdded(
             state.folders,
@@ -125,8 +126,8 @@ private fun MaterialsFoldersContent(
         LazyVerticalGrid(
             state = gridState,
             columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
+            verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
             modifier = Modifier.weight(1f).fillMaxHeight(),
         ) {
             item {

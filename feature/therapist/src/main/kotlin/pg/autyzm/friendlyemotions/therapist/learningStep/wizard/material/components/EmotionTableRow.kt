@@ -22,12 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.therapist.R
+import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.material.MaterialTableMetrics
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val ROW_CORNER_RADIUS = 10.dp
-private val NAME_COLUMN_WIDTH = 180.dp
 
 /**
  * One row of the wizard Material tab's persistent "Materials list" table (Figma
@@ -61,9 +62,9 @@ fun EmotionTableRow(
                         } else {
                             FriendlyEmotionsColors.Shades.White
                         },
-                    shape = RoundedCornerShape(ROW_CORNER_RADIUS),
+                    shape = RoundedCornerShape(ROW_CORNER_RADIUS.scaled()),
                 ).clickable(onClick = onRowClick)
-                .padding(horizontal = 18.dp, vertical = 4.dp),
+                .padding(horizontal = MaterialTableMetrics.horizontalPadding, vertical = 4.dp.scaled()),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -71,7 +72,7 @@ fun EmotionTableRow(
             text = label,
             style = FriendlyEmotionsTextStyles.headingH5Regular,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
-            modifier = Modifier.width(NAME_COLUMN_WIDTH),
+            modifier = Modifier.width(MaterialTableMetrics.nameColumnWidth),
         )
         Checkbox(
             checked = inLearningChecked,

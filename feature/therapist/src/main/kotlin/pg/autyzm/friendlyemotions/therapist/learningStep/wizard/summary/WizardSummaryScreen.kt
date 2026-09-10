@@ -49,6 +49,7 @@ import pg.autyzm.friendlyemotions.ui.compose.collectAsEffect
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 20.dp
 private val SAVE_PANEL_WIDTH = 358.dp
@@ -171,9 +172,9 @@ private fun WizardSummaryContent(
     onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier.padding(CONTENT_PADDING)) {
-        Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING)) {
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+    Row(modifier = modifier.padding(CONTENT_PADDING.scaled())) {
+        Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING.scaled())) {
+            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp.scaled())) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_summary_header_info),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
@@ -205,9 +206,9 @@ private fun WizardSummaryContent(
             modifier =
                 Modifier
                     .align(Alignment.CenterVertically)
-                    .width(SAVE_PANEL_WIDTH)
-                    .padding(start = CONTENT_PADDING),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                    .width(SAVE_PANEL_WIDTH.scaled())
+                    .padding(start = CONTENT_PADDING.scaled()),
+            verticalArrangement = Arrangement.spacedBy(24.dp.scaled()),
         ) {
             OutlinedTextField(
                 value = state.name,

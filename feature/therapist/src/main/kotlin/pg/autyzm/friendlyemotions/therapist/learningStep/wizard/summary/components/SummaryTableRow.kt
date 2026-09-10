@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * One read-only row of the Summary tab's settings comparison table (Figma `screens/settings/summary`,
@@ -27,7 +28,7 @@ fun SummaryTableRow(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp.scaled())) {
             Text(
                 text = label,
                 style = FriendlyEmotionsTextStyles.captionC1,

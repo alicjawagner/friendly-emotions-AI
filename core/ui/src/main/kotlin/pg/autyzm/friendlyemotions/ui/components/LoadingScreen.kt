@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Standard loading state overlay. Uses the same brand purple and Rubik type scale as the
@@ -30,7 +31,7 @@ fun LoadingScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
         ) {
             CircularProgressIndicator(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P700,

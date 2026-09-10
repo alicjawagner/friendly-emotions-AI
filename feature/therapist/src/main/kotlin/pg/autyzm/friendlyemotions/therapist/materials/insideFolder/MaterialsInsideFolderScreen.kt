@@ -64,6 +64,7 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val RAIL_WIDTH = 402.dp
 private val CONTENT_PADDING = 20.dp
@@ -137,8 +138,8 @@ private fun MaterialsInsideFolderContent(
     onRenameConfirmed: (String) -> Unit,
     onErrorDismissed: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING)) {
-        Column(modifier = Modifier.width(RAIL_WIDTH).fillMaxHeight()) {
+    Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
+        Column(modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight()) {
             Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
@@ -158,33 +159,33 @@ private fun MaterialsInsideFolderContent(
                     InfoIconButton(
                         infoTitle = stringResource(R.string.therapist_materials_hide_examples_info_title),
                         infoMessage = stringResource(R.string.therapist_materials_hide_examples_info_message),
-                        modifier = Modifier.padding(start = 5.dp),
+                        modifier = Modifier.padding(start = 5.dp.scaled()),
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp.scaled()))
                 EmotionRail(selectedEmotionId = state.selectedEmotionId, onEmotionSelected = onEmotionSelected)
             }
             GenderLegend()
         }
-        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp))
+        VerticalDividerBar(modifier = Modifier.padding(horizontal = 16.dp.scaled()))
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp.scaled()),
             ) {
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.therapist_topbar_back_description),
                         tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                        modifier = Modifier.size(HEADER_BACK_ICON_SIZE),
+                        modifier = Modifier.size(HEADER_BACK_ICON_SIZE.scaled()),
                     )
                 }
                 Icon(
                     imageVector = Icons.Filled.Folder,
                     contentDescription = null,
                     tint = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-                    modifier = Modifier.size(HEADER_FOLDER_ICON_SIZE),
+                    modifier = Modifier.size(HEADER_FOLDER_ICON_SIZE.scaled()),
                 )
                 Text(
                     text = "${state.folderName} (${stringResource(state.folderGenderPolicy.descriptionRes())})",
@@ -192,7 +193,7 @@ private fun MaterialsInsideFolderContent(
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                     modifier =
                         Modifier
-                            .padding(start = 4.dp)
+                            .padding(start = 4.dp.scaled())
                             .let { textModifier ->
                                 if (state.folderIsExample) {
                                     textModifier
@@ -206,7 +207,7 @@ private fun MaterialsInsideFolderContent(
                 InfoIconButton(
                     infoTitle = stringResource(R.string.therapist_materials_folder_name_info_title),
                     infoMessage = stringResource(R.string.therapist_materials_folder_name_info_message),
-                    modifier = Modifier.padding(start = 5.dp),
+                    modifier = Modifier.padding(start = 5.dp.scaled()),
                 )
             }
             val gridState = rememberLazyGridState()
@@ -215,8 +216,8 @@ private fun MaterialsInsideFolderContent(
             LazyVerticalGrid(
                 state = gridState,
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
+                verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                 modifier = Modifier.weight(1f).fillMaxHeight(),
             ) {
                 item {

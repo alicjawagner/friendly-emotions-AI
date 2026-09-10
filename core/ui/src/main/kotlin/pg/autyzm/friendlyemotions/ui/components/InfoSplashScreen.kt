@@ -45,6 +45,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Shared 5-second info splash, modeled on the Figma "screens/Starting-board" node (`1015:4978`).
@@ -80,10 +81,10 @@ fun InfoSplashScreen(
                 Modifier
                     .align(Alignment.BottomEnd)
                     .offset(
-                        x = 90.dp,
-                        y = 370.dp,
+                        x = 90.dp.scaled(),
+                        y = 370.dp.scaled(),
                     )
-                    .size(550.dp),
+                    .size(550.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.mascot),
@@ -91,33 +92,33 @@ fun InfoSplashScreen(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 70.dp, bottom = 140.dp)
-                    .size(200.dp),
+                    .padding(end = 70.dp.scaled(), bottom = 140.dp.scaled())
+                    .size(200.dp.scaled()),
         )
         SpeechBubble(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 70.dp, bottom = 350.dp)
-                    .widthIn(max = 200.dp),
+                    .padding(end = 70.dp.scaled(), bottom = 350.dp.scaled())
+                    .widthIn(max = 200.dp.scaled()),
         )
 
-        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp.scaled())) {
             Column(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 48.dp, vertical = 40.dp),
+                        .padding(horizontal = 48.dp.scaled(), vertical = 40.dp.scaled()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp.scaled()),
                 ) {
                     Image(
                         painter = painterResource(appIconRes),
                         contentDescription = null,
-                        modifier = Modifier.size(90.dp),
+                        modifier = Modifier.size(90.dp.scaled()),
                     )
                     Text(
                         text = appTitle,
@@ -125,7 +126,7 @@ fun InfoSplashScreen(
                         color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp.scaled()))
                 Text(
                     text = stringResource(R.string.core_ui_splash_subtitle),
                     style = FriendlyEmotionsTextStyles.headingH5Regular,
@@ -137,12 +138,12 @@ fun InfoSplashScreen(
             Column(
                 modifier =
                     Modifier
-                        .padding(start = 70.dp)
-                        .widthIn(max = 800.dp)
+                        .padding(start = 70.dp.scaled())
+                        .widthIn(max = 800.dp.scaled())
                         .background(FriendlyEmotionsColors.Shades.White, FriendlyEmotionsModalShape)
-                        .padding(16.dp)
+                        .padding(16.dp.scaled())
                         .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 SPLASH_BULLETS.forEach { bullet ->
                     BulletRow(bullet.emojiRes, bullet.labelRes, bullet.bodyRes)
@@ -155,21 +156,21 @@ fun InfoSplashScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(130.dp.scaled())
                         .background(FriendlyEmotionsColors.Shades.White.copy(alpha = 0.5f)),
-                horizontalArrangement = Arrangement.spacedBy(64.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(64.dp.scaled(), Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     painter = painterResource(R.drawable.gdansk_university_of_technology_and_eti_logo),
                     contentDescription = null,
-                    modifier = Modifier.height(80.dp),
+                    modifier = Modifier.height(80.dp.scaled()),
                     contentScale = ContentScale.FillHeight,
                 )
                 Image(
                     painter = painterResource(R.drawable.iwrd_logo),
                     contentDescription = null,
-                    modifier = Modifier.height(80.dp),
+                    modifier = Modifier.height(80.dp.scaled()),
                     contentScale = ContentScale.FillHeight,
                 )
             }
@@ -182,8 +183,8 @@ private fun SpeechBubble(modifier: Modifier = Modifier) {
     Box(
         modifier =
             modifier
-                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, RoundedCornerShape(10.dp))
-                .padding(12.dp),
+                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, RoundedCornerShape(10.dp.scaled()))
+                .padding(12.dp.scaled()),
     ) {
         Text(
             text = stringResource(R.string.core_ui_splash_continue_hint),
@@ -220,13 +221,13 @@ private fun BulletRow(
     bodyRes: Int,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp.scaled()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             painter = painterResource(emojiRes),
             contentDescription = null,
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(36.dp.scaled()),
         )
         Text(
             text = bulletText(labelRes, bodyRes),

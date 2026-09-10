@@ -16,6 +16,7 @@ import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * The "Uczenie"/"Test" checkbox pair shown below every folder or image tile in the wizard's
@@ -30,7 +31,7 @@ fun UsageCheckboxRow(
     onTestToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(20.dp.scaled())) {
         LabeledCheckbox(
             checked = inLearningChecked,
             onCheckedChange = onLearningToggle,

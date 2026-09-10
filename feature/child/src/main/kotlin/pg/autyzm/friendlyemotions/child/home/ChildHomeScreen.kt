@@ -29,6 +29,7 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val logoSize = 140.dp
 
@@ -48,11 +49,11 @@ fun ChildHomeScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 48.dp, vertical = 32.dp),
+                    .padding(horizontal = 48.dp.scaled(), vertical = 32.dp.scaled()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Header()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp.scaled()))
             InfoPanel(uiState = uiState)
         }
         PlayButtonArea(
@@ -61,7 +62,7 @@ fun ChildHomeScreen(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 70.dp),
+                    .padding(bottom = 70.dp.scaled()),
         )
     }
 }
@@ -71,15 +72,15 @@ private fun Header(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp.scaled()),
     ) {
         Image(
             painter = painterResource(R.drawable.friendly_emotions_logo),
             contentDescription = null,
             modifier =
                 Modifier
-                    .size(logoSize)
-                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(15.dp)),
+                    .size(logoSize.scaled())
+                    .shadow(elevation = 6.dp.scaled(), shape = RoundedCornerShape(15.dp.scaled())),
         )
         Text(
             text = stringResource(R.string.child_home_title),
@@ -97,9 +98,9 @@ private fun InfoPanel(
     Column(
         modifier =
             modifier
-                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, RoundedCornerShape(5.dp))
-                .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+                .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300, RoundedCornerShape(5.dp.scaled()))
+                .padding(8.dp.scaled()),
+        verticalArrangement = Arrangement.spacedBy(8.dp.scaled()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoRow(
@@ -122,7 +123,7 @@ private fun InfoRow(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp.scaled()),
     ) {
         Text(
             text = label,
@@ -154,7 +155,7 @@ private fun PlayButtonArea(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
     ) {
         PlayButtonCircle(
             onClick = onPlayClick,

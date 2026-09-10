@@ -20,6 +20,7 @@ import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Read-only information overlay, modeled on the Figma "Modal" component (node `53:2390`),
@@ -40,7 +41,7 @@ fun InfoDialog(
         containerColor = FriendlyEmotionsColors.Shades.White,
         title = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(

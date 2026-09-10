@@ -31,10 +31,12 @@ private val FriendlyEmotionsColorScheme =
 
 @Composable
 fun FriendlyEmotionsTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = FriendlyEmotionsColorScheme,
-        typography = FriendlyEmotionsTypography,
-        shapes = FriendlyEmotionsShapes,
-        content = content,
-    )
+    ProvideAdaptiveScale {
+        MaterialTheme(
+            colorScheme = FriendlyEmotionsColorScheme,
+            typography = FriendlyEmotionsTypography,
+            shapes = FriendlyEmotionsShapes,
+            content = content,
+        )
+    }
 }

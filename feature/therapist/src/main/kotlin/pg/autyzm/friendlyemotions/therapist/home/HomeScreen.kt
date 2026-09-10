@@ -21,6 +21,7 @@ import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistScaffold
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 import androidx.compose.material.icons.filled.Image as ImageIcon
 
 /**
@@ -53,16 +54,16 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp.scaled())) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
                     ) {
                         TherapistButton(
                             text = stringResource(R.string.therapist_home_materials_button),
                             icon = Icons.Filled.ImageIcon,
                             onClick = onMaterialsClick,
-                            modifier = Modifier.width(346.dp),
+                            modifier = Modifier.width(346.dp.scaled()),
                         )
                         InfoIconButton(
                             infoTitle = stringResource(R.string.therapist_home_gallery_info_title),
@@ -71,13 +72,13 @@ fun HomeScreen(
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
                     ) {
                         TherapistButton(
                             text = stringResource(R.string.therapist_home_learning_steps_button),
                             icon = Icons.Filled.Inventory,
                             onClick = onLearningStepsClick,
-                            modifier = Modifier.width(346.dp),
+                            modifier = Modifier.width(346.dp.scaled()),
                         )
                         InfoIconButton(
                             infoTitle = stringResource(R.string.therapist_home_learning_steps_info_title),

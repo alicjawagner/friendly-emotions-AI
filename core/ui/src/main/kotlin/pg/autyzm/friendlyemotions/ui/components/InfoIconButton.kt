@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Reusable "i" info affordance: a compact [IconButton] that opens an [InfoDialog] with
@@ -32,7 +33,7 @@ fun InfoIconButton(
     infoMessage: String,
     modifier: Modifier = Modifier,
     tint: Color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P800,
-    iconSize: Dp = 24.dp,
+    iconSize: Dp = 24.dp.scaled(),
 ) {
     var showInfo by remember { mutableStateOf(false) }
 

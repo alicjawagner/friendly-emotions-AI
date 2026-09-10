@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val DEFAULT_ICON_SIZE = 80.dp
 
@@ -48,9 +49,9 @@ fun AddNewTile(
 ) {
     MaterialTileContainer(modifier = modifier.clickable(onClick = onClick)) {
         BoxWithConstraints(modifier = Modifier.matchParentSize()) {
-            val resolvedIconSize = iconSize ?: (maxWidth * ICON_SIZE_FRACTION)
+            val resolvedIconSize = iconSize?.scaled() ?: (maxWidth * ICON_SIZE_FRACTION)
             Column(
-                modifier = Modifier.matchParentSize().padding(12.dp),
+                modifier = Modifier.matchParentSize().padding(12.dp.scaled()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {

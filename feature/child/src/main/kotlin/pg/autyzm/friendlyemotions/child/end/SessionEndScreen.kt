@@ -33,6 +33,7 @@ import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val contentPadding = 35.dp
 private val playButtonSize = 150.dp
@@ -58,7 +59,7 @@ fun SessionEndScreen(
 ) {
     GameFloorBackground(modifier = modifier, showMascot = true) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(contentPadding),
+            modifier = Modifier.fillMaxSize().padding(contentPadding.scaled()),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -73,7 +74,7 @@ fun SessionEndScreen(
             Image(
                 painter = painterResource(R.drawable.trophy),
                 contentDescription = null,
-                modifier = Modifier.size(trophySize),
+                modifier = Modifier.size(trophySize.scaled()),
             )
 
             if (uiState.mode == SessionMode.TEST) {
@@ -84,8 +85,8 @@ fun SessionEndScreen(
 
             PlayButtonCircle(
                 onClick = onPlayAgainClick,
-                size = playButtonSize,
-                iconSize = playButtonIconSize,
+                size = playButtonSize.scaled(),
+                iconSize = playButtonIconSize.scaled(),
                 contentDescription = stringResource(R.string.session_end_play_again_description),
             )
         }
@@ -104,12 +105,12 @@ private fun ScorePanel(
     Column(
         modifier =
             modifier
-                .width(scorePanelWidth)
+                .width(scorePanelWidth.scaled())
                 .background(
                     FriendlyEmotionsColors.PrimaryFriendlyEmotions.P500,
-                    RoundedCornerShape(10.dp),
-                ).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    RoundedCornerShape(10.dp.scaled()),
+                ).padding(16.dp.scaled()),
+        verticalArrangement = Arrangement.spacedBy(8.dp.scaled()),
     ) {
         ScoreRow(
             icon = Icons.Filled.Check,
@@ -147,13 +148,13 @@ private fun ScoreRow(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp.scaled()),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = iconTint,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp.scaled()),
             )
             Text(
                 text = label,
@@ -161,7 +162,7 @@ private fun ScoreRow(
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(scoreValuesGap)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(scoreValuesGap.scaled())) {
             Text(
                 text = "$count/$total",
                 style = FriendlyEmotionsTextStyles.headingH5Regular,
@@ -172,7 +173,7 @@ private fun ScoreRow(
                 style = FriendlyEmotionsTextStyles.headingH5Regular,
                 color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
                 textAlign = TextAlign.End,
-                modifier = Modifier.width(scoreValueColumnWidth),
+                modifier = Modifier.width(scoreValueColumnWidth.scaled()),
             )
         }
     }

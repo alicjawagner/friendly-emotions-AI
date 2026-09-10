@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsShapes
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /** Minimum column width passed to the galleries' `GridCells.Adaptive` — the actual tile size. */
 internal val TILE_CONTENT_SIZE = 186.dp
@@ -46,7 +47,7 @@ internal fun MaterialTileContainer(
                 .aspectRatio(1f)
                 .shadow(elevation = 2.dp, shape = FriendlyEmotionsModalShape)
                 .background(color = FriendlyEmotionsColors.Shades.White, shape = FriendlyEmotionsModalShape)
-                .padding(TILE_PADDING),
+                .padding(TILE_PADDING.scaled()),
     ) {
         Box(
             modifier = Modifier.fillMaxSize().clip(FriendlyEmotionsShapes.extraSmall),

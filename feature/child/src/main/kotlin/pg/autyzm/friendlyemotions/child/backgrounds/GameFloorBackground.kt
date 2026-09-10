@@ -20,6 +20,7 @@ import pg.autyzm.friendlyemotions.ui.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private const val FLOOR_HEIGHT_FRACTION = 0.2f
 
@@ -57,8 +58,8 @@ fun GameFloorBackground(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 80.dp, bottom = 140.dp)
-                        .size(200.dp),
+                        .padding(end = 80.dp.scaled(), bottom = 140.dp.scaled())
+                        .size(200.dp.scaled()),
             )
         }
         content()

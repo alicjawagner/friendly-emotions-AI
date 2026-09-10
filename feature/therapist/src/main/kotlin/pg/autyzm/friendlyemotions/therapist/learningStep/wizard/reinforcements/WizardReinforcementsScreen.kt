@@ -43,6 +43,7 @@ import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private val CONTENT_PADDING = 30.dp
 private val COLUMN_GAP = 30.dp
@@ -153,13 +154,13 @@ private fun WizardReinforcementsContent(
     onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING)) {
+    Column(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(40.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp.scaled()),
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING.scaled()),
             ) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_reinforcements_praise_header),
@@ -177,7 +178,7 @@ private fun WizardReinforcementsContent(
                 )
             }
             Column(
-                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING.scaled()),
             ) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_reinforcements_animation_header),
@@ -193,7 +194,7 @@ private fun WizardReinforcementsContent(
                 )
             }
             Column(
-                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING),
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING.scaled()),
             ) {
                 Text(
                     text = stringResource(R.string.therapist_wizard_reinforcements_end_session_header),
@@ -201,7 +202,7 @@ private fun WizardReinforcementsContent(
                     color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P900,
                 )
                 CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp.scaled())) {
                         CheckboxRow(
                             checked = reinforcementSettings.endSessionAnimationEnabled,
                             label = stringResource(R.string.therapist_wizard_reinforcements_end_animation_label),
@@ -216,7 +217,7 @@ private fun WizardReinforcementsContent(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(CONTENT_PADDING))
+        Spacer(modifier = Modifier.height(CONTENT_PADDING.scaled()))
         TherapistButton(
             text = stringResource(R.string.therapist_wizard_reinforcements_next),
             onClick = onNextClick,
@@ -249,10 +250,10 @@ private fun OptionCheckboxGroup(
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
         Row(
             modifier = modifier.fillMaxWidth(CHECKBOX_SECTION_WIDTH_FRACTION),
-            horizontalArrangement = Arrangement.spacedBy(COLUMN_GAP),
+            horizontalArrangement = Arrangement.spacedBy(COLUMN_GAP.scaled()),
         ) {
             columns.forEach { column ->
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(ROW_GAP)) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(ROW_GAP.scaled())) {
                     column.forEach { option ->
                         CheckboxRow(
                             checked = option in checked,

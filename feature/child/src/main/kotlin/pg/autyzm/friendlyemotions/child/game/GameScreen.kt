@@ -52,6 +52,7 @@ import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private const val MAX_FIXED_SLOTS = 3
 private const val SINGLE_ROW_OPTION_COUNT = 4
@@ -105,6 +106,7 @@ private data class CardSizing(
     val photoSize: Dp,
     val padding: Dp,
     val contentGap: Dp,
+    val gap: Dp,
     val labelStyle: TextStyle,
 ) {
     val cardWidth: Dp get() = photoSize + padding * 2
@@ -114,10 +116,12 @@ private data class CardSizing(
  * Computes the largest [CardSizing.photoSize] that fits [columns] cards per row and [rows] rows
  * inside [availableWidth] x [availableHeight], with [minCardGap] as a floor (never shrunk) on
  * both the horizontal inter-card gap and the vertical inter-row gap. [cardPadding]/
- * [cardContentGap] stay fixed — only the photo needs to flex significantly across screen sizes.
- * When [captionsEnabled], a single-line caption height (estimated from [labelStyle]'s font size
- * at the theme's 1.5x line-height convention) is reserved per row; this is a plain-arithmetic
- * approximation, not a real text-measurement pass.
+ * [cardContentGap] stay fixed relative to each other — callers pass them in already scaled for
+ * the current screen size, so this function's own math stays pure `Dp` arithmetic with no
+ * Android framework dependency, directly unit-testable. When [captionsEnabled], a single-line
+ * caption height (estimated from [labelStyle]'s font size at the theme's 1.5x line-height
+ * convention) is reserved per row; this is a plain-arithmetic approximation, not a real
+ * text-measurement pass.
  */
 private fun computeCardSizing(
     availableWidth: Dp,
@@ -126,6 +130,9 @@ private fun computeCardSizing(
     rows: Int,
     captionsEnabled: Boolean,
     labelStyle: TextStyle,
+    minCardGap: Dp,
+    cardPadding: Dp,
+    cardContentGap: Dp,
 ): CardSizing {
     val totalHorizontalGap = minCardGap * (columns - 1)
     val maxPhotoFromWidth = (availableWidth - totalHorizontalGap) / columns - cardPadding * 2
@@ -148,6 +155,7 @@ private fun computeCardSizing(
         photoSize = photoSize,
         padding = cardPadding,
         contentGap = cardContentGap,
+        gap = minCardGap,
         labelStyle = labelStyle,
     )
 }
@@ -204,8 +212,12 @@ private fun GameContent(
     onOptionTapped: (ImageId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scaledMinCardGap = minCardGap.scaled()
+    val scaledCardPadding = cardPadding.scaled()
+    val scaledCardContentGap = cardContentGap.scaled()
+
     Column(
-        modifier = modifier.padding(top = emotionNameTopPadding),
+        modifier = modifier.padding(top = emotionNameTopPadding.scaled()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -213,16 +225,16 @@ private fun GameContent(
             style = FriendlyEmotionsTextStyles.displayD2,
             color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P1000,
         )
-        Spacer(modifier = Modifier.height(minTitleToGridGap))
+        Spacer(modifier = Modifier.height(minTitleToGridGap.scaled()))
         BoxWithConstraints(
             modifier =
                 Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(
-                        start = screenHorizontalPadding,
-                        end = screenHorizontalPadding,
-                        bottom = screenBottomPadding,
+                        start = screenHorizontalPadding.scaled(),
+                        end = screenHorizontalPadding.scaled(),
+                        bottom = screenBottomPadding.scaled(),
                     ),
             contentAlignment = Alignment.Center,
         ) {
@@ -236,6 +248,9 @@ private fun GameContent(
                             rows = 1,
                             captionsEnabled = uiState.captionsEnabled,
                             labelStyle = FriendlyEmotionsTextStyles.headingH2,
+                            minCardGap = scaledMinCardGap,
+                            cardPadding = scaledCardPadding,
+                            cardContentGap = scaledCardContentGap,
                         )
                     FixedSlotRow(
                         options = uiState.options,
@@ -257,6 +272,9 @@ private fun GameContent(
                             rows = 1,
                             captionsEnabled = uiState.captionsEnabled,
                             labelStyle = FriendlyEmotionsTextStyles.headingH5Regular,
+                            minCardGap = scaledMinCardGap,
+                            cardPadding = scaledCardPadding,
+                            cardContentGap = scaledCardContentGap,
                         )
                     SingleRowGrid(
                         options = uiState.options,
@@ -283,6 +301,9 @@ private fun GameContent(
                             rows = WRAP_GRID_ROWS,
                             captionsEnabled = uiState.captionsEnabled,
                             labelStyle = FriendlyEmotionsTextStyles.bodyRegular,
+                            minCardGap = scaledMinCardGap,
+                            cardPadding = scaledCardPadding,
+                            cardContentGap = scaledCardContentGap,
                         )
                     val hintMargin = hintOverflowMargin(provisionalSizing.cardWidth)
                     val sizing =
@@ -293,6 +314,9 @@ private fun GameContent(
                             rows = WRAP_GRID_ROWS,
                             captionsEnabled = uiState.captionsEnabled,
                             labelStyle = FriendlyEmotionsTextStyles.bodyRegular,
+                            minCardGap = scaledMinCardGap,
+                            cardPadding = scaledCardPadding,
+                            cardContentGap = scaledCardContentGap,
                         )
                     WrappingOptionsGrid(
                         options = uiState.options,
@@ -329,7 +353,7 @@ private fun FixedSlotRow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(sizing.gap, Alignment.CenterHorizontally),
     ) {
         options.forEach { option ->
             if (option == null) {
@@ -373,7 +397,7 @@ private fun SingleRowGrid(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(sizing.gap, Alignment.CenterHorizontally),
     ) {
         options.filterNotNull().forEach { option ->
             OptionCard(
@@ -418,8 +442,8 @@ private fun WrappingOptionsGrid(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(hintOverflowMargin),
-        horizontalArrangement = Arrangement.spacedBy(minCardGap, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(minCardGap),
+        horizontalArrangement = Arrangement.spacedBy(sizing.gap, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(sizing.gap),
         maxItemsInEachRow = WRAP_GRID_MAX_ITEMS_PER_ROW,
     ) {
         options.filterNotNull().forEach { option ->

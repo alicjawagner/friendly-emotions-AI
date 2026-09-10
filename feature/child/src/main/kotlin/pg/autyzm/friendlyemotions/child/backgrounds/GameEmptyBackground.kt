@@ -22,6 +22,7 @@ import pg.autyzm.friendlyemotions.child.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Empty background for the child/game screens, modeled on the Figma "Background/Game/Empty":
@@ -48,8 +49,8 @@ fun GameEmptyBackground(
                 modifier =
                     Modifier
                         .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                        .size(48.dp),
+                        .padding(16.dp.scaled())
+                        .size(48.dp.scaled()),
                 colors =
                     IconButtonDefaults.filledIconButtonColors(
                         containerColor = FriendlyEmotionsColors.Shades.White,
@@ -60,7 +61,7 @@ fun GameEmptyBackground(
                     imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                     contentDescription = stringResource(R.string.child_game_speaker_content_description),
                     tint = FriendlyEmotionsColors.Shades.Black,
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(40.dp.scaled()),
                 )
             }
         }
