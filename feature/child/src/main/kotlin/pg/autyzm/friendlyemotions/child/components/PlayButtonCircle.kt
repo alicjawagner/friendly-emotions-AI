@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.rememberMinAxisScale
 import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 private const val DISABLED_ALPHA = 0.5f
@@ -35,8 +36,8 @@ fun PlayButtonCircle(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    size: Dp = DEFAULT_SIZE.scaled(),
-    iconSize: Dp = DEFAULT_ICON_SIZE.scaled(),
+    size: Dp = DEFAULT_SIZE * rememberMinAxisScale(),
+    iconSize: Dp = DEFAULT_ICON_SIZE * rememberMinAxisScale(),
     contentDescription: String? = null,
 ) {
     Surface(

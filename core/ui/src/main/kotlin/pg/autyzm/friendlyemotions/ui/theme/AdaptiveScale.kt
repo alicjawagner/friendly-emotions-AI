@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 private const val REFERENCE_WIDTH_DP = 1280f
+private const val REFERENCE_HEIGHT_DP = 800f
 
 // App is tablet-only, landscape-only (both activities lock `sensorLandscape`). These bounds cover
 // roughly a 7" tablet (~600dp smallest-width landscape) up to large 12-13" tablets/Chromebooks
@@ -16,6 +17,11 @@ private const val REFERENCE_WIDTH_DP = 1280f
 // to disproportionate sizes outside that range.
 private const val MIN_SCALE = 0.7f
 private const val MAX_SCALE = 1.15f
+
+private fun axisScale(
+    currentDp: Float,
+    referenceDp: Float,
+): Float = (currentDp / referenceDp).coerceIn(MIN_SCALE, MAX_SCALE)
 
 /**
  * Pure function, no Android framework dependency — directly unit-testable. Maps the current
@@ -26,7 +32,7 @@ private const val MAX_SCALE = 1.15f
 fun computeAdaptiveScale(
     currentWidthDp: Float,
     referenceWidthDp: Float = REFERENCE_WIDTH_DP,
-): Float = (currentWidthDp / referenceWidthDp).coerceIn(MIN_SCALE, MAX_SCALE)
+): Float = axisScale(currentWidthDp, referenceWidthDp)
 
 val LocalAdaptiveScale = staticCompositionLocalOf { 1f }
 
@@ -55,3 +61,16 @@ fun Dp.scaled(): Dp = this * LocalAdaptiveScale.current
  */
 @Composable
 fun TextUnit.scaled(): TextUnit = (this.value * LocalAdaptiveScale.current).sp
+
+/**
+ * Like [LocalAdaptiveScale], but also shrinks for short (not just narrow) windows — for elements
+ * that would otherwise overflow a low-height layout even though the width alone is generous, e.g.
+ * a large circular button sharing the screen with other content.
+ */
+@Composable
+fun rememberMinAxisScale(): Float {
+    val configuration = LocalConfiguration.current
+    val widthScale = axisScale(configuration.screenWidthDp.toFloat(), REFERENCE_WIDTH_DP)
+    val heightScale = axisScale(configuration.screenHeightDp.toFloat(), REFERENCE_HEIGHT_DP)
+    return minOf(widthScale, heightScale)
+}

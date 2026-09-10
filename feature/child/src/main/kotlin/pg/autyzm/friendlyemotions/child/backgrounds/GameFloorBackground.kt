@@ -4,9 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -37,20 +38,23 @@ fun GameFloorBackground(
     showMascot: Boolean = true,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
-    Box(
+    BoxWithConstraints(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300),
     ) {
+        val floorHeight = maxHeight * FLOOR_HEIGHT_FRACTION
+
         Box(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .fillMaxHeight(FLOOR_HEIGHT_FRACTION)
+                    .height(floorHeight)
                     .background(FriendlyEmotionsColors.PrimaryFriendlyEmotions.P500),
         )
+
         if (showMascot) {
             Image(
                 painter = painterResource(R.drawable.mascot),
@@ -58,10 +62,14 @@ fun GameFloorBackground(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 80.dp.scaled(), bottom = 140.dp.scaled())
+                        .padding(
+                            end = 80.dp.scaled(),
+                            bottom = floorHeight - 20.dp.scaled(),
+                        )
                         .size(200.dp.scaled()),
             )
         }
+
         content()
     }
 }
@@ -69,6 +77,21 @@ fun GameFloorBackground(
 @Preview(showBackground = true, widthDp = 1280, heightDp = 800)
 @Composable
 private fun GameFloorBackgroundPreview() {
+    FriendlyEmotionsTheme {
+        GameFloorBackground {
+            Text(
+                text = "content",
+                style = FriendlyEmotionsTextStyles.bodyRegular,
+                color = FriendlyEmotionsColors.Shades.White,
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1340, heightDp = 600)
+@Composable
+private fun GameFloorBackgroundSmallPreview() {
     FriendlyEmotionsTheme {
         GameFloorBackground {
             Text(

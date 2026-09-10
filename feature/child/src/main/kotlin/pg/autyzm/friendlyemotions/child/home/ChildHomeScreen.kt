@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,15 +56,16 @@ fun ChildHomeScreen(
             Header()
             Spacer(modifier = Modifier.height(16.dp.scaled()))
             InfoPanel(uiState = uiState)
+            Spacer(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .heightIn(min = 50.dp.scaled()),
+            )
+            PlayButtonArea(
+                uiState = uiState,
+                onPlayClick = onPlayClick,
+            )
         }
-        PlayButtonArea(
-            uiState = uiState,
-            onPlayClick = onPlayClick,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 70.dp.scaled()),
-        )
     }
 }
 
@@ -200,6 +202,22 @@ private fun ChildHomeScreenCannotPlayPreview() {
                     activeStepName = "Krok przykładowy 1",
                     activeMode = SessionMode.TEST,
                     canPlay = false,
+                ),
+            onPlayClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 1340, heightDp = 600)
+@Composable
+private fun ChildHomeScreenCanPlaySmallPreview() {
+    FriendlyEmotionsTheme {
+        ChildHomeScreen(
+            uiState =
+                ChildHomeUiState(
+                    activeStepName = "Krok przykładowy 1",
+                    activeMode = SessionMode.LEARNING,
+                    canPlay = true,
                 ),
             onPlayClick = {},
         )
