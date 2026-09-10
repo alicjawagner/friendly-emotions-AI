@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 
 /**
  * Rounded speech bubble used by the therapist app's "help text" background variants (Figma
@@ -28,7 +29,10 @@ internal fun BoxScope.HelpTextBubble(
     containerColor: Color = FriendlyEmotionsColors.PrimaryFriendlyEmotions.P300,
 ) {
     Box(
-        modifier = modifier.background(color = containerColor, shape = FriendlyEmotionsModalShape).padding(10.dp),
+        modifier =
+            modifier
+                .background(color = containerColor, shape = FriendlyEmotionsModalShape)
+                .padding(10.dp.scaled()),
     ) {
         Text(
             text = text,

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 /**
@@ -45,12 +46,20 @@ fun LowMascotNarrowHelpBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = 269.dp, y = (-266).dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 269.dp.scaled(), y = (-266).dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.ellipse_orange),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 13.dp).size(78.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-60).dp.scaled(), y = 13.dp.scaled())
+                    .size(78.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.leaf_purple),
@@ -58,14 +67,18 @@ fun LowMascotNarrowHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = (-51).dp, y = 32.dp)
-                    .size(width = 86.dp, height = 143.dp)
+                    .offset(x = (-51).dp.scaled(), y = 32.dp.scaled())
+                    .size(width = 86.dp.scaled(), height = 143.dp.scaled())
                     .rotate(16f),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 353.dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 38.dp.scaled(), y = 353.dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.mascot),
@@ -73,16 +86,16 @@ fun LowMascotNarrowHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-76).dp, y = (-70).dp)
-                    .size(width = 229.dp, height = 199.dp),
+                    .offset(x = (-76).dp.scaled(), y = (-70).dp.scaled())
+                    .size(width = 229.dp.scaled(), height = 199.dp.scaled()),
         )
         HelpTextBubble(
             text = helpText,
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 95.dp, bottom = 286.dp)
-                    .width(206.dp),
+                    .padding(end = 95.dp.scaled(), bottom = 286.dp.scaled())
+                    .width(206.dp.scaled()),
         )
         content()
     }

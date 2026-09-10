@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 /**
@@ -43,7 +44,11 @@ fun LowMascotWideHelpBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 38.dp, y = 370.dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 38.dp.scaled(), y = 370.dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.mascot),
@@ -51,16 +56,16 @@ fun LowMascotWideHelpBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-83).dp, y = (-58).dp)
-                    .size(width = 200.dp, height = 180.dp),
+                    .offset(x = (-83).dp.scaled(), y = (-58).dp.scaled())
+                    .size(width = 200.dp.scaled(), height = 180.dp.scaled()),
         )
         HelpTextBubble(
             text = helpText,
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 300.dp, bottom = 120.dp)
-                    .width(432.dp),
+                    .padding(end = 300.dp.scaled(), bottom = 120.dp.scaled())
+                    .width(432.dp.scaled()),
         )
         content()
     }

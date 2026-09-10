@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
+import pg.autyzm.friendlyemotions.ui.theme.scaled
 import pg.autyzm.friendlyemotions.ui.R as CoreUiR
 
 /**
@@ -42,17 +43,29 @@ fun HomeBackground(
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterStart).offset(x = (-231).dp, y = (-5).dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(x = (-231).dp.scaled(), y = (-5).dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = 269.dp, y = (-156).dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 269.dp.scaled(), y = (-156).dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.background_ellipse),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.BottomEnd).offset(x = 41.dp, y = 245.dp).size(461.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 41.dp.scaled(), y = 245.dp.scaled())
+                    .size(461.dp.scaled()),
         )
         Image(
             painter = painterResource(CoreUiR.drawable.mascot),
@@ -60,13 +73,17 @@ fun HomeBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-70).dp, y = (-177).dp)
-                    .size(width = 229.dp, height = 199.dp),
+                    .offset(x = (-70).dp.scaled(), y = (-177).dp.scaled())
+                    .size(width = 229.dp.scaled(), height = 199.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.ellipse_orange),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 123.dp).size(78.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-60).dp.scaled(), y = 123.dp.scaled())
+                    .size(78.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.leaf_purple),
@@ -74,8 +91,8 @@ fun HomeBackground(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = (-51).dp, y = 142.dp)
-                    .size(width = 86.dp, height = 143.dp)
+                    .offset(x = (-51).dp.scaled(), y = 142.dp.scaled())
+                    .size(width = 86.dp.scaled(), height = 143.dp.scaled())
                     .rotate(16f),
         )
         Image(
@@ -84,8 +101,8 @@ fun HomeBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomStart)
-                    .offset(x = 42.dp, y = (-171).dp)
-                    .size(width = 110.dp, height = 91.dp),
+                    .offset(x = 42.dp.scaled(), y = (-171).dp.scaled())
+                    .size(width = 110.dp.scaled(), height = 91.dp.scaled()),
         )
         Image(
             painter = painterResource(R.drawable.leaf_purple_small),
@@ -93,8 +110,8 @@ fun HomeBackground(
             modifier =
                 Modifier
                     .align(Alignment.BottomStart)
-                    .offset(x = 42.dp, y = (-226).dp)
-                    .size(width = 72.dp, height = 71.dp),
+                    .offset(x = 42.dp.scaled(), y = (-226).dp.scaled())
+                    .size(width = 72.dp.scaled(), height = 71.dp.scaled()),
         )
         content()
     }
