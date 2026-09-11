@@ -56,11 +56,21 @@ fun MaterialsNewFolderScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showExitConfirmation by remember { mutableStateOf(false) }
+    var pendingExitAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     val hasUnsavedChanges = uiState.name.isNotBlank() || uiState.genderPolicy != FolderGenderPolicy.FEMININE
+
+    fun guardedExit(action: () -> Unit) {
+        if (hasUnsavedChanges) {
+            pendingExitAction = action
+            showExitConfirmation = true
+        } else {
+            action()
+        }
+    }
     TherapistScaffold(
         title = stringResource(R.string.therapist_route_title_materials_new_folder),
-        onBackClick = { if (hasUnsavedChanges) showExitConfirmation = true else onBackClick() },
-        onHomeClick = onHomeClick,
+        onBackClick = { guardedExit(onBackClick) },
+        onHomeClick = { guardedExit(onHomeClick) },
         infoTitle = stringResource(R.string.therapist_materials_new_folder_page_info_title),
         infoMessage = stringResource(R.string.therapist_materials_new_folder_page_info_message),
         modifier = modifier,
@@ -81,7 +91,10 @@ fun MaterialsNewFolderScreen(
             message = stringResource(R.string.therapist_materials_exit_confirm_message),
             confirmLabel = stringResource(R.string.therapist_materials_exit_confirm_confirm),
             dismissLabel = stringResource(R.string.therapist_materials_exit_confirm_cancel),
-            onConfirm = onBackClick,
+            onConfirm = {
+                showExitConfirmation = false
+                pendingExitAction?.invoke()
+            },
             onDismiss = { showExitConfirmation = false },
         )
     }
