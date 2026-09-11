@@ -57,15 +57,16 @@ data class FocusedFolderUi(
 )
 
 /**
- * The pure use-case-driven "world" for the Material tab — the live folder/image catalog and the
- * shared hide-examples preference. Carries no container/draft state, so it's independently
- * derivable and testable. [isLoading] defaults `true` so [WizardMaterialViewModel.buildUiState]
- * doesn't briefly render an empty gallery before the first `combine` emission lands.
+ * The pure use-case-driven "world" for the Material tab — the live folder/image catalog. Carries
+ * no container/draft state, so it's independently derivable and testable. [isLoading] defaults
+ * `true` so [WizardMaterialViewModel.buildUiState] doesn't briefly render an empty gallery before
+ * the first catalog emission lands. Deliberately does not carry the "hide example materials"
+ * preference — unlike the standalone Materials library screens, the wizard always shows every
+ * image regardless of that preference.
  */
 data class MaterialWorldUiState(
     val foldersByEmotion: Map<EmotionId, List<EmotionFolder>> = emptyMap(),
     val imagesByFolder: Map<FolderId, List<EmotionImage>> = emptyMap(),
-    val hideExampleMaterials: Boolean = false,
     val isLoading: Boolean = true,
 )
 

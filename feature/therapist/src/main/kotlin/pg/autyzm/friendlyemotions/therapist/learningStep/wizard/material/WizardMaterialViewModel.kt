@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
@@ -19,7 +19,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
 import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveFoldersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveImagesForFolderUseCase
-import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerState
 import pg.autyzm.friendlyemotions.therapist.materials.components.currentLocaleCode
 import javax.inject.Inject
@@ -41,16 +40,14 @@ class WizardMaterialViewModel
     constructor(
         private val observeFoldersUseCase: ObserveFoldersUseCase,
         private val observeImagesForFolderUseCase: ObserveImagesForFolderUseCase,
-        private val observeHideExampleFoldersUseCase: ObserveHideExampleFoldersUseCase,
     ) : ViewModel() {
         private val materialCatalog = observeMaterialCatalog(observeFoldersUseCase, observeImagesForFolderUseCase)
 
         val materialWorld: StateFlow<MaterialWorldUiState> =
-            combine(materialCatalog, observeHideExampleFoldersUseCase()) { catalog, hide ->
+            materialCatalog.map { catalog ->
                 MaterialWorldUiState(
                     foldersByEmotion = catalog.foldersByEmotion,
                     imagesByFolder = catalog.imagesByFolder,
-                    hideExampleMaterials = hide,
                     isLoading = catalog.isLoading,
                 )
             }.stateIn(
@@ -112,7 +109,7 @@ class WizardMaterialViewModel
 
             val emotionRows =
                 browsing.addedEmotionIds.sortedBy { it.ordinal }.map { emotionId ->
-                    val imageIds = imageIdsForEmotion(world, emotionId)
+                    val imageIds = imageIdsInEmotion(world, emotionId)
                     EmotionRowUi(
                         emotionId = emotionId,
                         label = EmotionCatalog.get(emotionId).labels[currentLocaleCode()]?.neutral.orEmpty(),
@@ -132,7 +129,7 @@ class WizardMaterialViewModel
             val folders =
                 if (focusedFolder == null) {
                     world.foldersByEmotion[browsing.focusedEmotionId].orEmpty().map { folder ->
-                        val imageIds = visibleImageIds(world, folder.id)
+                        val imageIds = imageIdsInFolder(world, folder.id)
                         FolderTileUi(
                             id = folder.id,
                             name = folder.name,
@@ -149,7 +146,6 @@ class WizardMaterialViewModel
             val images =
                 focusedFolder?.let { ff ->
                     world.imagesByFolder[ff.id].orEmpty()
-                        .filter { !world.hideExampleMaterials || !it.isExample }
                         .map { image ->
                             val usage = usagesById[image.id]
                             ImageTileUi(
@@ -176,22 +172,19 @@ class WizardMaterialViewModel
             )
         }
 
-        private fun imageIdsForEmotion(
+        private fun imageIdsInEmotion(
             world: MaterialWorldUiState,
             emotionId: EmotionId,
         ): List<ImageId> =
             world.foldersByEmotion[emotionId].orEmpty().flatMap {
                     folder ->
-                visibleImageIds(world, folder.id)
+                imageIdsInFolder(world, folder.id)
             }
 
-        private fun visibleImageIds(
+        private fun imageIdsInFolder(
             world: MaterialWorldUiState,
             folderId: FolderId,
-        ): List<ImageId> =
-            world.imagesByFolder[folderId].orEmpty()
-                .filter { !world.hideExampleMaterials || !it.isExample }
-                .map { it.id }
+        ): List<ImageId> = world.imagesByFolder[folderId].orEmpty().map { it.id }
 
         /** Rollup semantics: checked when any image in this scope satisfies [selector] — a
          * partial/mixed selection still renders checked, to show "something is set" at a glance. */

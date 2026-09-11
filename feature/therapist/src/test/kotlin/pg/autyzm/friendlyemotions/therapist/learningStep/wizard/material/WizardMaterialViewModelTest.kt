@@ -28,7 +28,6 @@ import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
 import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveFoldersUseCase
 import pg.autyzm.friendlyemotions.domain.usecase.material.ObserveImagesForFolderUseCase
-import pg.autyzm.friendlyemotions.domain.usecase.preferences.ObserveHideExampleFoldersUseCase
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardContainerState
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardMaterialBrowsingState
 import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardStepDraft
@@ -37,7 +36,6 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardStepDraft
 class WizardMaterialViewModelTest {
     private val observeFoldersUseCase = mockk<ObserveFoldersUseCase>()
     private val observeImagesForFolderUseCase = mockk<ObserveImagesForFolderUseCase>()
-    private val observeHideExampleFoldersUseCase = mockk<ObserveHideExampleFoldersUseCase>()
 
     @Before
     fun setUp() {
@@ -49,7 +47,6 @@ class WizardMaterialViewModelTest {
         // override the specific emotion/folder they care about.
         every { observeFoldersUseCase(any()) } returns flowOf(emptyList())
         every { observeImagesForFolderUseCase(any()) } returns flowOf(emptyList())
-        every { observeHideExampleFoldersUseCase() } returns flowOf(false)
     }
 
     @After
@@ -61,7 +58,6 @@ class WizardMaterialViewModelTest {
         WizardMaterialViewModel(
             observeFoldersUseCase,
             observeImagesForFolderUseCase,
-            observeHideExampleFoldersUseCase,
         )
 
     private val folder =
@@ -71,15 +67,12 @@ class WizardMaterialViewModelTest {
     private val imageB =
         EmotionImage(ImageId("i2"), FolderId("f1"), "path2", GrammaticalGender.FEMININE, isExample = false)
 
-    private fun world(
-        images: List<EmotionImage>,
-        hideExamples: Boolean = false,
-    ) = MaterialWorldUiState(
-        foldersByEmotion = mapOf(EmotionId.HAPPY to listOf(folder)),
-        imagesByFolder = mapOf(FolderId("f1") to images),
-        hideExampleMaterials = hideExamples,
-        isLoading = false,
-    )
+    private fun world(images: List<EmotionImage>) =
+        MaterialWorldUiState(
+            foldersByEmotion = mapOf(EmotionId.HAPPY to listOf(folder)),
+            imagesByFolder = mapOf(FolderId("f1") to images),
+            isLoading = false,
+        )
 
     private fun containerState(
         usages: List<ImageUsage>,
@@ -188,24 +181,24 @@ class WizardMaterialViewModelTest {
     }
 
     @Test
-    fun `hidden example images are excluded from the folder rollup scope`() {
+    fun `example images are never filtered out of the wizard's folder or image scope`() {
         val exampleImage = imageB.copy(isExample = true)
-        val allSelected =
+        val partiallySelected =
             listOf(
                 ImageUsage(imageA.id, inLearning = true, inTest = false),
-                ImageUsage(exampleImage.id, inLearning = false, inTest = false),
             )
 
         val state =
             viewModel().buildUiState(
-                containerState(allSelected),
-                world(listOf(imageA, exampleImage), hideExamples = true),
+                containerState(partiallySelected),
+                world(listOf(imageA, exampleImage)),
                 WizardMaterialLocalState(),
             ) as WizardMaterialUiState.Content
 
-        // With the example image hidden, imageA is the only one left in scope and it's fully selected.
+        // Unlike the standalone Materials gallery, the wizard always includes example images.
         val folderUi = state.folders.single()
-        assertTrue(folderUi.inLearningChecked)
+        assertEquals(listOf(imageA.id, exampleImage.id), folderUi.imageIds)
+        assertEquals(2, state.emotionRows.single().imageIds.size)
     }
 
     @Test
@@ -243,7 +236,6 @@ class WizardMaterialViewModelTest {
                     if (emotionId == EmotionId.HAPPY) flowOf(listOf(folder)) else flowOf(emptyList())
             }
             every { observeImagesForFolderUseCase(folder.id) } returns flowOf(listOf(imageA))
-            every { observeHideExampleFoldersUseCase() } returns flowOf(false)
             val viewModel = viewModel()
 
             val job = launch { viewModel.materialWorld.collect {} }
