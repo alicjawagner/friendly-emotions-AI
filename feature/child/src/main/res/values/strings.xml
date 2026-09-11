@@ -10,8 +10,10 @@
     <string name="child_game_speaker_content_description">Głośnik</string>
     <string name="child_game_error_insufficient_material">Za mało obrazków skonfigurowanych dla tego kroku uczenia.</string>
     <string name="child_game_error_generic">Coś poszło nie tak. Spróbuj ponownie.</string>
-    <string name="child_game_tts_language_unavailable_title">Brak głosu polskiego</string>
-    <string name="child_game_tts_language_unavailable_message">Na tym urządzeniu nie jest zainstalowany głos polski (zamiana tekstu na mowę), więc aplikacja nie może odczytywać poleceń na głos. Przejdź do Ustawienia &gt; Ułatwienia dostępu &gt; Zamiana tekstu na mowę, wybierz zainstalowany silnik i zainstaluj dane głosowe dla języka polskiego.</string>
+    <string name="child_game_tts_language_unavailable_title">Brak głosu</string>
+    <string name="child_game_tts_language_unavailable_message">Na tym urządzeniu nie jest zainstalowany głos %1$s (zamiana tekstu na mowę), więc aplikacja nie może odczytywać poleceń na głos. Przejdź do Ustawienia &gt; Ułatwienia dostępu &gt; Zamiana tekstu na mowę, wybierz zainstalowany silnik i zainstaluj dane głosowe dla tego języka.</string>
+    <string name="child_game_tts_language_name_pl">polski</string>
+    <string name="child_game_tts_language_name_en">angielski</string>
     <string name="session_end_title">Koniec gry!</string>
     <string name="session_end_correct_label">Poprawne odpowiedzi:</string>
     <string name="session_end_incorrect_label">Niepoprawne odpowiedzi:</string>

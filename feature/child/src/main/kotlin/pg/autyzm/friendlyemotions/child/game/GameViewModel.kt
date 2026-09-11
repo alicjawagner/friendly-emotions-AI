@@ -97,10 +97,15 @@ class GameViewModel
 
         /**
          * True once [ttsController] discovers the device's TTS engine has no voice data installed
-         * for [TtsController.localeCode] — `GameScreen` shows [ttsController.languageUnavailable]
-         * as a one-time info dialog instead of prompts just staying silent (see `TtsController`).
+         * for [ttsLocaleCode] — `GameScreen` shows [ttsController.languageUnavailable] as a
+         * one-time info dialog instead of prompts just staying silent (see `TtsController`). This
+         * fires for whichever locale the device resolved to ([TtsController.localeCode] is Polish
+         * or English, detected from the device locale) — it is not Polish-specific.
          */
         val ttsLanguageUnavailable: StateFlow<Boolean> = ttsController.languageUnavailable
+
+        /** The locale ([TtsController.localeCode]) [ttsLanguageUnavailable] refers to, for `GameScreen` to name in its dialog. */
+        val ttsLocaleCode: String = ttsController.localeCode
 
         /** Loads the active step's mode and captions setting, generates a fresh trial list, then renders the first trial. */
         fun startSession() {

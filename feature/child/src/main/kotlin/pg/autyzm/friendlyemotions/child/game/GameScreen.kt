@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import pg.autyzm.friendlyemotions.child.R
 import pg.autyzm.friendlyemotions.child.backgrounds.GameEmptyBackground
+import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.HintType
@@ -177,6 +178,7 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
     ttsLanguageUnavailable: Boolean = false,
+    ttsLocaleCode: String = EmotionCatalog.LOCALE_ENGLISH,
 ) {
     // Dismissal is local UI state, not routed back through the ViewModel: once the child/therapist
     // has seen the warning for this session, re-showing it on every subsequent trial (it's a
@@ -184,9 +186,21 @@ fun GameScreen(
     // true is what raises it, but the user's "OK" tap is what should permanently lower it here.
     var languageWarningDismissed by remember { mutableStateOf(false) }
     if (ttsLanguageUnavailable && !languageWarningDismissed) {
+        // Whichever locale TtsController resolved to (Polish or English, from the device locale) —
+        // this dialog isn't Polish-specific, it names whichever language's voice is missing.
+        val languageNameRes =
+            if (ttsLocaleCode == EmotionCatalog.LOCALE_POLISH) {
+                R.string.child_game_tts_language_name_pl
+            } else {
+                R.string.child_game_tts_language_name_en
+            }
         InfoDialog(
             title = stringResource(R.string.child_game_tts_language_unavailable_title),
-            message = stringResource(R.string.child_game_tts_language_unavailable_message),
+            message =
+                stringResource(
+                    R.string.child_game_tts_language_unavailable_message,
+                    stringResource(languageNameRes),
+                ),
             onDismiss = { languageWarningDismissed = true },
         )
     }

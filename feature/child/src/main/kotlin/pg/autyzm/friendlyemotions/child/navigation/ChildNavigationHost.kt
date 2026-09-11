@@ -66,6 +66,7 @@ fun ChildNavigationHost(viewModel: ChildHomeViewModel = hiltViewModel()) {
                 onEvent = gameViewModel::onEvent,
                 onRetry = gameViewModel::startSession,
                 ttsLanguageUnavailable = ttsLanguageUnavailable,
+                ttsLocaleCode = gameViewModel.ttsLocaleCode,
             )
         }
 
