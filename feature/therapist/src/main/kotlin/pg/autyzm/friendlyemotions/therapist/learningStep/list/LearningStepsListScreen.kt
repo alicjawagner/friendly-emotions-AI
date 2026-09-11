@@ -52,6 +52,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -249,7 +250,7 @@ private fun LearningStepsListContent(
             LazyColumn(
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp.scaled()),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).fadeEdges(listState),
             ) {
                 items(state.rows, key = { it.id.value }) { row ->
                     LearningStepRow(

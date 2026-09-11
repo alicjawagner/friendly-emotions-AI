@@ -40,6 +40,7 @@ import pg.autyzm.friendlyemotions.therapist.learningStep.wizard.WizardTab
 import pg.autyzm.friendlyemotions.therapist.materials.components.currentLocaleCode
 import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -155,8 +156,13 @@ private fun WizardReinforcementsContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
+        val scrollState = rememberScrollState()
         Column(
-            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fadeEdges(scrollState)
+                    .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(40.dp.scaled()),
         ) {
             Column(

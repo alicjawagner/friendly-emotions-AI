@@ -68,6 +68,7 @@ import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
 import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsModalShape
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
@@ -198,11 +199,13 @@ private fun MaterialsNewMaterialContent(
         Column(
             modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight(),
         ) {
+            val formScrollState = rememberScrollState()
             Column(
                 modifier =
                     Modifier
                         .weight(1f)
-                        .verticalScroll(rememberScrollState()),
+                        .fadeEdges(formScrollState)
+                        .verticalScroll(formScrollState),
                 verticalArrangement = Arrangement.spacedBy(FORM_ITEM_SPACING.scaled()),
             ) {
                 ReadOnlyField(
@@ -290,7 +293,7 @@ private fun MaterialsNewMaterialContent(
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
                 horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                 verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
-                modifier = Modifier.weight(1f).fillMaxHeight(),
+                modifier = Modifier.weight(1f).fillMaxHeight().fadeEdges(gridState),
             ) {
                 items(state.pendingImages, key = { it.localId }) { image ->
                     PendingImageTile(

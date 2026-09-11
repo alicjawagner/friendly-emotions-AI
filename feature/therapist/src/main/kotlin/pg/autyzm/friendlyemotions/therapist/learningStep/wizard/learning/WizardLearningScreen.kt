@@ -50,6 +50,7 @@ import pg.autyzm.friendlyemotions.therapist.navigation.TherapistTopBar
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.RangeSlider
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -165,13 +166,15 @@ private fun WizardLearningContent(
     var promptDropdownExpanded by remember { mutableStateOf(false) }
 
     Row(modifier = modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
+        val trialSettingsScrollState = rememberScrollState()
         Column(
             modifier =
                 Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .padding(end = CONTENT_PADDING.scaled())
-                    .verticalScroll(rememberScrollState()),
+                    .fadeEdges(trialSettingsScrollState)
+                    .verticalScroll(trialSettingsScrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
         ) {
             Row(
@@ -229,8 +232,13 @@ private fun WizardLearningContent(
         Column(
             modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING.scaled()),
         ) {
+            val learningSettingsScrollState = rememberScrollState()
             Column(
-                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fadeEdges(learningSettingsScrollState)
+                        .verticalScroll(learningSettingsScrollState),
                 verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 Row(

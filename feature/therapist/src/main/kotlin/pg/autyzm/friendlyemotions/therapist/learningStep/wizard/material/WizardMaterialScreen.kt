@@ -66,6 +66,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -309,7 +310,10 @@ private fun WizardMaterialContent(
             listState.ScrollToNewlyAdded(state.emotionRows, key = { it.emotionId.name })
             LazyColumn(
                 state = listState,
-                modifier = Modifier.weight(1f),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fadeEdges(listState),
                 verticalArrangement = Arrangement.spacedBy(8.dp.scaled()),
             ) {
                 items(state.emotionRows, key = { it.emotionId.name }) { row ->
@@ -376,7 +380,11 @@ private fun WizardMaterialContent(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                     verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .fadeEdges(gridState),
                 ) {
                     items(state.images, key = { it.id.value }) { image ->
                         WizardImageTile(
@@ -398,7 +406,11 @@ private fun WizardMaterialContent(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                     verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .fadeEdges(gridState),
                 ) {
                     items(state.folders, key = { it.id.value }) { folder ->
                         WizardFolderTile(

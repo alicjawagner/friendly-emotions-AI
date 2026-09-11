@@ -49,6 +49,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.RangeSlider
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -205,12 +206,14 @@ private fun WizardTestContent(
             )
         }
         Row(modifier = Modifier.weight(1f).fillMaxSize()) {
+            val trialSettingsScrollState = rememberScrollState()
             Column(
                 modifier =
                     Modifier.weight(1f).fillMaxHeight().padding(end = CONTENT_PADDING.scaled())
                         .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
                         .clickable(enabled = !overridesLearning) { showOverrideHint = true }
-                        .verticalScroll(rememberScrollState()),
+                        .fadeEdges(trialSettingsScrollState)
+                        .verticalScroll(trialSettingsScrollState),
                 verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
             ) {
                 Text(
@@ -258,12 +261,14 @@ private fun WizardTestContent(
             Column(
                 modifier = Modifier.weight(1f).fillMaxHeight().padding(start = CONTENT_PADDING.scaled()),
             ) {
+                val learningOptionsScrollState = rememberScrollState()
                 Column(
                     modifier =
                         Modifier.weight(1f)
                             .alpha(if (overridesLearning) OVERRIDING_ALPHA else NOT_OVERRIDING_ALPHA)
                             .clickable(enabled = !overridesLearning) { showOverrideHint = true }
-                            .verticalScroll(rememberScrollState()),
+                            .fadeEdges(learningOptionsScrollState)
+                            .verticalScroll(learningOptionsScrollState),
                     verticalArrangement = Arrangement.spacedBy(16.dp.scaled()),
                 ) {
                     Text(

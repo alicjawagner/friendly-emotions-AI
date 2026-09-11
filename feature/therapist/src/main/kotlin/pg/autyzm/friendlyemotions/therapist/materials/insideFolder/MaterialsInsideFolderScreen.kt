@@ -63,6 +63,7 @@ import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.InfoIconButton
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.components.YesNoConfirmationDialog
+import pg.autyzm.friendlyemotions.ui.compose.fadeEdges
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTheme
@@ -142,7 +143,8 @@ private fun MaterialsInsideFolderContent(
 ) {
     Row(modifier = Modifier.fillMaxSize().padding(CONTENT_PADDING.scaled())) {
         Column(modifier = Modifier.width(RAIL_WIDTH.scaled()).fillMaxHeight()) {
-            Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            val railScrollState = rememberScrollState()
+            Column(modifier = Modifier.weight(1f).fadeEdges(railScrollState).verticalScroll(railScrollState)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 38.dp.scaled()) {
                         Checkbox(
@@ -222,7 +224,7 @@ private fun MaterialsInsideFolderContent(
                 columns = GridCells.Adaptive(minSize = TILE_CONTENT_SIZE),
                 horizontalArrangement = Arrangement.spacedBy(20.dp.scaled()),
                 verticalArrangement = Arrangement.spacedBy(20.dp.scaled()),
-                modifier = Modifier.weight(1f).fillMaxHeight(),
+                modifier = Modifier.weight(1f).fillMaxHeight().fadeEdges(gridState),
             ) {
                 item {
                     AddNewTile(
