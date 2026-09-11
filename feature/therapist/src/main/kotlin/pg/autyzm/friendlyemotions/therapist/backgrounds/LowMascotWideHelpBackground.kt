@@ -104,7 +104,7 @@ private fun LowMascotWideHelpBackgroundPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 1340, heightDp = 600)
+@Preview(showBackground = true, widthDp = 1340, heightDp = 500)
 @Composable
 private fun LowMascotWideHelpBackgroundShortPreview() {
     FriendlyEmotionsTheme {
