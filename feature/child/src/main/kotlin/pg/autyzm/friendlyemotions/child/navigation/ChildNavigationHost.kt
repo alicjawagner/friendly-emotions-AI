@@ -60,10 +60,12 @@ fun ChildNavigationHost(viewModel: ChildHomeViewModel = hiltViewModel()) {
             }
 
             val gameUiState by gameViewModel.uiState.collectAsStateWithLifecycle()
+            val ttsLanguageUnavailable by gameViewModel.ttsLanguageUnavailable.collectAsStateWithLifecycle()
             GameScreen(
                 uiState = gameUiState,
                 onEvent = gameViewModel::onEvent,
                 onRetry = gameViewModel::startSession,
+                ttsLanguageUnavailable = ttsLanguageUnavailable,
             )
         }
 

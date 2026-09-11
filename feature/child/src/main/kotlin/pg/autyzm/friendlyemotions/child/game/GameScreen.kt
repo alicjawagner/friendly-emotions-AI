@@ -28,6 +28,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -48,6 +51,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.HintType
 import pg.autyzm.friendlyemotions.ui.components.ErrorScreen
+import pg.autyzm.friendlyemotions.ui.components.InfoDialog
 import pg.autyzm.friendlyemotions.ui.components.LoadingScreen
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsColors
 import pg.autyzm.friendlyemotions.ui.theme.FriendlyEmotionsTextStyles
@@ -172,7 +176,21 @@ fun GameScreen(
     onEvent: (GameUiEvent) -> Unit,
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
+    ttsLanguageUnavailable: Boolean = false,
 ) {
+    // Dismissal is local UI state, not routed back through the ViewModel: once the child/therapist
+    // has seen the warning for this session, re-showing it on every subsequent trial (it's a
+    // StateFlow that stays true) would be a nag, not a help — [ttsLanguageUnavailable] flipping
+    // true is what raises it, but the user's "OK" tap is what should permanently lower it here.
+    var languageWarningDismissed by remember { mutableStateOf(false) }
+    if (ttsLanguageUnavailable && !languageWarningDismissed) {
+        InfoDialog(
+            title = stringResource(R.string.child_game_tts_language_unavailable_title),
+            message = stringResource(R.string.child_game_tts_language_unavailable_message),
+            onDismiss = { languageWarningDismissed = true },
+        )
+    }
+
     // Congrats owns its own GameEmptyBackground (Figma correct-selection is a full replacement
     // screen, not Content-with-overlay) — other states share the game empty backdrop + speaker.
     when (uiState) {

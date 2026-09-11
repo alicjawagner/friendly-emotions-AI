@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ class GameViewModelTest {
     private val ttsController =
         mockk<TtsController>(relaxUnitFun = true) {
             every { localeCode } returns EmotionCatalog.LOCALE_POLISH
+            every { languageUnavailable } returns MutableStateFlow(false)
         }
 
     @Before

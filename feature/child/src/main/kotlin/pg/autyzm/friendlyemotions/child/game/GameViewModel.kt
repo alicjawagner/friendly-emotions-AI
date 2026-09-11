@@ -95,6 +95,13 @@ class GameViewModel
         private val _navigationEvents = Channel<GameNavigationEvent>(Channel.BUFFERED)
         val navigationEvents: Flow<GameNavigationEvent> = _navigationEvents.receiveAsFlow()
 
+        /**
+         * True once [ttsController] discovers the device's TTS engine has no voice data installed
+         * for [TtsController.localeCode] — `GameScreen` shows [ttsController.languageUnavailable]
+         * as a one-time info dialog instead of prompts just staying silent (see `TtsController`).
+         */
+        val ttsLanguageUnavailable: StateFlow<Boolean> = ttsController.languageUnavailable
+
         /** Loads the active step's mode and captions setting, generates a fresh trial list, then renders the first trial. */
         fun startSession() {
             viewModelScope.launch {

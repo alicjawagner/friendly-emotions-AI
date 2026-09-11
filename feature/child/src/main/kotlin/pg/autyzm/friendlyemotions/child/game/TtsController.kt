@@ -2,10 +2,16 @@ package pg.autyzm.friendlyemotions.child.game
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
 import java.util.Locale
+
+private const val TAG = "TtsController"
 
 /**
  * Owns the single `TextToSpeech` instance for a game session (ADR-015, target-architecture.md
@@ -29,15 +35,40 @@ class TtsController(context: Context) : DefaultLifecycleObserver {
      */
     private val pendingUtterances = mutableListOf<PendingUtterance>()
 
+    private val _languageUnavailable = MutableStateFlow(false)
+
+    /**
+     * True once engine init has finished and the device's TTS engine has no installed voice data
+     * for [localeCode] (`setLanguage` returned [TextToSpeech.LANG_MISSING_DATA] /
+     * [TextToSpeech.LANG_NOT_SUPPORTED]) — e.g. some OEM engines (observed on Samsung One UI
+     * devices) ship without the Polish voice pre-installed. Unlike a silently-dropped [speak] call,
+     * this is surfaced so `GameViewModel`/`GameScreen` can tell the user to install the voice
+     * instead of the prompt just staying silent with no explanation.
+     */
+    val languageUnavailable: StateFlow<Boolean> = _languageUnavailable.asStateFlow()
+
     private var textToSpeech: TextToSpeech? =
         TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                textToSpeech?.language = localeFor(localeCode)
-                isReady = true
-                pendingUtterances.forEach { (text, queueMode) ->
-                    textToSpeech?.speak(text, queueMode, null, null)
+                when (val languageResult = textToSpeech?.setLanguage(localeFor(localeCode))) {
+                    TextToSpeech.LANG_MISSING_DATA, TextToSpeech.LANG_NOT_SUPPORTED -> {
+                        Log.w(
+                            TAG,
+                            "TTS voice data missing/unsupported for locale '$localeCode' (result=$languageResult)",
+                        )
+                        _languageUnavailable.value = true
+                    }
+
+                    else -> {
+                        isReady = true
+                        pendingUtterances.forEach { (text, queueMode) ->
+                            textToSpeech?.speak(text, queueMode, null, null)
+                        }
+                        pendingUtterances.clear()
+                    }
                 }
-                pendingUtterances.clear()
+            } else {
+                Log.e(TAG, "TextToSpeech engine initialization failed (status=$status)")
             }
         }
 
