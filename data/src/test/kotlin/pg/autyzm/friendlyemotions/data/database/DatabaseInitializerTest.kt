@@ -19,6 +19,7 @@ import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCase
+import java.util.Locale
 
 /**
  * Verifies [DatabaseInitializer]'s seeding contract (phase-3 plan session 3.5 Definition of Done):
@@ -32,9 +33,12 @@ import pg.autyzm.friendlyemotions.domain.usecase.session.InitializeSessionUseCas
 class DatabaseInitializerTest {
     private lateinit var db: AppDatabase
     private lateinit var initializer: DatabaseInitializer
+    private lateinit var originalLocale: Locale
 
     @Before
     fun setUp() {
+        originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale("pl"))
         val context = RuntimeEnvironment.getApplication()
         db =
             Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
@@ -47,6 +51,7 @@ class DatabaseInitializerTest {
     @After
     fun tearDown() {
         db.close()
+        Locale.setDefault(originalLocale)
     }
 
     @Test
@@ -62,6 +67,25 @@ class DatabaseInitializerTest {
                 }
             foldersByEmotion.values.forEach { assertEquals(4, it.size) }
             assertEquals(24, foldersByEmotion.values.sumOf { it.size })
+        }
+
+    @Test
+    fun `seedIfNeeded seeds English folder and step names when device locale is English`() =
+        runTest {
+            Locale.setDefault(Locale("en"))
+
+            initializer.seedIfNeeded()
+
+            val folderNames =
+                EmotionId.entries
+                    .flatMap { db.emotionFolderDao().observeForEmotion(it.name).first() }
+                    .map { it.name }
+                    .toSet()
+            assertEquals(setOf("Women", "Men", "Emojis", "Animals"), folderNames)
+            assertEquals(
+                setOf("Basic (example step)", "Advanced (example step)"),
+                db.learningStepDao().getAllNames().toSet(),
+            )
         }
 
     @Test

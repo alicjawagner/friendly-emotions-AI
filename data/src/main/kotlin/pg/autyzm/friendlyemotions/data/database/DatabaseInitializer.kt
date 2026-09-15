@@ -8,6 +8,7 @@ import pg.autyzm.friendlyemotions.data.entity.EmotionFolderEntity
 import pg.autyzm.friendlyemotions.data.entity.EmotionImageEntity
 import pg.autyzm.friendlyemotions.data.mapper.toEntity
 import pg.autyzm.friendlyemotions.data.mapper.toImageUsageEntities
+import pg.autyzm.friendlyemotions.domain.catalog.EmotionCatalog
 import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
 import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
@@ -22,6 +23,7 @@ import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,11 +55,12 @@ class DatabaseInitializer
         suspend fun seedIfNeeded() {
             if (learningStepDao.getAllNames().isNotEmpty()) return
 
-            val seededImages = seedFoldersAndImages()
-            seedExampleSteps(seededImages)
+            val localeCode = currentLocaleCode()
+            val seededImages = seedFoldersAndImages(localeCode)
+            seedExampleSteps(seededImages, localeCode)
         }
 
-        private suspend fun seedFoldersAndImages(): List<SeededImage> {
+        private suspend fun seedFoldersAndImages(localeCode: String): List<SeededImage> {
             val images = mutableListOf<EmotionImageEntity>()
             val seededImages = mutableListOf<SeededImage>()
             for (emotionId in EmotionId.entries) {
@@ -67,7 +70,7 @@ class DatabaseInitializer
                         EmotionFolderEntity(
                             id = folderId,
                             emotionId = emotionId.name,
-                            name = spec.displayName,
+                            name = spec.displayNames.getValue(localeCode),
                             genderPolicy = spec.genderPolicy.name,
                             isExample = true,
                         ),
@@ -95,7 +98,10 @@ class DatabaseInitializer
          * with the full catalog. "Podstawowy" is intentionally restricted to a beginner-friendly
          * subset: only the HAPPY/SAD/ANGRY emotions, and only their kobiety/mezczyzni folders.
          */
-        private suspend fun seedExampleSteps(seededImages: List<SeededImage>) {
+        private suspend fun seedExampleSteps(
+            seededImages: List<SeededImage>,
+            localeCode: String,
+        ) {
             val allMaterialSelection =
                 MaterialSelection(seededImages.map { ImageUsage(it.id, inLearning = true, inTest = true) })
 
@@ -134,7 +140,12 @@ class DatabaseInitializer
                 mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
-                        name = "Podstawowy (krok przykładowy)",
+                        name =
+                            if (localeCode == EmotionCatalog.LOCALE_POLISH) {
+                                "Podstawowy (krok przykładowy)"
+                            } else {
+                                "Basic (example step)"
+                            },
                         materialSelection = podstawowyMaterialSelection,
                         learningParameters = podstawowyLearning,
                         testParameters = podstawowyTest,
@@ -170,7 +181,12 @@ class DatabaseInitializer
                 mode = SessionMode.LEARNING,
                 draft =
                     LearningStepDraft(
-                        name = "Zaawansowany (krok przykładowy)",
+                        name =
+                            if (localeCode == EmotionCatalog.LOCALE_POLISH) {
+                                "Zaawansowany (krok przykładowy)"
+                            } else {
+                                "Advanced (example step)"
+                            },
                         materialSelection = allMaterialSelection,
                         learningParameters = zaawansowanyLearning,
                         testParameters = zaawansowanyTest,
@@ -194,7 +210,8 @@ class DatabaseInitializer
         private data class SeededImage(val id: ImageId, val emotionId: EmotionId, val folderKey: String)
 
         private data class FolderSpec(
-            val displayName: String,
+            /** Keyed by [EmotionCatalog.LOCALE_POLISH] / [EmotionCatalog.LOCALE_ENGLISH]. */
+            val displayNames: Map<String, String>,
             val key: String,
             val genderPolicy: FolderGenderPolicy,
             /** One [GrammaticalGender] per seeded image in this folder (6 images per folder). */
@@ -206,6 +223,14 @@ class DatabaseInitializer
             private const val PODSTAWOWY_ID = "example-step-podstawowy"
             private const val ZAAWANSOWANY_ID = "example-step-zaawansowany"
 
+            /** Mirrors [pg.autyzm.friendlyemotions.child.game.TtsController]'s locale-code detection. */
+            private fun currentLocaleCode(): String =
+                if (Locale.getDefault().language == Locale(EmotionCatalog.LOCALE_POLISH).language) {
+                    EmotionCatalog.LOCALE_POLISH
+                } else {
+                    EmotionCatalog.LOCALE_ENGLISH
+                }
+
             /**
              * The 4 example folders seeded per emotion (functional spec §6.4). `Buźki` and `Zwierzaki`
              * (MIXED policy) each seed a mix of genders to demonstrate mixed-gender material within a
@@ -214,19 +239,31 @@ class DatabaseInitializer
             private val FOLDER_SPECS =
                 listOf(
                     FolderSpec(
-                        displayName = "Kobiety",
+                        displayNames =
+                            mapOf(
+                                EmotionCatalog.LOCALE_POLISH to "Kobiety",
+                                EmotionCatalog.LOCALE_ENGLISH to "Women",
+                            ),
                         key = "kobiety",
                         genderPolicy = FolderGenderPolicy.FEMININE,
                         imageGenders = List(6) { GrammaticalGender.FEMININE },
                     ),
                     FolderSpec(
-                        displayName = "Mężczyźni",
+                        displayNames =
+                            mapOf(
+                                EmotionCatalog.LOCALE_POLISH to "Mężczyźni",
+                                EmotionCatalog.LOCALE_ENGLISH to "Men",
+                            ),
                         key = "mezczyzni",
                         genderPolicy = FolderGenderPolicy.MASCULINE,
                         imageGenders = List(6) { GrammaticalGender.MASCULINE },
                     ),
                     FolderSpec(
-                        displayName = "Buźki",
+                        displayNames =
+                            mapOf(
+                                EmotionCatalog.LOCALE_POLISH to "Buźki",
+                                EmotionCatalog.LOCALE_ENGLISH to "Emojis",
+                            ),
                         key = "buzki",
                         genderPolicy = FolderGenderPolicy.MIXED,
                         imageGenders =
@@ -240,7 +277,11 @@ class DatabaseInitializer
                             ),
                     ),
                     FolderSpec(
-                        displayName = "Zwierzaki",
+                        displayNames =
+                            mapOf(
+                                EmotionCatalog.LOCALE_POLISH to "Zwierzaki",
+                                EmotionCatalog.LOCALE_ENGLISH to "Animals",
+                            ),
                         key = "zwierzaki",
                         genderPolicy = FolderGenderPolicy.MIXED,
                         imageGenders =
