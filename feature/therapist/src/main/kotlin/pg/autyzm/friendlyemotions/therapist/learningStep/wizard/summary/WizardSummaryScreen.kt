@@ -27,10 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.model.session.HintType
 import pg.autyzm.friendlyemotions.domain.model.session.LearningStepId
 import pg.autyzm.friendlyemotions.domain.model.session.PromptTemplate
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
+import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.therapist.R
 import pg.autyzm.friendlyemotions.therapist.backgrounds.PlainBackground
 import pg.autyzm.friendlyemotions.therapist.components.TherapistButton
@@ -161,7 +163,21 @@ fun WizardSummaryScreen(
     if (currentError != null) {
         InfoDialog(
             title = stringResource(R.string.therapist_wizard_summary_error_dialog_title),
-            message = stringResource(currentError.toMessageRes()),
+            message =
+                when (currentError) {
+                    is DomainError.InsufficientEmotionsForDisplayCount -> {
+                        val modeLabel =
+                            stringResource(
+                                if (currentError.mode == SessionMode.LEARNING) {
+                                    R.string.therapist_learning_steps_mode_learning
+                                } else {
+                                    R.string.therapist_learning_steps_mode_test
+                                },
+                            )
+                        stringResource(currentError.toMessageRes(), modeLabel, currentError.requiredEmotionCount)
+                    }
+                    else -> stringResource(currentError.toMessageRes())
+                },
             onDismiss = viewModel::onErrorDismissed,
         )
     }

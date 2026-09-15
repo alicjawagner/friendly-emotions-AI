@@ -17,14 +17,21 @@ class SaveLearningStepUseCase
     constructor(
         private val learningStepRepository: LearningStepRepository,
         private val validateLearningStepNameUseCase: ValidateLearningStepNameUseCase,
+        private val validateMaterialSelectionUseCase: ValidateMaterialSelectionUseCase,
     ) {
         suspend operator fun invoke(draft: LearningStepDraft): Result<LearningStepId, DomainError> {
             val validation = validateLearningStepNameUseCase(name = draft.name)
             if (validation is Result.Failure) {
                 return validation
             }
-            if (draft.materialSelection.imageUsages.isEmpty()) {
-                return Result.Failure(DomainError.NoMaterialSelected)
+            val materialValidation =
+                validateMaterialSelectionUseCase(
+                    draft.materialSelection,
+                    draft.learningParameters,
+                    draft.testParameters,
+                )
+            if (materialValidation is Result.Failure) {
+                return materialValidation
             }
 
             return Result.Success(learningStepRepository.saveStep(draft))

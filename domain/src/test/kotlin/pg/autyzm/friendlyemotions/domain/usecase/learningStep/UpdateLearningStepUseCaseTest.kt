@@ -8,6 +8,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import pg.autyzm.friendlyemotions.domain.error.DomainError
 import pg.autyzm.friendlyemotions.domain.error.Result
+import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionFolder
+import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionId
+import pg.autyzm.friendlyemotions.domain.model.emotion.EmotionImage
+import pg.autyzm.friendlyemotions.domain.model.emotion.FolderGenderPolicy
+import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
+import pg.autyzm.friendlyemotions.domain.model.emotion.GrammaticalGender
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
 import pg.autyzm.friendlyemotions.domain.model.session.ImageUsage
 import pg.autyzm.friendlyemotions.domain.model.session.LearningParameters
@@ -18,12 +24,19 @@ import pg.autyzm.friendlyemotions.domain.model.session.MaterialSelection
 import pg.autyzm.friendlyemotions.domain.model.session.ReinforcementSettings
 import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 import pg.autyzm.friendlyemotions.domain.model.session.TestParameters
+import pg.autyzm.friendlyemotions.domain.repository.EmotionFolderRepository
+import pg.autyzm.friendlyemotions.domain.repository.EmotionImageRepository
 import pg.autyzm.friendlyemotions.domain.repository.LearningStepRepository
 
 class UpdateLearningStepUseCaseTest {
     private val repository = mockk<LearningStepRepository>()
+    private val emotionImageRepository = mockk<EmotionImageRepository>()
+    private val emotionFolderRepository = mockk<EmotionFolderRepository>()
     private val validateLearningStepNameUseCase = ValidateLearningStepNameUseCase(repository)
-    private val useCase = UpdateLearningStepUseCase(repository, validateLearningStepNameUseCase)
+    private val validateMaterialSelectionUseCase =
+        ValidateMaterialSelectionUseCase(emotionImageRepository, emotionFolderRepository)
+    private val useCase =
+        UpdateLearningStepUseCase(repository, validateLearningStepNameUseCase, validateMaterialSelectionUseCase)
 
     private val stepId = LearningStepId("step-1")
 
@@ -49,10 +62,29 @@ class UpdateLearningStepUseCaseTest {
     ) = LearningStepDraft(
         name = name,
         materialSelection = MaterialSelection(imageUsages = imageUsages),
-        learningParameters = LearningParameters(),
+        learningParameters = LearningParameters(displayedImageCount = 1),
         testParameters = TestParameters(),
         reinforcementSettings = ReinforcementSettings(),
     )
+
+    init {
+        coEvery { emotionImageRepository.getImageById(ImageId("img-1")) } returns
+            EmotionImage(
+                id = ImageId("img-1"),
+                folderId = FolderId("folder-1"),
+                filePath = "",
+                gender = GrammaticalGender.NEUTER,
+                isExample = false,
+            )
+        coEvery { emotionFolderRepository.getFolderById(FolderId("folder-1")) } returns
+            EmotionFolder(
+                id = FolderId("folder-1"),
+                emotionId = EmotionId.HAPPY,
+                name = "",
+                genderPolicy = FolderGenderPolicy.MIXED,
+                isExample = false,
+            )
+    }
 
     @Test
     fun `example steps cannot be edited`() =

@@ -2,6 +2,7 @@ package pg.autyzm.friendlyemotions.domain.error
 
 import pg.autyzm.friendlyemotions.domain.model.emotion.FolderId
 import pg.autyzm.friendlyemotions.domain.model.emotion.ImageId
+import pg.autyzm.friendlyemotions.domain.model.session.SessionMode
 
 sealed class DomainError {
     data class FolderNotFound(val folderId: FolderId) : DomainError()
@@ -11,6 +12,11 @@ sealed class DomainError {
     object StepNameBlank : DomainError()
 
     object NoMaterialSelected : DomainError()
+
+    data class InsufficientEmotionsForDisplayCount(
+        val mode: SessionMode,
+        val requiredEmotionCount: Int,
+    ) : DomainError()
 
     object NoExampleStepAvailable : DomainError()
 

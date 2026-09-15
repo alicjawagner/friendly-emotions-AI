@@ -244,4 +244,5 @@
     <string name="therapist_wizard_summary_error_name_blank">Nazwa kroku nie może być pusta.</string>
     <string name="therapist_wizard_summary_error_name_duplicate">Krok o takiej nazwie już istnieje.</string>
     <string name="therapist_wizard_summary_error_no_material">Wybierz co najmniej jedną emocję i materiał przed zapisaniem.</string>
+    <string name="therapist_wizard_summary_error_insufficient_emotions">W trybie „%1$s” ustawiono liczbę wyświetlanych zdjęć na %2$d, ale liczba uczonych emocji wynosi mniej niż %2$d – dodaj więcej emocji do tego trybu, ponieważ na ekranie mogą pojawić się obrazki tylko z dodanych emocji.</string>
 </resources>

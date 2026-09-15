@@ -244,4 +244,5 @@
     <string name="therapist_wizard_summary_error_name_blank">The step name cannot be blank.</string>
     <string name="therapist_wizard_summary_error_name_duplicate">A step with this name already exists.</string>
     <string name="therapist_wizard_summary_error_no_material">Select at least one emotion and material before saving.</string>
+    <string name="therapist_wizard_summary_error_insufficient_emotions">%1$s mode is set to display %2$d images on screen, but this step teaches fewer than %2$d emotions – add more emotions to this mode, since only images from the selected emotions can appear on screen.</string>
 </resources>

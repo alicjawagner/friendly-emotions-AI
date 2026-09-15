@@ -18,5 +18,7 @@ fun DomainError.toMessageRes(): Int =
         is DomainError.StepNameBlank -> R.string.therapist_wizard_summary_error_name_blank
         is DomainError.DuplicateStepName -> R.string.therapist_wizard_summary_error_name_duplicate
         is DomainError.NoMaterialSelected -> R.string.therapist_wizard_summary_error_no_material
+        is DomainError.InsufficientEmotionsForDisplayCount ->
+            R.string.therapist_wizard_summary_error_insufficient_emotions
         else -> R.string.therapist_materials_error_generic
     }
