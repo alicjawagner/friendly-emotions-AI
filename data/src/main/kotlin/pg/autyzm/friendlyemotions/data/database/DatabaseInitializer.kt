@@ -93,14 +93,14 @@ class DatabaseInitializer
         /**
          * "Zaawansowany" selects every seeded image, for both modes, so it is immediately playable
          * with the full catalog. "Podstawowy" is intentionally restricted to a beginner-friendly
-         * subset: only the HAPPY/SAD/ANGRY emotions, and only their buzki/zwierzaki folders.
+         * subset: only the HAPPY/SAD/ANGRY emotions, and only their kobiety/mezczyzni folders.
          */
         private suspend fun seedExampleSteps(seededImages: List<SeededImage>) {
             val allMaterialSelection =
                 MaterialSelection(seededImages.map { ImageUsage(it.id, inLearning = true, inTest = true) })
 
             val podstawowyEmotions = setOf(EmotionId.HAPPY, EmotionId.SAD, EmotionId.ANGRY)
-            val podstawowyFolderKeys = setOf("buzki", "zwierzaki")
+            val podstawowyFolderKeys = setOf("kobiety", "mezczyzni")
             val podstawowyMaterialSelection =
                 MaterialSelection(
                     seededImages
